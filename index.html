@@ -1,0 +1,823 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  Search, 
+  Filter, 
+  Info, 
+  AlertTriangle, 
+  Zap, 
+  ShieldCheck, 
+  Layers, 
+  Box, 
+  ChevronRight, 
+  X,
+  Plus,
+  ArrowRight,
+  Activity,
+  Compass,
+  Link as LinkIcon,
+  ZapOff,
+  Database,
+  Cpu,
+  Shield,
+  Layout,
+  Workflow,
+  CheckCircle2,
+  XCircle,
+  AlertOctagon,
+  TrendingUp
+} from 'lucide-react';
+
+// --- THE DATASET ---
+const DATA = {
+  site: {
+    name: "Architectural Chromatics",
+    version: "0.2",
+    tagline: "A landscape of AI tools, patterns, and combinations seen through color theory.",
+    description: "Architectural Chromatics is a reference landscape for modern AI systems that treats tools like pigments, combinations like color harmonies, and architectures like compositions."
+  },
+  hues: [
+    { id: "intent", name: "Intent", colorName: "Red", hex: "#C84C3A", description: "Direction, goals, prompting, and decision framing." },
+    { id: "logic", name: "Logic", colorName: "Blue", hex: "#4A6FA5", description: "Deterministic control, orchestration, and flow." },
+    { id: "cognition", name: "Cognition", colorName: "Purple", hex: "#7A5AA6", description: "Reasoning, generation, and transformation." },
+    { id: "memory", name: "Memory", colorName: "Orange", hex: "#D98E3D", description: "Context, retrieval, and persistence of meaning." },
+    { id: "interface", name: "Interface", colorName: "Yellow", hex: "#D9B84A", description: "Interaction, experience, and visibility." },
+    { id: "velocity", name: "Velocity", colorName: "Green", hex: "#5D9C59", description: "Build speed, iteration, and delivery." },
+    { id: "trust", name: "Trust", colorName: "Teal", hex: "#3F8F8C", description: "Observability, evaluation, safety, and governance." }
+  ],
+  evaluationDimensions: [
+    "harmony", "contrast", "complexity", "durability", "clarity", "adaptability", "operationalLoad", "trustSurface"
+  ],
+  tools: [
+    { id: "langchain", name: "LangChain", primaryHue: "intent", secondaryHue: "logic", category: "Framework", maturity: "production", description: "Prompt orchestration and agent scaffolding for LLM applications.", complexityAdded: "medium", trustContribution: "low", pairsWellWith: ["openai", "pinecone", "langgraph", "langsmith"], conflictsWith: ["temporal", "prefect", "airflow"], patterns: ["conductor", "muddy-mix", "thin-wrapper"], notes: "Common entry point for early LLM apps. Can create overlap when paired with too many orchestration layers." },
+    { id: "semantic-kernel", name: "Semantic Kernel", primaryHue: "intent", secondaryHue: "logic", category: "Framework", maturity: "production", description: "Structured intent and planner abstraction with enterprise-oriented integration patterns.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["openai", "gemini", "temporal"], conflictsWith: ["langchain"], patterns: ["conductor", "governance-shell"], notes: "Often better suited for structured enterprise implementations than looser prompt-first stacks." },
+    { id: "dspy", name: "DSPy", primaryHue: "intent", secondaryHue: "trust", category: "Framework", maturity: "emerging", description: "Programmatic prompting and optimization framework that turns intent engineering into something more measurable.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["openai", "claude", "wandb", "langsmith"], conflictsWith: [], patterns: ["reflective-loop", "cognitive-core"], notes: "Important for moving prompting from craft toward engineering." },
+    { id: "langgraph", name: "LangGraph", primaryHue: "logic", secondaryHue: "intent", category: "Orchestrator", maturity: "emerging", description: "Graph-based orchestration for stateful agent and workflow control.", complexityAdded: "medium", trustContribution: "low", pairsWellWith: ["langchain", "openai", "pinecone", "langsmith"], conflictsWith: ["temporal", "prefect", "airflow"], patterns: ["conductor", "orchestration-pileup", "modular-palette"], notes: "Very strong for agent flow control but easy to overlap with other workflow engines." },
+    { id: "temporal", name: "Temporal", primaryHue: "logic", secondaryHue: "trust", category: "Workflow Engine", maturity: "production", description: "Durable workflow orchestration for production-critical systems.", complexityAdded: "high", trustContribution: "high", pairsWellWith: ["openai", "claude", "pinecone", "guardrails", "arize"], conflictsWith: ["langgraph", "prefect", "airflow"], patterns: ["durable-spine", "governance-shell", "conductor"], notes: "A strong backbone for systems that need reliability, retries, auditability, and long-running workflow control." },
+    { id: "airflow", name: "Apache Airflow", primaryHue: "logic", secondaryHue: "velocity", category: "Workflow Engine", maturity: "production", description: "Widely used orchestration for batch and data-heavy workflows.", complexityAdded: "high", trustContribution: "medium", pairsWellWith: ["weaviate", "wandb"], conflictsWith: ["langgraph", "temporal"], patterns: ["orchestration-pileup"], notes: "Useful in data-heavy contexts, but often awkward when stretched into real-time AI interaction patterns." },
+    { id: "prefect", name: "Prefect", primaryHue: "logic", secondaryHue: "velocity", category: "Workflow Engine", maturity: "production", description: "Modern workflow orchestration with a smoother developer experience than older pipeline tools.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["wandb", "weaviate"], conflictsWith: ["langgraph", "temporal", "airflow"], patterns: ["orchestration-pileup", "modular-palette"], notes: "Strong for modern data and ML workflows, but still creates overlap if stacked with other orchestration systems." },
+    { id: "openai", name: "OpenAI", primaryHue: "cognition", secondaryHue: "intent", category: "Model Provider", maturity: "production", description: "General-purpose cognition layer for reasoning, generation, summarization, and transformation.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith", "helicone"], conflictsWith: [], patterns: ["bright-demo", "thin-wrapper", "conductor", "cognitive-core"], notes: "Default cognitive engine in many stacks. Powerful, but easy to over-rely on without stronger control and trust layers." },
+    { id: "claude", name: "Anthropic Claude", primaryHue: "cognition", secondaryHue: "trust", category: "Model Provider", maturity: "production", description: "Reasoning-focused model layer with strong performance on structured language tasks.", complexityAdded: "low", trustContribution: "medium", pairsWellWith: ["dspy", "langsmith", "guardrails", "temporal"], conflictsWith: [], patterns: ["reflective-loop", "cognitive-core", "governance-shell"], notes: "Often a strong fit where clarity, structure, and safer behavior matter." },
+    { id: "gemini", name: "Google Gemini", primaryHue: "cognition", secondaryHue: "interface", category: "Model Provider", maturity: "production", description: "Multimodal cognition layer with strong fit in Google-oriented ecosystems.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["semantic-kernel", "vercel"], conflictsWith: [], patterns: ["bright-demo", "cognitive-core"], notes: "Important when multimodality and Google ecosystem fit are central." },
+    { id: "mistral", name: "Mistral / Mixtral", primaryHue: "cognition", secondaryHue: "velocity", category: "Model Provider", maturity: "production", description: "Open-weight cognition option for teams prioritizing control, cost, and self-hosted flexibility.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["weaviate", "temporal", "wandb"], conflictsWith: [], patterns: ["cognitive-core", "modular-palette"], notes: "Especially relevant where sovereignty and model control matter." },
+    { id: "pinecone", name: "Pinecone", primaryHue: "memory", secondaryHue: "trust", category: "Vector Database", maturity: "production", description: "Managed vector database for retrieval-based memory systems.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["openai", "claude", "langchain", "langgraph"], conflictsWith: [], patterns: ["long-memory-system", "conductor", "retrieval-illusion"], notes: "A common memory layer, but still vulnerable to poor retrieval design and bad source data." },
+    { id: "weaviate", name: "Weaviate", primaryHue: "memory", secondaryHue: "logic", category: "Vector Database", maturity: "production", description: "Vector database with stronger structure and hybrid retrieval patterns.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["claude", "mistral", "prefect", "airflow"], conflictsWith: [], patterns: ["long-memory-system", "modular-palette"], notes: "A more structured memory layer for teams that want more than a quick-start RAG backend." },
+    { id: "chroma", name: "Chroma", primaryHue: "memory", secondaryHue: "velocity", category: "Vector Database", maturity: "emerging", description: "Lightweight local vector store for rapid experimentation and prototypes.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["openai", "vercel", "streamlit"], conflictsWith: [], patterns: ["bright-demo", "thin-wrapper", "retrieval-illusion"], notes: "Excellent for getting started, but easy to outgrow." },
+    { id: "vercel", name: "Vercel / Next.js", primaryHue: "interface", secondaryHue: "velocity", category: "Frontend Platform", maturity: "production", description: "Interface and deployment layer that makes AI applications feel polished quickly.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["openai", "supabase", "chroma", "firebase"], conflictsWith: [], patterns: ["bright-demo", "thin-wrapper", "velocity-stack"], notes: "A major enabler of beautiful AI demos and fast productization." },
+    { id: "streamlit", name: "Streamlit", primaryHue: "interface", secondaryHue: "velocity", category: "UI Framework", maturity: "production", description: "Rapid UI for Python and data-heavy AI applications.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["openai", "chroma", "wandb"], conflictsWith: [], patterns: ["bright-demo", "velocity-stack"], notes: "Great for prototypes, internal tools, and technical proof-of-concepts." },
+    { id: "retool", name: "Retool", primaryHue: "interface", secondaryHue: "trust", category: "Internal Tools", maturity: "production", description: "Interface layer for operational and internal workflow applications.", complexityAdded: "medium", trustContribution: "medium", pairsWellWith: ["temporal", "guardrails", "arize"], conflictsWith: [], patterns: ["governance-shell", "modular-palette"], notes: "Especially useful when the audience is internal operators rather than public users." },
+    { id: "supabase", name: "Supabase", primaryHue: "velocity", secondaryHue: "memory", category: "Backend Platform", maturity: "production", description: "Backend-as-a-service that accelerates full-stack AI application development.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["vercel", "openai"], conflictsWith: [], patterns: ["bright-demo", "velocity-stack"], notes: "Fast, practical, and very effective for getting products moving." },
+    { id: "firebase", name: "Firebase", primaryHue: "velocity", secondaryHue: "interface", category: "Backend Platform", maturity: "production", description: "Rapid backend and realtime infrastructure for fast-moving applications.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["vercel", "openai", "helicone"], conflictsWith: [], patterns: ["velocity-stack", "bright-demo"], notes: "Very strong for iteration speed, but not always the cleanest long-term substrate." },
+    { id: "railway", name: "Railway", primaryHue: "velocity", secondaryHue: "logic", category: "Deployment Platform", maturity: "emerging", description: "Simple deployment platform for prototypes and early product stages.", complexityAdded: "low", trustContribution: "low", pairsWellWith: ["openai", "streamlit", "chroma"], conflictsWith: [], patterns: ["velocity-stack"], notes: "Excellent for lowering the friction to ship, but not always the final home for mature systems." },
+    { id: "langsmith", name: "LangSmith", primaryHue: "trust", secondaryHue: "logic", category: "Observability", maturity: "production", description: "Tracing, debugging, and observability for LLM applications and workflows.", complexityAdded: "low", trustContribution: "high", pairsWellWith: ["langchain", "langgraph", "openai", "claude", "dspy"], conflictsWith: [], patterns: ["reflective-loop", "durable-spine", "conductor", "trust-gap"], notes: "One of the cleanest ways to make LLM systems more legible." },
+    { id: "wandb", name: "Weights & Biases", primaryHue: "trust", secondaryHue: "cognition", category: "Evaluation", maturity: "production", description: "Experiment tracking and evaluation layer for model and prompt development.", complexityAdded: "medium", trustContribution: "high", pairsWellWith: ["dspy", "mistral", "prefect", "streamlit"], conflictsWith: [], patterns: ["reflective-loop", "cognitive-core"], notes: "Crucial for teams that want to measure progress instead of guessing." },
+    { id: "arize", name: "Arize AI", primaryHue: "trust", secondaryHue: "logic", category: "Observability", maturity: "production", description: "Production monitoring and observability for AI systems.", complexityAdded: "medium", trustContribution: "high", pairsWellWith: ["temporal", "retool", "guardrails"], conflictsWith: [], patterns: ["durable-spine", "governance-shell", "trust-gap"], notes: "An important part of moving from prototype confidence to production confidence." },
+    { id: "helicone", name: "Helicone", primaryHue: "trust", secondaryHue: "velocity", category: "Observability", maturity: "emerging", description: "Lightweight tracing and analytics layer for LLM usage.", complexityAdded: "low", trustContribution: "medium", pairsWellWith: ["openai", "firebase", "vercel"], conflictsWith: [], patterns: ["velocity-stack", "trust-gap"], notes: "A lightweight trust layer that helps early-stage stacks become less opaque." },
+    { id: "guardrails", name: "Guardrails AI", primaryHue: "trust", secondaryHue: "intent", category: "Governance", maturity: "production", description: "Validation and safety constraints for model inputs and outputs.", complexityAdded: "medium", trustContribution: "high", pairsWellWith: ["claude", "openai", "temporal", "arize", "retool"], conflictsWith: [], patterns: ["governance-shell", "durable-spine"], notes: "A useful stabilizer when systems need reliable structure, safety, or policy enforcement." }
+  ],
+  patterns: [
+    { id: "conductor", name: "The Conductor", type: "Orchestration", description: "A central framework or workflow engine managing flow between cognitive and memory units.", hues: ["logic", "intent"] },
+    { id: "cognitive-core", name: "Cognitive Core", type: "Reasoning", description: "A system built around high-reasoning models with minimal middleware.", hues: ["cognition", "trust"] },
+    { id: "durable-spine", name: "Durable Spine", type: "Reliability", description: "Heavy-duty workflow engines ensuring stateful persistence and failure recovery.", hues: ["logic", "trust"] },
+    { id: "reflective-loop", name: "Reflective Loop", type: "Optimization", description: "Self-correcting systems that track traces and optimize prompts based on evaluation data.", hues: ["trust", "intent"] },
+    { id: "long-memory-system", name: "Long Memory System", type: "Persistence", description: "Vector-backed memory for long-running context.", hues: ["memory"] },
+    { id: "bright-demo", name: "The Bright Demo", type: "Presentation", description: "Highly polished interface with simple cognitive backing.", hues: ["interface", "velocity"] },
+    { id: "thin-wrapper", name: "Thin Wrapper", type: "Anti-Pattern", description: "Passing through model API with almost no logic or trust layer.", hues: ["cognition"] },
+    { id: "governance-shell", name: "Governance Shell", type: "Safety", description: "Strict boundaries around model interaction.", hues: ["trust"] },
+    { id: "velocity-stack", name: "Velocity Stack", type: "Agility", description: "Optimized for speed of deployment over structural durability.", hues: ["velocity"] },
+    { id: "muddy-mix", name: "Muddy Mix", type: "Anti-Pattern", description: "Conflicting orchestration layers with unclear boundaries.", hues: ["logic", "intent"] },
+    { id: "orchestration-pileup", name: "Orchestration Pileup", type: "Anti-Pattern", description: "Multiple workflow engines fighting for state control.", hues: ["logic"] }
+  ],
+  recipes: [
+    {
+      id: "bright-demo-recipe",
+      name: "The Bright Demo",
+      tools: ["vercel", "supabase", "openai", "chroma"],
+      patternIds: ["bright-demo", "thin-wrapper", "long-memory-system"],
+      useCase: "Quick AI MVP, internal pitch, or lightweight product prototype.",
+      whyItWorks: [
+        "Gets to a polished experience quickly",
+        "Feels complete early",
+        "Minimizes setup friction"
+      ],
+      whereItBreaks: [
+        "Weak observability",
+        "Limited workflow control",
+        "Prototype memory layer"
+      ],
+      missingHues: ["logic", "trust"],
+      upgradePath: ["langgraph", "langsmith"]
+    },
+    {
+      id: "internal-knowledge-agent",
+      name: "The Internal Knowledge Agent",
+      tools: ["openai", "pinecone", "langchain", "langgraph", "langsmith"],
+      patternIds: ["conductor", "long-memory-system", "reflective-loop"],
+      useCase: "Internal knowledge search, support assistant, or organizational memory tool.",
+      whyItWorks: [
+        "Combines reasoning with retrieval",
+        "Adds orchestration structure",
+        "Improves debuggability"
+      ],
+      whereItBreaks: [
+        "Poor source quality",
+        "Retrieval tuning burden",
+        "Prompt and workflow complexity"
+      ],
+      missingHues: ["interface", "velocity"],
+      upgradePath: ["guardrails", "retool"]
+    },
+    {
+      id: "enterprise-ai-workflow",
+      name: "The Enterprise-Ready AI Workflow",
+      tools: ["temporal", "claude", "pinecone", "guardrails", "arize", "langsmith"],
+      patternIds: ["durable-spine", "governance-shell", "conductor"],
+      useCase: "Regulated, production-critical, or enterprise-sensitive AI workflows.",
+      whyItWorks: [
+        "Durable control plane",
+        "Strong trust layer",
+        "Safer operational behavior"
+      ],
+      whereItBreaks: [
+        "Higher cost",
+        "Slower to implement",
+        "Can feel heavy for small teams"
+      ],
+      missingHues: ["interface", "velocity"],
+      upgradePath: ["retool", "vercel"]
+    },
+    {
+      id: "reflective-ai-system",
+      name: "The Reflective AI System",
+      tools: ["claude", "dspy", "wandb", "langsmith"],
+      patternIds: ["reflective-loop", "cognitive-core"],
+      useCase: "Higher-quality generation workflows for documents, decisions, or code assistance.",
+      whyItWorks: [
+        "Adds measurable quality feedback",
+        "Improves consistency over time",
+        "Makes prompt behavior more legible"
+      ],
+      whereItBreaks: [
+        "Latency",
+        "Evaluation overhead",
+        "Higher operational sophistication"
+      ],
+      missingHues: ["memory", "interface", "velocity"],
+      upgradePath: ["pinecone", "vercel"]
+    },
+    {
+      id: "velocity-stack-recipe",
+      name: "The Velocity Stack",
+      tools: ["firebase", "vercel", "openai", "helicone"],
+      patternIds: ["velocity-stack", "bright-demo"],
+      useCase: "Hackathons, fast-moving startups, and early product iteration.",
+      whyItWorks: [
+        "Low-friction delivery",
+        "Fast product loops",
+        "Enough trust to avoid flying blind"
+      ],
+      whereItBreaks: [
+        "Weak long-term architecture boundaries",
+        "Scaling pain",
+        "Control trade-offs"
+      ],
+      missingHues: ["logic", "memory"],
+      upgradePath: ["langgraph", "pinecone"]
+    },
+    {
+      id: "muddy-agent-recipe",
+      name: "The Muddy Agent",
+      tools: ["langchain", "langgraph", "temporal", "prefect", "openai"],
+      patternIds: ["muddy-mix", "orchestration-pileup"],
+      useCase: "A cautionary example of what teams often build accidentally.",
+      whyItHappens: [
+        "Tool enthusiasm",
+        "Unclear boundaries",
+        "Layering new tools on top of old ones"
+      ],
+      symptoms: [
+        "Confusing flow control",
+        "Difficult debugging",
+        "Architectural disagreement"
+      ],
+      fix: [
+        "Choose one primary orchestration layer",
+        "Clarify tool responsibilities",
+        "Reduce overlap"
+      ]
+    }
+  ]
+};
+
+// --- COMPONENTS ---
+
+const ComplexityBar = ({ level }) => {
+  const levels = { low: 1, medium: 2, high: 3 };
+  const current = levels[level] || 1;
+  return (
+    <div className="flex gap-1 items-center">
+      {[1, 2, 3].map(i => (
+        <div key={i} className={`h-1.5 w-4 rounded-full transition-colors ${i <= current ? 'bg-amber-400' : 'bg-gray-100'}`} />
+      ))}
+    </div>
+  );
+};
+
+const TrustScale = ({ level }) => {
+  const levels = { low: 1, medium: 2, high: 3 };
+  const current = levels[level] || 1;
+  return (
+    <div className="flex gap-1 items-center">
+      {[1, 2, 3].map(i => (
+        <div key={i} className={`h-1.5 w-4 rounded-full transition-colors ${i <= current ? 'bg-teal-400' : 'bg-gray-100'}`} />
+      ))}
+    </div>
+  );
+};
+
+const ToolCard = ({ tool, onClick, isSelected, onToggleSelect }) => {
+  const primaryHue = DATA.hues.find(h => h.id === tool.primaryHue);
+  
+  return (
+    <div 
+      className={`group relative bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col h-full overflow-hidden
+        ${isSelected ? 'ring-2 ring-indigo-500 border-transparent scale-[1.02]' : 'border-gray-100'}`}
+      onClick={() => onClick(tool)}
+    >
+      <div 
+        className="absolute top-0 left-0 w-1.5 h-full opacity-80" 
+        style={{ backgroundColor: primaryHue.hex }} 
+      />
+      
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="font-bold text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors">{tool.name}</h3>
+          <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">{tool.category}</p>
+        </div>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onToggleSelect(tool.id); }}
+          className={`p-1.5 rounded-lg border transition-all ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
+        >
+          {isSelected ? <Layers size={14} /> : <Plus size={14} />}
+        </button>
+      </div>
+
+      <p className="text-xs text-gray-500 mb-6 flex-1 line-clamp-3 leading-relaxed">{tool.description}</p>
+      
+      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+        <div className="flex -space-x-1.5">
+          <div className="w-5 h-5 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: primaryHue.hex }} title={primaryHue.name} />
+          {tool.secondaryHue && (
+            <div className="w-5 h-5 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: DATA.hues.find(h => h.id === tool.secondaryHue).hex }} title={DATA.hues.find(h => h.id === tool.secondaryHue).name} />
+          )}
+        </div>
+        
+        <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter
+          ${tool.maturity === 'production' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+          {tool.maturity}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// --- MAIN PAGE ---
+
+export default function App() {
+  const [search, setSearch] = useState('');
+  const [activeHue, setActiveHue] = useState(null);
+  const [selectedTools, setSelectedTools] = useState([]);
+  const [inspectedTool, setInspectedTool] = useState(null);
+  const [view, setView] = useState('landscape');
+
+  const filteredTools = useMemo(() => {
+    return DATA.tools.filter(tool => {
+      const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase()) || 
+                          tool.description.toLowerCase().includes(search.toLowerCase()) || 
+                          tool.category.toLowerCase().includes(search.toLowerCase());
+      const matchesHue = !activeHue || tool.primaryHue === activeHue || tool.secondaryHue === activeHue;
+      return matchesSearch && matchesHue;
+    });
+  }, [search, activeHue]);
+
+  const toggleToolSelection = (toolId) => {
+    setSelectedTools(prev => 
+      prev.includes(toolId) ? prev.filter(id => id !== toolId) : (prev.length < 5 ? [...prev, toolId] : prev)
+    );
+  };
+
+  const mixAnalytics = useMemo(() => {
+    if (selectedTools.length === 0) return null;
+    const tools = DATA.tools.filter(t => selectedTools.includes(t.id));
+    const hues = Array.from(new Set(tools.flatMap(t => [t.primaryHue, t.secondaryHue].filter(Boolean))));
+    
+    const warnings = [];
+    const conflicts = [];
+    
+    // Check for explicit conflicts
+    tools.forEach(t => {
+      t.conflictsWith.forEach(conflictId => {
+        if (selectedTools.includes(conflictId)) {
+          conflicts.push(`${t.name} + ${DATA.tools.find(c => c.id === conflictId).name}`);
+        }
+      });
+    });
+
+    if (!hues.includes('trust')) warnings.push({ type: 'Trust Gap', msg: 'No governance or observability layer detected.' });
+    if (tools.filter(t => t.category === 'Framework' || t.category === 'Orchestrator' || t.category === 'Workflow Engine').length > 1) {
+      warnings.push({ type: 'Orchestration Pileup', msg: 'Multiple flow control layers may conflict.' });
+    }
+    
+    return {
+      dominantHues: hues,
+      matchingPatterns: DATA.patterns.filter(p => p.hues.every(h => hues.includes(h))),
+      warnings,
+      conflicts
+    };
+  }, [selectedTools]);
+
+  return (
+    <div className="min-h-screen bg-[#fcfcfd] text-gray-900 font-sans selection:bg-indigo-100 pb-32">
+      
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-6 border-b border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex gap-1">
+              {DATA.hues.slice(0, 3).map(h => <div key={h.id} className="w-1.5 h-4 rounded-full" style={{ backgroundColor: h.hex }} />)}
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Architectural Atlas v{DATA.site.version}</span>
+          </div>
+          <h1 className="text-6xl font-black text-gray-900 mb-8 tracking-tight max-w-4xl">
+            Modern systems are <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#C84C3A] to-[#4A6FA5]">Chromatic.</span>
+          </h1>
+          <p className="text-xl text-gray-500 max-w-3xl leading-relaxed mb-10">
+            {DATA.site.description} Stop picking tools based on popularity; start picking them based on their harmonic fit in the stack.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={() => setView('landscape')}
+              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
+                ${view === 'landscape' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+            >
+              The Landscape
+            </button>
+            <button 
+              onClick={() => setView('recipes')}
+              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
+                ${view === 'recipes' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+            >
+              Curated Recipes
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Hue Legend */}
+      <section className="bg-white border-b border-gray-100 py-8 overflow-x-auto no-scrollbar sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/90">
+        <div className="max-w-7xl mx-auto px-6 flex gap-10 whitespace-nowrap items-center">
+          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100">The Palette</div>
+          {DATA.hues.map(hue => (
+            <button 
+              key={hue.id} 
+              onClick={() => setActiveHue(activeHue === hue.id ? null : hue.id)}
+              className={`group flex items-start gap-4 text-left transition-all ${activeHue && activeHue !== hue.id ? 'opacity-30 grayscale' : 'opacity-100'}`}
+            >
+              <div className="w-2.5 h-12 rounded-full transition-transform group-hover:scale-y-110" style={{ backgroundColor: hue.hex }} />
+              <div>
+                <p className="text-xs font-black uppercase text-gray-900 tracking-wider mb-0.5">{hue.name}</p>
+                <p className="text-[10px] text-gray-500 max-w-[140px] whitespace-normal leading-tight">{hue.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <main className="max-w-7xl mx-auto px-6 py-16">
+        {view === 'landscape' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            {/* Sidebar Filters */}
+            <aside className="lg:col-span-3 space-y-12">
+              <div>
+                <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Filter Spectrum</h4>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input 
+                    type="text" 
+                    placeholder="Search tools..." 
+                    className="w-full bg-white border border-gray-200 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-gray-300 font-medium"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Evaluation Dimensions</h4>
+                <div className="space-y-4">
+                  {DATA.evaluationDimensions.map(dim => (
+                    <div key={dim} className="flex items-center gap-3 text-xs text-gray-500 group cursor-default">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-indigo-400 transition-colors" />
+                      <span className="capitalize font-medium">{dim.replace(/([A-Z])/g, ' $1')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* Main Landscape */}
+            <section className="lg:col-span-9">
+              <div className="flex justify-between items-end mb-12">
+                <div>
+                  <h2 className="text-3xl font-black text-gray-900 mb-2">Architectural Spectrum</h2>
+                  <p className="text-sm text-gray-500 font-medium">Found {filteredTools.length} pigments matching your current lens.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {filteredTools.map(tool => (
+                  <ToolCard 
+                    key={tool.id} 
+                    tool={tool} 
+                    onClick={setInspectedTool}
+                    isSelected={selectedTools.includes(tool.id)}
+                    onToggleSelect={toggleToolSelection}
+                  />
+                ))}
+              </div>
+
+              {/* Patterns Subsection */}
+              <div className="mt-32">
+                <div className="flex items-center gap-6 mb-12">
+                  <h2 className="text-3xl font-black text-gray-900">Compositional Patterns</h2>
+                  <div className="flex-1 h-[1px] bg-gray-100" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {DATA.patterns.map(pattern => (
+                    <div key={pattern.id} className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all">
+                      <div className="flex gap-2 mb-6">
+                        {pattern.hues.map(h => (
+                          <div key={h} className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: DATA.hues.find(hu => hu.id === h).hex }} />
+                        ))}
+                      </div>
+                      <h3 className="text-xl font-black text-gray-900 mb-2">{pattern.name}</h3>
+                      <p className="text-[10px] uppercase font-black text-indigo-500 mb-4 tracking-widest">{pattern.type}</p>
+                      <p className="text-sm text-gray-500 leading-relaxed font-medium">{pattern.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {view === 'recipes' && (
+          <div className="space-y-16">
+            <div className="text-center max-w-2xl mx-auto mb-20">
+              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Canonical Starter Recipes</h2>
+              <p className="text-gray-500 font-medium">Pre-vetted tool combinations that achieve high harmonic resonance for specific organizational goals.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+              {DATA.recipes.map(recipe => {
+                const isMuddy = recipe.id === 'muddy-agent-recipe';
+                return (
+                  <div key={recipe.id} className={`flex flex-col rounded-[3rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border-2 
+                    ${isMuddy ? 'border-rose-200 bg-rose-50/30' : 'border-gray-100 bg-white'}`}>
+                    
+                    {/* Header */}
+                    <div className={`px-10 py-10 border-b flex justify-between items-start 
+                      ${isMuddy ? 'border-rose-100 bg-rose-50' : 'border-gray-50 bg-gray-50/50'}`}>
+                      <div>
+                        <div className="flex items-center gap-3 mb-4">
+                          {isMuddy ? (
+                            <AlertOctagon className="text-rose-500" size={24} />
+                          ) : (
+                            <div className="flex -space-x-1">
+                              {recipe.tools.map(tId => {
+                                const tool = DATA.tools.find(t => t.id === tId);
+                                return <div key={tId} className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: DATA.hues.find(h => h.id === tool?.primaryHue)?.hex }} />
+                              })}
+                            </div>
+                          )}
+                          <span className={`text-[10px] font-black uppercase tracking-[0.2em] 
+                            ${isMuddy ? 'text-rose-600' : 'text-indigo-500'}`}>
+                            {isMuddy ? 'Anti-Pattern' : 'Canonical Recipe'}
+                          </span>
+                        </div>
+                        <h3 className="text-3xl font-black text-gray-900 tracking-tight">{recipe.name}</h3>
+                      </div>
+                      <Workflow size={24} className={isMuddy ? 'text-rose-200' : 'text-gray-200'} />
+                    </div>
+
+                    <div className="p-10 flex-1 space-y-12">
+                      {/* Use Case */}
+                      <div>
+                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-3 tracking-widest">Application Spectrum</h4>
+                        <p className="text-sm font-bold text-gray-700">{recipe.useCase}</p>
+                      </div>
+
+                      {/* Tools & Missing Hues */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                          <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Pigments</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {recipe.tools.map(tId => (
+                              <span key={tId} className="px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-bold text-gray-600 shadow-sm flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: DATA.hues.find(h => h.id === DATA.tools.find(t => t.id === tId)?.primaryHue)?.hex }} />
+                                {DATA.tools.find(t => t.id === tId)?.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {!isMuddy && recipe.missingHues && (
+                          <div>
+                            <h4 className="text-[10px] uppercase font-black text-amber-500 mb-4 tracking-widest">Spectral Gaps</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {recipe.missingHues.map(hId => (
+                                <span key={hId} className="px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-lg text-[10px] font-black text-amber-700 uppercase tracking-tighter flex items-center gap-2 opacity-80">
+                                  <div className="w-1.5 h-1.5 rounded-full grayscale opacity-50" style={{ backgroundColor: DATA.hues.find(h => h.id === hId)?.hex }} />
+                                  {hId}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Pros/Cons or Caution logic */}
+                      {isMuddy ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                          <div>
+                            <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Why it happens</h4>
+                            <ul className="space-y-3">
+                              {recipe.whyItHappens.map(item => (
+                                <li key={item} className="flex items-start gap-3 text-xs text-rose-800 font-medium">
+                                  <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Architectural Fix</h4>
+                            <ul className="space-y-3">
+                              {recipe.fix.map(item => (
+                                <li key={item} className="flex items-start gap-3 text-xs text-emerald-700 font-medium">
+                                  <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                          <div>
+                            <h4 className="text-[10px] uppercase font-black text-emerald-600 mb-4 tracking-widest">Why it works</h4>
+                            <ul className="space-y-3">
+                              {recipe.whyItWorks.map(item => (
+                                <li key={item} className="flex items-start gap-3 text-xs text-gray-600 font-medium">
+                                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Where it breaks</h4>
+                            <ul className="space-y-3">
+                              {recipe.whereItBreaks.map(item => (
+                                <li key={item} className="flex items-start gap-3 text-xs text-gray-600 font-medium">
+                                  <XCircle size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Upgrade Path */}
+                      {!isMuddy && (
+                        <div className="pt-8 border-t border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                          <div className="flex items-center gap-3">
+                            <TrendingUp size={16} className="text-indigo-400" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Upgrade Path</span>
+                            <div className="flex gap-2">
+                              {recipe.upgradePath.map(uId => (
+                                <span key={uId} className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase">
+                                  {uId}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <button className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-900 group flex items-center gap-2 hover:text-indigo-600 transition-colors">
+                            Detailed Specs <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* BLEND PREVIEW BAR */}
+      <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl bg-gray-900 text-white rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] transition-all duration-700 z-50 p-5 border border-white/10 backdrop-blur-xl bg-gray-900/95
+        ${selectedTools.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-40 opacity-0'}`}>
+        <div className="flex flex-col lg:flex-row items-center gap-10">
+          
+          {/* Selected Pills */}
+          <div className="flex items-center gap-6 lg:border-r lg:border-white/10 lg:pr-10 w-full lg:w-auto">
+            <div className="flex -space-x-3">
+              {selectedTools.map(id => {
+                const tool = DATA.tools.find(t => t.id === id);
+                return (
+                  <div key={id} className="w-12 h-12 rounded-2xl border-2 border-gray-900 bg-white flex items-center justify-center text-xs font-black text-gray-900 group relative cursor-pointer hover:-translate-y-1 transition-transform">
+                    {tool.name.substring(0, 2).toUpperCase()}
+                    <button onClick={() => toggleToolSelection(id)} className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X size={10} strokeWidth={4} />
+                    </button>
+                  </div>
+                );
+              })}
+              {Array.from({ length: 5 - selectedTools.length }).map((_, i) => (
+                <div key={i} className="w-12 h-12 rounded-2xl border-2 border-dashed border-gray-700 flex items-center justify-center text-gray-600">
+                  <Plus size={16} />
+                </div>
+              ))}
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-0.5">The Composition</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase">{selectedTools.length} / 5 Tools</p>
+            </div>
+          </div>
+
+          {/* Analysis View */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-10 w-full">
+            <div>
+              <p className="text-[10px] uppercase text-gray-500 mb-3 font-black tracking-widest">Spectral Density</p>
+              <div className="flex gap-2">
+                {mixAnalytics?.dominantHues.map(h => (
+                  <div key={h} className="w-5 h-5 rounded-lg shadow-inner border border-white/10" style={{ backgroundColor: DATA.hues.find(hu => hu.id === h).hex }} title={h} />
+                ))}
+                {mixAnalytics?.dominantHues.length === 0 && <div className="text-[10px] text-gray-600 italic">No hues detected</div>}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase text-gray-500 mb-3 font-black tracking-widest">Compositional Health</p>
+              <div className="space-y-2">
+                {mixAnalytics?.conflicts.length > 0 && (
+                  <div className="flex items-center gap-2 text-rose-400">
+                    <ZapOff size={14} strokeWidth={3} />
+                    <span className="text-[10px] font-black uppercase">Conflict: {mixAnalytics.conflicts[0]}</span>
+                  </div>
+                )}
+                {mixAnalytics?.warnings.length > 0 && !mixAnalytics?.conflicts.length && (
+                  <div className="flex items-center gap-2 text-amber-400">
+                    <AlertTriangle size={14} strokeWidth={3} />
+                    <span className="text-[10px] font-black uppercase">{mixAnalytics.warnings[0].type}</span>
+                  </div>
+                )}
+                {mixAnalytics?.warnings.length === 0 && mixAnalytics?.conflicts.length === 0 && (
+                  <div className="flex items-center gap-2 text-emerald-400">
+                    <ShieldCheck size={14} strokeWidth={3} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">High Resonance Blend</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <button className="w-full lg:w-auto bg-white text-gray-900 px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:bg-indigo-400 hover:scale-105 shadow-xl shadow-white/5">
+            Export Manifest
+          </button>
+        </div>
+      </div>
+
+      {/* TOOL DETAIL MODAL */}
+      {inspectedTool && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/80 backdrop-blur-xl">
+          <div className="bg-white w-full max-w-3xl rounded-[3rem] shadow-[0_64px_128px_-16px_rgba(0,0,0,0.5)] overflow-hidden relative border border-white/20">
+            <button 
+              onClick={() => setInspectedTool(null)} 
+              className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-gray-100 text-gray-400 transition-all hover:rotate-90"
+            >
+              <X size={24} />
+            </button>
+            
+            <div className="h-4 w-full" style={{ backgroundColor: DATA.hues.find(h => h.id === inspectedTool.primaryHue).hex }} />
+            
+            <div className="p-12">
+              <div className="flex items-center gap-6 mb-10">
+                <div className="w-20 h-20 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center font-black text-3xl text-gray-300">
+                  {inspectedTool.name.charAt(0)}
+                </div>
+                <div>
+                  <h2 className="text-4xl font-black text-gray-900 tracking-tight">{inspectedTool.name}</h2>
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-indigo-600 font-black tracking-widest uppercase text-xs">{inspectedTool.category}</p>
+                    <div className="w-1 h-1 bg-gray-200 rounded-full" />
+                    <p className="text-gray-400 font-black tracking-widest uppercase text-[10px]">{inspectedTool.maturity}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div>
+                  <h4 className="text-[10px] uppercase font-black text-gray-400 mb-6 tracking-widest">System Profile</h4>
+                  <div className="space-y-8">
+                    <div>
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase text-gray-500 mb-2">
+                        <span>Complexity Added</span>
+                        <span className="text-gray-900 font-black">{inspectedTool.complexityAdded}</span>
+                      </div>
+                      <ComplexityBar level={inspectedTool.complexityAdded} />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase text-gray-500 mb-2">
+                        <span>Trust Contribution</span>
+                        <span className="text-gray-900 font-black">{inspectedTool.trustContribution}</span>
+                      </div>
+                      <TrustScale level={inspectedTool.trustContribution} />
+                    </div>
+                  </div>
+
+                  <div className="mt-12">
+                    <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Patterns</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {inspectedTool.patterns.map(p => (
+                        <span key={p} className="px-3 py-1.5 bg-gray-50 rounded-lg text-[10px] font-black text-gray-600 border border-gray-100 uppercase tracking-tighter">
+                          {p.replace('-', ' ')}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-10">
+                  <div>
+                    <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Relationship Mapping</h4>
+                    <div className="space-y-4">
+                      {inspectedTool.pairsWellWith.length > 0 && (
+                        <div className="flex items-start gap-3">
+                          <LinkIcon size={14} className="text-emerald-500 shrink-0 mt-1" />
+                          <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                            <span className="text-gray-900 font-bold block mb-1">Harmonic Pairings</span>
+                            {inspectedTool.pairsWellWith.map(id => DATA.tools.find(t => t.id === id)?.name).join(', ')}
+                          </p>
+                        </div>
+                      )}
+                      {inspectedTool.conflictsWith.length > 0 && (
+                        <div className="flex items-start gap-3">
+                          <ZapOff size={14} className="text-rose-500 shrink-0 mt-1" />
+                          <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                            <span className="text-gray-900 font-bold block mb-1">Incompatible Hues</span>
+                            {inspectedTool.conflictsWith.map(id => DATA.tools.find(t => t.id === id)?.name).join(', ')}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100">
+                    <h4 className="text-[10px] uppercase font-black text-amber-900 mb-2 tracking-widest">Architectural Note</h4>
+                    <p className="text-xs text-amber-900/70 font-medium leading-relaxed italic">
+                      "{inspectedTool.notes}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 px-12 py-8 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-400">
+                  <Database size={14} />
+                </div>
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Reference Metadata v0.1</span>
+              </div>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => {
+                    toggleToolSelection(inspectedTool.id);
+                    setInspectedTool(null);
+                  }}
+                  className={`px-10 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all
+                    ${selectedTools.includes(inspectedTool.id) ? 'bg-rose-500 text-white' : 'bg-gray-900 text-white shadow-xl shadow-gray-900/20'}`}
+                >
+                  {selectedTools.includes(inspectedTool.id) ? 'Remove Pigment' : 'Add to Blend'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
