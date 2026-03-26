@@ -928,6 +928,9 @@ export default function ArchitecturalChromatics() {
   const [view, setView] = useState<'landscape' | 'recipes' | 'diagram'>('landscape');
   const [compactMode, setCompactMode] = useState(false);
   const [blendCopied, setBlendCopied] = useState(false);
+  const [soWhatOpen, setSoWhatOpen] = useState(() => {
+    try { return localStorage.getItem('ac-sowhat-collapsed') !== 'true'; } catch { return true; }
+  });
 
   // Restore blend from URL or localStorage on mount
   useEffect(() => {
@@ -945,6 +948,13 @@ export default function ArchitecturalChromatics() {
         if (valid.length > 0) setSelectedTools(valid.slice(0, 5));
       }
     } catch {}
+  }, []);
+
+  // Escape key closes tool modal
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setInspectedTool(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, []);
 
   // Sync blend to URL + localStorage whenever it changes
@@ -1141,6 +1151,166 @@ export default function ArchitecturalChromatics() {
               Context Diagram
             </button>
           </div>
+        </div>
+      </section>
+
+      {/* PLAIN ENGLISH — so what / why this framing matters */}
+      <section className="bg-[#fafafa] border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+
+          {/* Collapse toggle */}
+          <button
+            onClick={() => setSoWhatOpen(o => {
+              const next = !o;
+              try { localStorage.setItem('ac-sowhat-collapsed', next ? 'false' : 'true'); } catch {}
+              return next;
+            })}
+            className="w-full flex items-center justify-between py-5 text-left group"
+          >
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-gray-600 transition-colors">
+              The Palette, in Plain English
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-gray-500 transition-colors">
+              {soWhatOpen ? '↑ collapse' : '↓ expand'}
+            </span>
+          </button>
+
+          {soWhatOpen && (
+            <div className="pb-16 space-y-16">
+
+              {/* Block 1 — the vocabulary problem */}
+              <div className="max-w-3xl">
+                <p className="text-xl font-black text-gray-900 mb-4 leading-snug">
+                  There's a vocabulary problem at the center of AI stack design.
+                </p>
+                <p className="text-base text-gray-600 leading-relaxed mb-3">
+                  When a system misbehaves in production, the diagnostic conversation usually stalls — not because the answer is hard to find, but because there's no agreed framework for describing what went wrong.
+                </p>
+                <p className="text-base text-gray-600 leading-relaxed">
+                  Color theory gives you that framework. Not because AI and paint have anything in common, but because the structural problems are the same: too many things doing the same job, whole categories of responsibility left uncovered, or combinations that look right but produce mud.
+                </p>
+              </div>
+
+              {/* Block 2 — hues are roles, not brands */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
+                  Hues are roles, not brands
+                </p>
+                <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
+                  The seven hues aren't tool categories — they're categories of <em>architectural responsibility</em>. Every production AI system needs most of them covered, in some form, by something.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl">
+                  {([
+                    { id: 'intent',    plain: 'Who frames the problem and shapes what the model is trying to do' },
+                    { id: 'logic',     plain: 'Who controls the flow — retries, branching, sequencing' },
+                    { id: 'cognition', plain: 'Who reasons and generates' },
+                    { id: 'memory',    plain: 'Who holds context across time and retrieval' },
+                    { id: 'interface', plain: 'Who faces the user' },
+                    { id: 'velocity',  plain: 'Who keeps delivery moving' },
+                    { id: 'trust',     plain: "Who verifies the system is doing what you think it's doing" },
+                  ] as { id: string; plain: string }[]).map(({ id, plain }) => {
+                    const hue = DATA.hues.find(h => h.id === id);
+                    return (
+                      <div key={id} className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: hue?.hex }} />
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-wider text-gray-800 mb-1">{hue?.name}</p>
+                          <p className="text-[11px] text-gray-500 leading-snug">{plain}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div className="flex items-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                    <p className="text-[11px] text-gray-500 italic leading-snug">
+                      A stack heavy on Cognition and Velocity with nothing in Trust isn't missing a tool — it's missing a <em>conversation</em>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Block 3 — coverage is a diagnostic */}
+              <div className="flex flex-col lg:flex-row gap-12 items-start">
+                <div className="flex-1 max-w-xl">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
+                    Coverage is a diagnostic
+                  </p>
+                  <p className="text-base text-gray-600 leading-relaxed mb-3">
+                    When you plot your current stack against the wheel, the gaps are the story. Not "we need more tools" — the opposite. The gaps tell you which architectural responsibilities have no owner.
+                  </p>
+                  <p className="text-base text-gray-600 leading-relaxed">
+                    A RAG system with no Trust layer means nobody is watching whether retrieval is actually grounding the model. A workflow with no Logic layer means the model is making control-flow decisions it shouldn't. These are the most common failure modes in production AI.
+                  </p>
+                </div>
+                <div className="flex gap-10 items-end shrink-0">
+                  <div className="flex flex-col items-center gap-3">
+                    <ColorWheelMini hues={['cognition', 'velocity', 'interface']} />
+                    <div className="text-center">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Typical Early Stack</p>
+                      <p className="text-[9px] text-gray-400 mt-0.5">3 of 7 roles covered</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-3">
+                    <ColorWheelMini hues={['intent', 'logic', 'cognition', 'memory', 'trust', 'interface']} />
+                    <div className="text-center">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Production-Ready</p>
+                      <p className="text-[9px] text-gray-400 mt-0.5">6 of 7 roles covered</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Block 4 — combinations have names */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
+                  Combinations have names
+                </p>
+                <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-3xl">
+                  It's not just what you have — it's how it combines. Two orchestrators in the same stack is an <em>Orchestration Pileup</em>. A polished UI over a hollow backend is a <em>Hollow Core</em>. Strong cognition with a generate-evaluate-refine loop is a <em>Reflective Loop</em>.
+                </p>
+                <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
+                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we're building a Bright Demo, not a Durable Spine" and have that mean something to the room.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  {(['reflective-loop', 'hollow-core', 'durable-spine'] as string[]).map(patId => {
+                    const pat = DATA.patterns.find(p => p.id === patId);
+                    const hue = DATA.hues.find(h => h.id === pat?.hues[0]);
+                    const typeStyle = PATTERN_TYPE_STYLES[pat?.type ?? 'foundational'];
+                    return pat ? (
+                      <div key={patId} className="flex items-center gap-4 bg-white border border-gray-100 rounded-2xl px-5 py-4 shadow-sm">
+                        <PatternDiagram patternId={patId} color={hue?.hex ?? '#6b7280'} size={44} />
+                        <div>
+                          <p className="text-xs font-black text-gray-800 mb-1.5">{pat.name}</p>
+                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${typeStyle}`}>
+                            {pat.type}
+                          </span>
+                        </div>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+
+              {/* Block 5 — the payoff */}
+              <div className="max-w-3xl">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
+                  The payoff
+                </p>
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                  <p className="text-sm text-gray-500 font-mono leading-relaxed mb-4">
+                    You're at a client site. Someone asks why the system keeps drifting off-task.
+                    The stack is Vercel + OpenAI + Supabase. Beautiful demo. No Logic, no Trust.
+                  </p>
+                  <p className="text-base text-gray-800 font-black leading-relaxed">
+                    That's not a model problem. That's a Hollow Core.
+                  </p>
+                  <p className="text-sm text-gray-500 leading-relaxed mt-4">
+                    You don't need to enumerate every missing component. You just need to know which hues are absent and which pattern you're looking at. The rest follows.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          )}
         </div>
       </section>
 
@@ -1420,62 +1590,78 @@ export default function ArchitecturalChromatics() {
                         <p className="text-sm font-bold text-gray-700">{recipe.useCase}</p>
                       </div>
 
-                      {/* Tools + Missing Hues */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Tools */}
+                      <div>
+                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Pigments</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {recipe.tools.map(tId => {
+                            const tool = DATA.tools.find(t => t.id === tId);
+                            const hue = DATA.hues.find(h => h.id === tool?.primaryHue);
+                            return (
+                              <span key={tId} className="px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-bold text-gray-600 shadow-sm flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: hue?.hex }} />
+                                {tool?.name}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Missing Hues */}
+                      {!isMuddy && recipe.missingHues && recipe.missingHues.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Pigments</h4>
+                          <h4 className="text-[10px] uppercase font-black text-amber-500 mb-4 tracking-widest">Spectral Gaps</h4>
                           <div className="flex flex-wrap gap-2">
-                            {recipe.tools.map(tId => {
-                              const tool = DATA.tools.find(t => t.id === tId);
-                              const hue = DATA.hues.find(h => h.id === tool?.primaryHue);
+                            {recipe.missingHues.map(hId => {
+                              const hue = DATA.hues.find(h => h.id === hId);
                               return (
-                                <span key={tId} className="px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-bold text-gray-600 shadow-sm flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hue?.hex }} />
-                                  {tool?.name}
+                                <span key={hId} className="px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-lg text-[10px] font-black text-amber-700 uppercase tracking-tighter flex items-center gap-2 opacity-80">
+                                  <div className="w-1.5 h-1.5 rounded-full grayscale opacity-50 shrink-0" style={{ backgroundColor: hue?.hex }} />
+                                  {hId}
                                 </span>
                               );
                             })}
                           </div>
                         </div>
+                      )}
 
-                        {!isMuddy && recipe.missingHues && recipe.missingHues.length > 0 && (
-                          <div>
-                            <h4 className="text-[10px] uppercase font-black text-amber-500 mb-4 tracking-widest">Spectral Gaps</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {recipe.missingHues.map(hId => {
-                                const hue = DATA.hues.find(h => h.id === hId);
-                                return (
-                                  <span key={hId} className="px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-lg text-[10px] font-black text-amber-700 uppercase tracking-tighter flex items-center gap-2 opacity-80">
-                                    <div className="w-1.5 h-1.5 rounded-full grayscale opacity-50" style={{ backgroundColor: hue?.hex }} />
-                                    {hId}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Muddy / Normal pros-cons */}
+                      {/* Pros / cons — always single column, separated by a rule */}
                       {isMuddy ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-8 pt-2">
                           <div>
                             <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Why it happens</h4>
                             <ul className="space-y-3">
                               {recipe.whyItHappens?.map(item => (
-                                <li key={item} className="flex items-start gap-3 text-xs text-rose-800 font-medium">
-                                  <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                                <li key={item} className="flex items-start gap-3 text-sm text-rose-800 font-medium leading-relaxed">
+                                  <AlertTriangle size={14} className="shrink-0 mt-1 text-rose-400" />
                                   {item}
                                 </li>
                               ))}
                             </ul>
                           </div>
+                          {recipe.symptoms && recipe.symptoms.length > 0 && (
+                            <>
+                              <div className="h-px bg-rose-100" />
+                              <div>
+                                <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Symptoms</h4>
+                                <ul className="space-y-3">
+                                  {recipe.symptoms.map(item => (
+                                    <li key={item} className="flex items-start gap-3 text-sm text-rose-800 font-medium leading-relaxed">
+                                      <AlertOctagon size={14} className="shrink-0 mt-1 text-rose-400" />
+                                      {item}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </>
+                          )}
+                          <div className="h-px bg-rose-100" />
                           <div>
                             <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Architectural Fix</h4>
                             <ul className="space-y-3">
                               {recipe.fix?.map(item => (
-                                <li key={item} className="flex items-start gap-3 text-xs text-emerald-700 font-medium">
-                                  <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+                                <li key={item} className="flex items-start gap-3 text-sm text-gray-700 font-medium leading-relaxed">
+                                  <CheckCircle2 size={14} className="shrink-0 mt-1 text-emerald-500" />
                                   {item}
                                 </li>
                               ))}
@@ -1483,24 +1669,25 @@ export default function ArchitecturalChromatics() {
                           </div>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-8 pt-2">
                           <div>
                             <h4 className="text-[10px] uppercase font-black text-emerald-600 mb-4 tracking-widest">Why it works</h4>
                             <ul className="space-y-3">
                               {recipe.whyItWorks?.map(item => (
-                                <li key={item} className="flex items-start gap-3 text-xs text-gray-600 font-medium">
-                                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                <li key={item} className="flex items-start gap-3 text-sm text-gray-700 font-medium leading-relaxed">
+                                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-1" />
                                   {item}
                                 </li>
                               ))}
                             </ul>
                           </div>
+                          <div className="h-px bg-gray-100" />
                           <div>
                             <h4 className="text-[10px] uppercase font-black text-rose-600 mb-4 tracking-widest">Where it breaks</h4>
                             <ul className="space-y-3">
                               {recipe.whereItBreaks?.map(item => (
-                                <li key={item} className="flex items-start gap-3 text-xs text-gray-600 font-medium">
-                                  <XCircle size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                                <li key={item} className="flex items-start gap-3 text-sm text-gray-700 font-medium leading-relaxed">
+                                  <XCircle size={14} className="text-rose-400 shrink-0 mt-1" />
                                   {item}
                                 </li>
                               ))}
@@ -1749,13 +1936,19 @@ export default function ArchitecturalChromatics() {
 
       {/* TOOL DETAIL MODAL */}
       {inspectedTool && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/80 backdrop-blur-xl">
-          <div className="bg-white w-full max-w-3xl rounded-[3rem] shadow-[0_64px_128px_-16px_rgba(0,0,0,0.5)] overflow-hidden relative border border-white/20 max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/80 backdrop-blur-xl"
+          onClick={() => setInspectedTool(null)}
+        >
+          <div
+            className="bg-white w-full max-w-3xl rounded-[3rem] shadow-[0_64px_128px_-16px_rgba(0,0,0,0.5)] overflow-y-auto relative border border-white/20 max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setInspectedTool(null)}
-              className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-gray-100 text-gray-400 transition-all hover:rotate-90 z-10"
+              className="sticky top-4 float-right mr-4 p-2.5 rounded-2xl bg-white hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-all hover:rotate-90 z-10 shadow-md border border-gray-200"
             >
-              <X size={24} />
+              <X size={20} strokeWidth={2.5} />
             </button>
 
             <div className="h-4 w-full" style={{ backgroundColor: DATA.hues.find(h => h.id === inspectedTool.primaryHue)?.hex }} />
@@ -1890,7 +2083,7 @@ export default function ArchitecturalChromatics() {
               </div>
             </div>
 
-            <div className="bg-gray-50 px-12 py-8 flex justify-between items-center">
+            <div className="bg-gray-50 px-12 py-8 flex justify-between items-center border-t border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-400">
                   <Database size={14} />
