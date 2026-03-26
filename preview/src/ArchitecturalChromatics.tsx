@@ -44,6 +44,17 @@ const TrustScale = ({ level }: { level: string }) => {
   );
 };
 
+// Plain-language examples per hue — used in palette explainer and filter bar
+const HUE_EXAMPLES: Record<string, string> = {
+  intent:    'prompts, goals, decisions',
+  logic:     'orchestrators, workflows',
+  cognition: 'LLMs, reasoning engines',
+  memory:    'vector stores, retrieval',
+  interface: 'UIs, dashboards',
+  velocity:  'deployment, build tools',
+  trust:     'evals, guardrails, logging',
+};
+
 // Pattern type → badge color
 const PATTERN_TYPE_STYLES: Record<string, string> = {
   foundational: 'text-indigo-600 bg-indigo-50 border-indigo-100',
@@ -161,6 +172,60 @@ const ColorWheelMini = ({ hues }: { hues: string[] }) => {
       {activePoints.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r="3" fill="white" opacity="0.9" />
       ))}
+    </svg>
+  );
+};
+
+// Full labeled color wheel for the palette explainer — annular segments with hue names outside.
+const ColorWheelLabeled = ({ activeHue }: { activeHue: string | null }) => {
+  const cx = 130, cy = 130, outerR = 78, innerR = 26, labelR = 104;
+
+  return (
+    <svg viewBox="0 0 260 260" width="190" height="190" aria-hidden="true">
+      {DATA.hues.map(hue => {
+        const start = HUE_ANGLES[hue.id];
+        const end = start + SEGMENT_SWEEP;
+        const midAngle = start + SEGMENT_SWEEP / 2;
+        const isActive = !activeHue || activeHue === hue.id;
+
+        // Annular wedge (donut segment)
+        const os = polarToXY(cx, cy, outerR, start);
+        const oe = polarToXY(cx, cy, outerR, end);
+        const is_ = polarToXY(cx, cy, innerR, start);
+        const ie = polarToXY(cx, cy, innerR, end);
+        const large = SEGMENT_SWEEP > 180 ? 1 : 0;
+        const wedge = [
+          `M${os.x.toFixed(1)},${os.y.toFixed(1)}`,
+          `A${outerR},${outerR} 0 ${large} 1 ${oe.x.toFixed(1)},${oe.y.toFixed(1)}`,
+          `L${ie.x.toFixed(1)},${ie.y.toFixed(1)}`,
+          `A${innerR},${innerR} 0 ${large} 0 ${is_.x.toFixed(1)},${is_.y.toFixed(1)}`,
+          'Z',
+        ].join(' ');
+
+        const labelPos = polarToXY(cx, cy, labelR, midAngle);
+
+        return (
+          <g key={hue.id} opacity={isActive ? 1 : 0.15} style={{ transition: 'opacity 0.25s' }}>
+            <path d={wedge} fill={hue.hex} />
+            <text
+              x={labelPos.x}
+              y={labelPos.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="8"
+              fontWeight="800"
+              fill={isActive ? '#4b5563' : '#9ca3af'}
+              fontFamily="system-ui,sans-serif"
+              letterSpacing="0.5"
+            >
+              {hue.name.toUpperCase()}
+            </text>
+          </g>
+        );
+      })}
+      <circle cx={cx} cy={cy} r={innerR} fill="white" />
+      <text x={cx} y={cx - 4} textAnchor="middle" fontSize="8" fontWeight="900" fill="#e5e7eb" fontFamily="system-ui,sans-serif">7</text>
+      <text x={cx} y={cx + 6} textAnchor="middle" fontSize="6" fill="#e5e7eb" fontFamily="system-ui,sans-serif" letterSpacing="1">ROLES</text>
     </svg>
   );
 };
@@ -808,16 +873,6 @@ export default function ArchitecturalChromatics() {
     };
   }, [selectedTools]);
 
-  const HUE_EXAMPLES: Record<string, string> = {
-    intent:    'prompts, goals, decisions',
-    logic:     'orchestrators, workflows',
-    cognition: 'LLMs, reasoning engines',
-    memory:    'vector stores, retrieval',
-    interface: 'UIs, dashboards',
-    velocity:  'deployment, build tools',
-    trust:     'evals, guardrails, logging',
-  };
-
   const saveBlend = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setBlendCopied(true);
@@ -922,6 +977,67 @@ export default function ArchitecturalChromatics() {
             >
               View Recipes
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* PALETTE EXPLAINER — non-sticky, educational */}
+      <section className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-14">
+          <div className="flex flex-col lg:flex-row items-start gap-14">
+
+            {/* Wheel + legend */}
+            <div className="shrink-0 flex flex-col items-center gap-5">
+              <ColorWheelLabeled activeHue={activeHue} />
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-gray-400">
+                  <div className="w-6 h-px bg-emerald-400" />
+                  Adjacent — reinforces
+                </div>
+                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-gray-400">
+                  <svg width="24" height="2"><line x1="0" y1="1" x2="24" y2="1" stroke="#f87171" strokeWidth="1.5" strokeDasharray="4 2" /></svg>
+                  Opposite — tensions
+                </div>
+              </div>
+            </div>
+
+            {/* Explanation + hue chips */}
+            <div className="flex-1">
+              <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-5">
+                The Palette — 7 Architectural Roles
+              </p>
+              <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-2xl">
+                Every tool in an AI system plays an architectural role. These seven roles — mapped as hues on a color wheel — describe what a tool <em>does</em> in a stack, not what it <em>is</em>.
+              </p>
+              <p className="text-sm text-gray-500 leading-relaxed mb-10 max-w-2xl">
+                <strong className="text-gray-700 font-black">Adjacent hues reinforce each other</strong> — they share concerns and compose naturally into cohesive layers.{' '}
+                <strong className="text-gray-700 font-black">Opposite hues create productive tension</strong> — each covers the other's blind spots.
+                A stack built from a single hue runs deep but fragile. Harmonic coverage across multiple roles builds resilience.
+              </p>
+
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                {DATA.hues.map(hue => (
+                  <button
+                    key={hue.id}
+                    onClick={() => setActiveHue(activeHue === hue.id ? null : hue.id)}
+                    className={`flex items-start gap-3 p-3 rounded-xl text-left transition-all border group
+                      ${activeHue === hue.id
+                        ? 'border-gray-300 bg-gray-50 shadow-sm'
+                        : 'border-gray-100 hover:border-gray-200 bg-white hover:shadow-sm'}`}
+                  >
+                    <div className="w-1.5 h-10 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: hue.hex }} />
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black uppercase text-gray-800 tracking-wider leading-none mb-1 group-hover:text-indigo-600 transition-colors">
+                        {hue.name}
+                      </p>
+                      <p className="text-[9px] text-gray-500 leading-tight">{hue.description}</p>
+                      <p className="text-[9px] text-gray-400 italic mt-1">{HUE_EXAMPLES[hue.id]}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
