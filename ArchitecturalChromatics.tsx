@@ -763,6 +763,162 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
   );
 };
 
+// --- DIAGRAM VIEW ---
+
+const MetaphorBridgeDiagram = () => {
+  const pairs = [
+    { left: 'Pigment',       right: 'Tool',                color: '#C84C3A' },
+    { left: 'Primary Hue',   right: 'Architectural Role',  color: '#4A6FA5' },
+    { left: 'Color Wheel',   right: 'Role Spectrum',       color: '#2D9B8A' },
+    { left: 'Harmony',       right: 'Stack Composition',   color: '#E8A838' },
+    { left: 'Analogous',     right: 'Adjacent Roles',      color: '#7C5CBF' },
+    { left: 'Complementary', right: 'Opposing Roles',      color: '#D4567E' },
+    { left: 'Composition',   right: 'Architecture',        color: '#2ECC71' },
+    { left: 'Muddy Mix',     right: 'Anti-Pattern',        color: '#94a3b8' },
+  ];
+  const rowH = 36, startY = 46, svgH = startY + pairs.length * rowH + 12;
+  return (
+    <svg viewBox={`0 0 500 ${svgH}`} className="w-full">
+      <defs>
+        <marker id="mb-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill="#d1d5db" />
+        </marker>
+      </defs>
+      <text x="115" y="20" textAnchor="middle" fontSize="7.5" fontWeight="900" fill="#d1d5db" fontFamily="system-ui,sans-serif" letterSpacing="2">COLOR THEORY</text>
+      <text x="375" y="20" textAnchor="middle" fontSize="7.5" fontWeight="900" fill="#d1d5db" fontFamily="system-ui,sans-serif" letterSpacing="2">AI ARCHITECTURE</text>
+      <line x1="10" y1="28" x2="220" y2="28" stroke="#f3f4f6" strokeWidth="1" />
+      <line x1="280" y1="28" x2="490" y2="28" stroke="#f3f4f6" strokeWidth="1" />
+      {pairs.map((p, i) => {
+        const cy = startY + i * rowH + rowH / 2;
+        return (
+          <g key={p.left}>
+            <circle cx="22" cy={cy} r="5" fill={p.color} />
+            <text x="36" y={cy + 4} fontSize="11" fontWeight="700" fill="#374151" fontFamily="system-ui,sans-serif">{p.left}</text>
+            <line x1="228" y1={cy} x2="272" y2={cy} stroke="#e5e7eb" strokeWidth="1.5" markerEnd="url(#mb-arr)" />
+            <text x="284" y={cy + 4} fontSize="11" fontWeight="700" fill="#4f46e5" fontFamily="system-ui,sans-serif">{p.right}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+const DataModelDiagram = () => {
+  const hH = 30, fH = 17, pad = 10;
+  type E = { label: string; count: string; color: string; x: number; y: number; w: number; fields: string[] };
+  const entities: E[] = [
+    { label: 'HUE',     count: `×${DATA.hues.length}`,     color: '#64748b', x: 10,  y: 105, w: 150,
+      fields: ['id', 'name', 'hex', 'description'] },
+    { label: 'TOOL',    count: `×${DATA.tools.length}`,    color: '#4f46e5', x: 265, y: 10,  w: 180,
+      fields: ['id, name, category', 'primaryHue', 'secondaryHue', 'patterns[ ]', 'pairsWellWith[ ]', 'conflictsWith[ ]'] },
+    { label: 'PATTERN', count: `×${DATA.patterns.length}`, color: '#d97706', x: 545, y: 105, w: 150,
+      fields: ['id, name, type', 'hues[ ]', 'strengths[ ]', 'weaknesses[ ]', 'watchFor[ ]'] },
+    { label: 'RECIPE',  count: `×${DATA.recipes.length}`,  color: '#059669', x: 265, y: 250, w: 180,
+      fields: ['id, name', 'tools[ ]', 'patternIds[ ]', 'useCase', 'whyItWorks[ ]'] },
+  ];
+  const nh = (e: E) => hH + e.fields.length * fH + pad * 2;
+  return (
+    <svg viewBox="0 0 710 415" className="w-full">
+      <defs>
+        <marker id="dm-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#9ca3af" />
+        </marker>
+      </defs>
+      {/* TOOL → HUE */}
+      <line x1="265" y1="88" x2="160" y2="158" stroke="#cbd5e1" strokeWidth="1.5" markerEnd="url(#dm-arr)" />
+      <text x="198" y="109" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">primaryHue</text>
+      {/* TOOL → PATTERN */}
+      <line x1="445" y1="88" x2="545" y2="158" stroke="#cbd5e1" strokeWidth="1.5" markerEnd="url(#dm-arr)" />
+      <text x="503" y="109" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">patterns[ ]</text>
+      {/* RECIPE → TOOL */}
+      <line x1="355" y1="250" x2="355" y2="168" stroke="#cbd5e1" strokeWidth="1.5" markerEnd="url(#dm-arr)" />
+      <text x="370" y="213" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">tools[ ]</text>
+      {/* RECIPE → PATTERN */}
+      <line x1="445" y1="322" x2="617" y2="252" stroke="#cbd5e1" strokeWidth="1.5" markerEnd="url(#dm-arr)" />
+      <text x="546" y="300" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">patternIds[ ]</text>
+      {/* TOOL self-loop (pairs/conflicts) */}
+      <path d="M 318,10 C 302,-28 418,-28 402,10" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 2" markerEnd="url(#dm-arr)" />
+      <text x="360" y="-8" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">pairs / conflicts</text>
+      {/* PATTERN → HUE (hues[]) — bottom arc */}
+      <path d="M 617,248 C 617,396 85,396 85,222" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 2" markerEnd="url(#dm-arr)" />
+      <text x="355" y="408" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">pattern.hues[ ]</text>
+      {/* Nodes */}
+      {entities.map(e => {
+        const h = nh(e);
+        return (
+          <g key={e.label}>
+            <rect x={e.x} y={e.y} width={e.w} height={h} rx="8" fill="white" stroke="#e5e7eb" strokeWidth="1.5" />
+            <rect x={e.x + 1.5} y={e.y + 1.5} width={e.w - 3} height={h - 3} rx="6.5" fill={e.color} opacity="0.05" />
+            <text x={e.x + 10} y={e.y + 20} fontSize="10" fontWeight="900" fill={e.color} fontFamily="system-ui,sans-serif" letterSpacing="0.8">{e.label}</text>
+            <text x={e.x + e.w - 10} y={e.y + 20} textAnchor="end" fontSize="9" fontWeight="700" fill={e.color} fontFamily="system-ui,sans-serif" opacity="0.5">{e.count}</text>
+            <line x1={e.x + 8} y1={e.y + hH} x2={e.x + e.w - 8} y2={e.y + hH} stroke={e.color} strokeWidth="0.75" opacity="0.2" />
+            {e.fields.map((field, fi) => (
+              <text key={fi} x={e.x + 14} y={e.y + hH + pad + fi * fH + 12}
+                fontSize="8.5" fill="#9ca3af" fontFamily="'Courier New', monospace">
+                {field}
+              </text>
+            ))}
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+const UserLoopDiagram = () => {
+  const cx = 350, cy = 185, r = 128, nodeR = 42;
+  const nodes = [
+    { label: 'BROWSE',  sub: ['filter', 'search · hue'],   color: '#6366f1', angle: 270 },
+    { label: 'BLEND',   sub: ['select', 'up to 5 tools'],  color: '#8b5cf6', angle: 342 },
+    { label: 'ANALYZE', sub: ['harmony', 'health · score'], color: '#f59e0b', angle: 54  },
+    { label: 'EXPORT',  sub: ['manifest', 'share · URL'],   color: '#10b981', angle: 126 },
+    { label: 'RETURN',  sub: ['saved', 'blend · iterate'],  color: '#14b8a6', angle: 198 },
+  ];
+  const pos = (angle: number) => {
+    const rad = (angle - 90) * (Math.PI / 180);
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  };
+  return (
+    <svg viewBox="0 0 700 370" className="w-full" style={{ maxHeight: 370 }}>
+      <defs>
+        <marker id="ul-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#d1d5db" />
+        </marker>
+      </defs>
+      {/* Edges */}
+      {nodes.map((_, i) => {
+        const from = pos(nodes[i].angle);
+        const to   = pos(nodes[(i + 1) % nodes.length].angle);
+        const dx = to.x - from.x, dy = to.y - from.y;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const ux = dx / len, uy = dy / len;
+        return (
+          <line key={i}
+            x1={from.x + ux * nodeR} y1={from.y + uy * nodeR}
+            x2={to.x   - ux * nodeR} y2={to.y   - uy * nodeR}
+            stroke="#e5e7eb" strokeWidth="2" markerEnd="url(#ul-arr)" />
+        );
+      })}
+      {/* Nodes */}
+      {nodes.map(n => {
+        const p = pos(n.angle);
+        return (
+          <g key={n.label}>
+            <circle cx={p.x} cy={p.y} r={nodeR} fill={n.color} opacity="0.08" />
+            <circle cx={p.x} cy={p.y} r={nodeR} fill="none" stroke={n.color} strokeWidth="2" />
+            <text x={p.x} y={p.y - 7}  textAnchor="middle" fontSize="9"   fontWeight="900" fill={n.color}   fontFamily="system-ui,sans-serif" letterSpacing="0.5">{n.label}</text>
+            <text x={p.x} y={p.y + 5}  textAnchor="middle" fontSize="7.5" fontWeight="600" fill="#9ca3af"   fontFamily="system-ui,sans-serif">{n.sub[0]}</text>
+            <text x={p.x} y={p.y + 16} textAnchor="middle" fontSize="7"               fill="#c4c9d4"   fontFamily="system-ui,sans-serif">{n.sub[1]}</text>
+          </g>
+        );
+      })}
+      {/* Center */}
+      <text x={cx} y={cy - 5}  textAnchor="middle" fontSize="9"  fontWeight="900" fill="#e5e7eb" fontFamily="system-ui,sans-serif">THE</text>
+      <text x={cx} y={cy + 7}  textAnchor="middle" fontSize="9"  fontWeight="900" fill="#e5e7eb" fontFamily="system-ui,sans-serif">LOOP</text>
+    </svg>
+  );
+};
+
 // --- MAIN PAGE ---
 
 export default function ArchitecturalChromatics() {
@@ -770,7 +926,7 @@ export default function ArchitecturalChromatics() {
   const [activeHue, setActiveHue] = useState<string | null>(null);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [inspectedTool, setInspectedTool] = useState<typeof DATA.tools[number] | null>(null);
-  const [view, setView] = useState<'landscape' | 'recipes'>('landscape');
+  const [view, setView] = useState<'landscape' | 'recipes' | 'diagram'>('landscape');
   const [compactMode, setCompactMode] = useState(false);
   const [blendCopied, setBlendCopied] = useState(false);
 
@@ -977,6 +1133,13 @@ export default function ArchitecturalChromatics() {
                 ${view === 'recipes' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
             >
               View Recipes
+            </button>
+            <button
+              onClick={() => setView('diagram')}
+              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
+                ${view === 'diagram' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+            >
+              Context Diagram
             </button>
           </div>
         </div>
@@ -1386,6 +1549,56 @@ export default function ArchitecturalChromatics() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* DIAGRAM VIEW */}
+        {view === 'diagram' && (
+          <div className="space-y-12">
+            <div className="max-w-3xl mx-auto text-center mb-4">
+              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">How It Fits Together</h2>
+              <p className="text-gray-500 font-medium leading-relaxed">
+                Three lenses: the conceptual metaphor, the data model, and the path through the tool.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Panel 1 — Metaphor Bridge */}
+              <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+                <div className="px-8 py-6 border-b border-gray-50">
+                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 1 — Conceptual</p>
+                  <h3 className="text-xl font-black text-gray-900">The Metaphor Bridge</h3>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Color theory concepts mapped to AI architecture</p>
+                </div>
+                <div className="p-6">
+                  <MetaphorBridgeDiagram />
+                </div>
+              </div>
+
+              {/* Panel 2 — Data Model */}
+              <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+                <div className="px-8 py-6 border-b border-gray-50">
+                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 2 — Structural</p>
+                  <h3 className="text-xl font-black text-gray-900">The Data Model</h3>
+                  <p className="text-xs text-gray-500 font-medium mt-1">How Hue, Tool, Pattern, and Recipe relate to each other</p>
+                </div>
+                <div className="p-6">
+                  <DataModelDiagram />
+                </div>
+              </div>
+            </div>
+
+            {/* Panel 3 — User Loop */}
+            <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+              <div className="px-8 py-6 border-b border-gray-50">
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 3 — Interaction</p>
+                <h3 className="text-xl font-black text-gray-900">The Loop</h3>
+                <p className="text-xs text-gray-500 font-medium mt-1">How a consultant moves through the tool — from discovery to a saved, shareable composition</p>
+              </div>
+              <div className="p-8">
+                <UserLoopDiagram />
+              </div>
             </div>
           </div>
         )}
