@@ -1339,6 +1339,11 @@ export default function ArchitecturalChromatics() {
                 </div>
               </div>
 
+              {/* Bridge — latency acknowledgment */}
+              <p className="text-sm text-gray-400 italic leading-relaxed max-w-2xl">
+                A muddy color mix is obvious in seconds. A muddy stack takes 18 months to reveal itself. That gap is exactly why naming the patterns matters before you build.
+              </p>
+
               {/* Block 5 — the payoff */}
               <div className="max-w-3xl">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
