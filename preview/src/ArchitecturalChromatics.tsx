@@ -44,6 +44,40 @@ const TrustScale = ({ level }: { level: string }) => {
   );
 };
 
+// Evaluation dimension filter predicates — each maps a dimension name to a tool test
+const DIM_FILTER: Record<string, (t: typeof DATA.tools[number]) => boolean> = {
+  harmony:         t => t.pairsWellWith.length >= 3,
+  contrast:        t => t.conflictsWith.length > 0,
+  complexity:      t => t.complexityAdded === 'low',
+  durability:      t => t.maturity === 'production',
+  clarity:         t => !t.secondaryHue,
+  adaptability:    t => t.patterns.length >= 2,
+  operationalLoad: t => t.complexityAdded !== 'high',
+  trustSurface:    t => t.trustContribution === 'high',
+};
+
+const DIM_LABELS: Record<string, string> = {
+  harmony:         'Harmony',
+  contrast:        'Contrast',
+  complexity:      'Low Complexity',
+  durability:      'Durability',
+  clarity:         'Clarity',
+  adaptability:    'Adaptability',
+  operationalLoad: 'Operational Load',
+  trustSurface:    'Trust Surface',
+};
+
+const DIM_DESCRIPTIONS: Record<string, string> = {
+  harmony:         'Pairs well with 3+ other tools',
+  contrast:        'Creates productive architectural tension',
+  complexity:      'Low complexity to adopt and operate',
+  durability:      'Production-ready maturity',
+  clarity:         'Single-role focus — no secondary hue',
+  adaptability:    'Appears in 2 or more patterns',
+  operationalLoad: 'Low-to-medium operational burden',
+  trustSurface:    'High trust and observability contribution',
+};
+
 // Plain-language examples per hue — used in palette explainer and filter bar
 const HUE_EXAMPLES: Record<string, string> = {
   intent:    'prompts, goals, decisions',
@@ -506,12 +540,13 @@ const RelationshipWeb = ({ tool }: { tool: typeof DATA.tools[number] }) => {
 // --- TOOL INDEX CARD (compact reference mode) ---
 
 const ToolIndexCard = ({
-  tool, onClick, isSelected, onToggleSelect,
+  tool, onClick, isSelected, onToggleSelect, blendFull,
 }: {
   tool: typeof DATA.tools[number];
   onClick: (tool: typeof DATA.tools[number]) => void;
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
+  blendFull?: boolean;
 }) => {
   const primaryHue = DATA.hues.find(h => h.id === tool.primaryHue)!;
   const secondaryHue = tool.secondaryHue ? DATA.hues.find(h => h.id === tool.secondaryHue) : null;
@@ -520,15 +555,13 @@ const ToolIndexCard = ({
   return (
     <div
       className={`flex items-center gap-4 px-4 py-2.5 bg-white border rounded-xl cursor-pointer hover:shadow-sm transition-all group
-        ${isSelected ? 'border-indigo-300 bg-indigo-50/30' : 'border-gray-100 hover:border-gray-200'}`}
+        ${isSelected ? '' : 'border-gray-100 hover:border-gray-200'}`}
+      style={isSelected ? { backgroundColor: `${primaryHue.hex}0d`, borderColor: primaryHue.hex } : undefined}
       onClick={() => onClick(tool)}
     >
-      {/* Hue bar */}
-      <div className="w-1 h-8 rounded-full shrink-0" style={{ backgroundColor: primaryHue.hex }} />
-
       {/* Name + category */}
       <div className="w-44 min-w-0 shrink-0">
-        <p className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate leading-tight">{tool.name}</p>
+        <p className="text-sm font-bold text-gray-900 group-hover:text-gray-800 transition-colors truncate leading-tight">{tool.name}</p>
         <p className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">{tool.category}</p>
       </div>
 
@@ -551,14 +584,17 @@ const ToolIndexCard = ({
       </div>
 
       {/* Pattern chips */}
-      <div className="flex gap-1 flex-wrap flex-1 min-w-0">
+      <div className="flex gap-1.5 flex-wrap flex-1 min-w-0">
         {tool.patterns.map(pId => {
           const pat = DATA.patterns.find(p => p.id === pId);
           if (!pat) return null;
           const hue = DATA.hues.find(h => h.id === pat.hues[0]);
           return (
-            <div key={pId} title={pat.name} className="opacity-60 hover:opacity-100 transition-opacity shrink-0">
-              <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={18} />
+            <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help">
+              <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={22} />
+              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 transition-opacity z-10">
+                {pat.name}
+              </span>
             </div>
           );
         })}
@@ -581,7 +617,9 @@ const ToolIndexCard = ({
       {/* Add button */}
       <button
         onClick={e => { e.stopPropagation(); onToggleSelect(tool.id); }}
-        className={`p-1.5 rounded-lg border transition-all shrink-0 ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'}`}
+        title={blendFull && !isSelected ? '5/5 — remove a tool to add another' : undefined}
+        className={`p-1.5 rounded-lg border transition-all shrink-0 ${isSelected ? 'text-white' : blendFull ? 'bg-gray-50 border-gray-100 text-gray-200 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'}`}
+        style={isSelected ? { backgroundColor: primaryHue.hex, borderColor: primaryHue.hex } : undefined}
       >
         {isSelected ? <Layers size={12} /> : <Plus size={12} />}
       </button>
@@ -596,32 +634,37 @@ const ToolCard = ({
   onClick,
   isSelected,
   onToggleSelect,
+  blendFull,
 }: {
   tool: typeof DATA.tools[number];
   onClick: (tool: typeof DATA.tools[number]) => void;
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
+  blendFull?: boolean;
 }) => {
   const primaryHue = DATA.hues.find(h => h.id === tool.primaryHue)!;
   const secondaryHue = tool.secondaryHue ? DATA.hues.find(h => h.id === tool.secondaryHue) : null;
 
   return (
     <div
-      className={`group relative bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col h-full overflow-hidden
-        ${isSelected ? 'ring-2 ring-indigo-500 border-transparent scale-[1.02]' : 'border-gray-100'}`}
+      className={`group border rounded-xl p-5 transition-all cursor-pointer flex flex-col h-full
+        ${isSelected ? 'border-transparent scale-[1.02]' : 'border-gray-100 shadow-sm hover:shadow-md'}`}
+      style={{
+        backgroundColor: isSelected ? `${primaryHue.hex}0d` : `${primaryHue.hex}06`,
+        boxShadow: isSelected ? `0 0 0 2px ${primaryHue.hex}, 0 4px 6px -1px rgb(0 0 0 / 0.1)` : undefined,
+      }}
       onClick={() => onClick(tool)}
     >
-      {/* Hue accent bar */}
-      <div className="absolute top-0 left-0 w-1.5 h-full opacity-80" style={{ backgroundColor: primaryHue.hex }} />
-
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="font-bold text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors">{tool.name}</h3>
+          <h3 className="font-bold text-gray-900 leading-tight group-hover:text-gray-800 transition-colors">{tool.name}</h3>
           <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">{tool.category}</p>
         </div>
         <button
           onClick={e => { e.stopPropagation(); onToggleSelect(tool.id); }}
-          className={`p-1.5 rounded-lg border transition-all ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
+          title={blendFull && !isSelected ? '5/5 — remove a tool to add another' : undefined}
+          className={`p-1.5 rounded-lg border transition-all ${isSelected ? 'text-white shadow-lg' : blendFull ? 'bg-gray-50 border-gray-100 text-gray-200 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
+          style={isSelected ? { backgroundColor: primaryHue.hex, borderColor: primaryHue.hex } : undefined}
         >
           {isSelected ? <Layers size={14} /> : <Plus size={14} />}
         </button>
@@ -631,14 +674,14 @@ const ToolCard = ({
 
       {/* Pattern chips — visual anchors for which patterns this tool participates in */}
       {tool.patterns.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap mb-4">
+        <div className="flex gap-2 flex-wrap mb-4">
           {tool.patterns.map(pId => {
             const pat = DATA.patterns.find(p => p.id === pId);
             if (!pat) return null;
             const hue = DATA.hues.find(h => h.id === pat.hues[0]);
             return (
-              <div key={pId} title={pat.name} className="opacity-50 hover:opacity-100 transition-opacity cursor-help">
-                <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={20} />
+              <div key={pId} title={pat.name} className="cursor-help hover:scale-110 transition-transform">
+                <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={28} />
               </div>
             );
           })}
@@ -928,6 +971,8 @@ export default function ArchitecturalChromatics() {
   const [view, setView] = useState<'landscape' | 'recipes' | 'diagram'>('landscape');
   const [compactMode, setCompactMode] = useState(false);
   const [blendCopied, setBlendCopied] = useState(false);
+  const [pendingBlendRecipe, setPendingBlendRecipe] = useState<string | null>(null);
+  const [activeDimensions, setActiveDimensions] = useState<string[]>([]);
   const [soWhatOpen, setSoWhatOpen] = useState(() => {
     try { return localStorage.getItem('ac-sowhat-collapsed') !== 'true'; } catch { return true; }
   });
@@ -978,9 +1023,10 @@ export default function ArchitecturalChromatics() {
         tool.description.toLowerCase().includes(search.toLowerCase()) ||
         tool.category.toLowerCase().includes(search.toLowerCase());
       const matchesHue = !activeHue || tool.primaryHue === activeHue || tool.secondaryHue === activeHue;
-      return matchesSearch && matchesHue;
+      const matchesDimensions = activeDimensions.every(dim => DIM_FILTER[dim]?.(tool) ?? true);
+      return matchesSearch && matchesHue && matchesDimensions;
     });
-  }, [search, activeHue]);
+  }, [search, activeHue, activeDimensions]);
 
   const toggleToolSelection = (toolId: string) => {
     setSelectedTools(prev =>
@@ -1119,6 +1165,9 @@ export default function ArchitecturalChromatics() {
             Modern systems are{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#C84C3A] to-[#4A6FA5]">Chromatic.</span>
           </h1>
+          <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl leading-snug">
+            A reference tool for AI stack composition built on a simple premise: how things combine matters more than what they are individually.
+          </p>
           <p className="text-xs text-gray-400 font-medium mb-8 border-l-2 border-gray-200 pl-3 max-w-xl leading-relaxed">
             <span className="font-black text-gray-500">Chromatic</span> /krəˈmatɪk/ — of or relating to color.
             Here: the property that determines how tools harmonize, contrast, or conflict when combined in a system.
@@ -1126,7 +1175,7 @@ export default function ArchitecturalChromatics() {
           <p className="text-xl text-gray-500 max-w-3xl leading-relaxed mb-10">
             Every AI tool is a pigment. Some blend naturally — others muddy the palette.
             Select, combine, and stress-test stacks the way a painter mixes colors: by harmony, tension, and intent.
-            An attempt at helping people find the right tools for the right problems.
+            Know your stack before you commit to it.
           </p>
           <div className="flex flex-wrap gap-4">
             <button
@@ -1211,10 +1260,9 @@ export default function ArchitecturalChromatics() {
                   ] as { id: string; plain: string }[]).map(({ id, plain }) => {
                     const hue = DATA.hues.find(h => h.id === id);
                     return (
-                      <div key={id} className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
-                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: hue?.hex }} />
+                      <div key={id} className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl shadow-sm" style={{ backgroundColor: hue?.hex ? `${hue.hex}09` : 'white' }}>
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-wider text-gray-800 mb-1">{hue?.name}</p>
+                          <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: hue?.hex }}>{hue?.name}</p>
                           <p className="text-[11px] text-gray-500 leading-snug">{plain}</p>
                         </div>
                       </div>
@@ -1353,15 +1401,15 @@ export default function ArchitecturalChromatics() {
                   <button
                     key={hue.id}
                     onClick={() => setActiveHue(activeHue === hue.id ? null : hue.id)}
-                    className={`flex items-start gap-3 p-3 rounded-xl text-left transition-all border group
-                      ${activeHue === hue.id
-                        ? 'border-gray-300 bg-gray-50 shadow-sm'
-                        : 'border-gray-100 hover:border-gray-200 bg-white hover:shadow-sm'}`}
+                    className={`flex items-start gap-3 p-3 rounded-xl text-left transition-all border group shadow-sm`}
+                    style={activeHue === hue.id
+                      ? { borderColor: hue.hex, backgroundColor: `${hue.hex}0d` }
+                      : { borderColor: '#f3f4f6', backgroundColor: 'white' }}
                   >
-                    <div className="w-1.5 h-10 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: hue.hex }} />
                     <div className="min-w-0">
-                      <p className="text-[10px] font-black uppercase text-gray-800 tracking-wider leading-none mb-1 group-hover:text-indigo-600 transition-colors">
-                        {hue.name}
+                      <p className="text-[10px] font-black uppercase tracking-wider leading-none mb-1 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full shrink-0 inline-block" style={{ backgroundColor: hue.hex }} />
+                        <span style={{ color: activeHue === hue.id ? hue.hex : undefined }}>{hue.name}</span>
                       </p>
                       <p className="text-[9px] text-gray-500 leading-tight">{hue.description}</p>
                       <p className="text-[9px] text-gray-400 italic mt-1">{HUE_EXAMPLES[hue.id]}</p>
@@ -1416,7 +1464,7 @@ export default function ArchitecturalChromatics() {
                   <input
                     type="text"
                     placeholder="Search tools..."
-                    className="w-full bg-white border border-gray-200 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-gray-300 font-medium"
+                    className="w-full bg-white border border-gray-200 rounded-xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-gray-400/15 focus:border-gray-400 transition-all placeholder:text-gray-300 font-medium"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                   />
@@ -1424,14 +1472,40 @@ export default function ArchitecturalChromatics() {
               </div>
 
               <div>
-                <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Evaluation Dimensions</h4>
-                <div className="space-y-4">
-                  {DATA.evaluationDimensions.map(dim => (
-                    <div key={dim} className="flex items-center gap-3 text-xs text-gray-500 group cursor-default">
-                      <div className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-indigo-400 transition-colors" />
-                      <span className="capitalize font-medium">{dim.replace(/([A-Z])/g, ' $1')}</span>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em]">Dimensions</h4>
+                  {activeDimensions.length > 0 && (
+                    <button
+                      onClick={() => setActiveDimensions([])}
+                      className="text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-gray-700 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  {DATA.evaluationDimensions.map(dim => {
+                    const isActive = activeDimensions.includes(dim);
+                    const matchCount = DATA.tools.filter(t => DIM_FILTER[dim]?.(t) ?? true).length;
+                    return (
+                      <button
+                        key={dim}
+                        onClick={() => setActiveDimensions(prev =>
+                          prev.includes(dim) ? prev.filter(d => d !== dim) : [...prev, dim]
+                        )}
+                        title={DIM_DESCRIPTIONS[dim]}
+                        className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-left transition-all border
+                          ${isActive
+                            ? 'bg-gray-900 border-gray-900 text-white'
+                            : 'bg-white border-gray-100 text-gray-600 hover:border-gray-300 hover:text-gray-900'}`}
+                      >
+                        <span className="text-[10px] font-black uppercase tracking-wider">{DIM_LABELS[dim]}</span>
+                        <span className={`text-[9px] font-bold tabular-nums shrink-0 ${isActive ? 'text-gray-400' : 'text-gray-300'}`}>
+                          {matchCount}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>
@@ -1486,6 +1560,7 @@ export default function ArchitecturalChromatics() {
                       onClick={setInspectedTool}
                       isSelected={selectedTools.includes(tool.id)}
                       onToggleSelect={toggleToolSelection}
+                      blendFull={selectedTools.length >= 5}
                     />
                   ))}
                 </div>
@@ -1498,13 +1573,18 @@ export default function ArchitecturalChromatics() {
                       onClick={setInspectedTool}
                       isSelected={selectedTools.includes(tool.id)}
                       onToggleSelect={toggleToolSelection}
+                      blendFull={selectedTools.length >= 5}
                     />
                   ))}
                 </div>
               )}
 
               {/* PATTERNS SECTION */}
-              <div className="mt-32">
+              <div className="mt-20">
+                <div className="flex items-center gap-4 mb-10 pt-10 border-t border-gray-100">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300">{DATA.patterns.length} patterns</span>
+                  <div className="flex-1 h-[1px] bg-gray-100" />
+                </div>
                 <div className="flex items-center gap-6 mb-4">
                   <h2 className="text-3xl font-black text-gray-900">Compositional Patterns</h2>
                   <div className="flex-1 h-[1px] bg-gray-100" />
@@ -1699,11 +1779,30 @@ export default function ArchitecturalChromatics() {
                       {/* Anti-pattern load CTA */}
                       {isMuddy && (
                         <div className="pt-4 flex justify-end">
-                          <button
-                            onClick={() => { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); }}
-                            className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 group flex items-center gap-2 hover:text-rose-700 transition-colors">
-                            Load Anti-Pattern to See Warnings <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                          </button>
+                          {pendingBlendRecipe === recipe.id ? (
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] text-rose-400 font-bold">Replaces your current blend.</span>
+                              <button
+                                onClick={() => { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); setPendingBlendRecipe(null); }}
+                                className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-rose-500 px-3 py-1.5 rounded-lg hover:bg-rose-600 transition-colors">
+                                Load Anyway
+                              </button>
+                              <button
+                                onClick={() => setPendingBlendRecipe(null)}
+                                className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400 hover:text-rose-600 transition-colors">
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (selectedTools.length > 0) { setPendingBlendRecipe(recipe.id); }
+                                else { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); }
+                              }}
+                              className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 group flex items-center gap-2 hover:text-rose-700 transition-colors">
+                              Load Anti-Pattern to See Warnings <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -1724,11 +1823,30 @@ export default function ArchitecturalChromatics() {
                               })}
                             </div>
                           </div>
-                          <button
-                            onClick={() => { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); }}
-                            className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 group flex items-center gap-2 hover:text-indigo-800 transition-colors">
-                            Load into Blend <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                          </button>
+                          {pendingBlendRecipe === recipe.id ? (
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] text-gray-500 font-bold">Replaces your current blend.</span>
+                              <button
+                                onClick={() => { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); setPendingBlendRecipe(null); }}
+                                className="text-[10px] font-black uppercase tracking-[0.2em] text-white bg-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors">
+                                Load Anyway
+                              </button>
+                              <button
+                                onClick={() => setPendingBlendRecipe(null)}
+                                className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-gray-600 transition-colors">
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (selectedTools.length > 0) { setPendingBlendRecipe(recipe.id); }
+                                else { setSelectedTools(recipe.tools.slice(0, 5)); setView('landscape'); }
+                              }}
+                              className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 group flex items-center gap-2 hover:text-gray-900 transition-colors">
+                              Load into Blend <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
