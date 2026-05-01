@@ -563,7 +563,7 @@ const ToolIndexCard = ({
       {/* Name + category */}
       <div className="w-44 min-w-0 shrink-0">
         <p className="text-sm font-bold text-gray-900 group-hover:text-gray-800 transition-colors truncate leading-tight">{tool.name}</p>
-        <p className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">{tool.category}</p>
+        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{tool.category}</p>
       </div>
 
       {/* Hue dots */}
@@ -574,13 +574,13 @@ const ToolIndexCard = ({
 
       {/* Complexity */}
       <div className="flex flex-col gap-0.5 shrink-0 w-20">
-        <p className="text-[8px] uppercase text-gray-400 font-black tracking-wider">Complexity</p>
+        <p className="text-[10px] uppercase text-gray-400 font-black tracking-wider">Complexity</p>
         <div className="flex gap-0.5">{[1,2,3].map(i => <div key={i} className={`w-4 h-1 rounded-full ${i <= lvl[tool.complexityAdded] ? 'bg-amber-400' : 'bg-gray-100'}`} />)}</div>
       </div>
 
       {/* Trust */}
       <div className="flex flex-col gap-0.5 shrink-0 w-16">
-        <p className="text-[8px] uppercase text-gray-400 font-black tracking-wider">Trust</p>
+        <p className="text-[10px] uppercase text-gray-400 font-black tracking-wider">Trust</p>
         <div className="flex gap-0.5">{[1,2,3].map(i => <div key={i} className={`w-4 h-1 rounded-full ${i <= lvl[tool.trustContribution] ? 'bg-teal-400' : 'bg-gray-100'}`} />)}</div>
       </div>
 
@@ -593,7 +593,7 @@ const ToolIndexCard = ({
           return (
             <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help">
               <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={22} />
-              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 transition-opacity z-10">
+              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 transition-opacity z-10">
                 {pat.name}
               </span>
             </div>
@@ -604,13 +604,13 @@ const ToolIndexCard = ({
       {/* Conflicts */}
       <div className="shrink-0 w-20 text-right">
         {tool.conflictsWith.length > 0
-          ? <span className="text-[9px] font-black uppercase text-rose-400">{tool.conflictsWith.length} conflict{tool.conflictsWith.length > 1 ? 's' : ''}</span>
-          : <span className="text-[9px] font-black uppercase text-emerald-500">clean</span>
+          ? <span className="text-[10px] font-black uppercase text-rose-400">{tool.conflictsWith.length} conflict{tool.conflictsWith.length > 1 ? 's' : ''}</span>
+          : <span className="text-[10px] font-black uppercase text-emerald-500">clean</span>
         }
       </div>
 
       {/* Maturity */}
-      <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter shrink-0
+      <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter shrink-0
         ${tool.maturity === 'production' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
         {tool.maturity === 'production' ? 'prod' : 'emerging'}
       </span>
@@ -696,7 +696,7 @@ const ToolCard = ({
             <div className="w-5 h-5 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: secondaryHue.hex }} title={secondaryHue.name} />
           )}
         </div>
-        <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter
+        <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter
           ${tool.maturity === 'production' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
           {tool.maturity}
         </span>
@@ -731,10 +731,10 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
         <div className="flex flex-col items-center justify-center gap-3 p-5 w-36 shrink-0">
           <ColorWheelMini hues={pattern.hues} />
           <div className="text-center">
-            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
               {harmony.label}
             </p>
-            <p className="text-[9px] text-gray-400 leading-snug font-medium">
+            <p className="text-[10px] text-gray-400 leading-snug font-medium">
               {harmony.meaning}
             </p>
           </div>
@@ -746,7 +746,7 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
         {/* Name + badges */}
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-xl font-black text-gray-900 leading-tight">{pattern.name}</h3>
-          <span className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest border shrink-0 ${typeStyle}`}>
+          <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest border shrink-0 ${typeStyle}`}>
             {pattern.type.replace('-', ' ')}
           </span>
         </div>
@@ -759,10 +759,10 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
           <div className="grid grid-cols-2 gap-4 pt-2">
             {pattern.strengths?.length > 0 && (
               <div>
-                <p className="text-[9px] uppercase font-black text-emerald-600 tracking-widest mb-2">Strengths</p>
+                <p className="text-[10px] uppercase font-black text-emerald-600 tracking-widest mb-2">Strengths</p>
                 <ul className="space-y-1">
                   {pattern.strengths.map(s => (
-                    <li key={s} className="flex items-start gap-1.5 text-[11px] text-gray-600 font-medium">
+                    <li key={s} className="flex items-start gap-1.5 text-xs text-gray-600 font-medium">
                       <CheckCircle2 size={11} className="text-emerald-400 shrink-0 mt-0.5" />
                       {s}
                     </li>
@@ -772,10 +772,10 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
             )}
             {pattern.weaknesses?.length > 0 && (
               <div>
-                <p className="text-[9px] uppercase font-black text-rose-500 tracking-widest mb-2">Weaknesses</p>
+                <p className="text-[10px] uppercase font-black text-rose-500 tracking-widest mb-2">Weaknesses</p>
                 <ul className="space-y-1">
                   {pattern.weaknesses.map(w => (
-                    <li key={w} className="flex items-start gap-1.5 text-[11px] text-gray-600 font-medium">
+                    <li key={w} className="flex items-start gap-1.5 text-xs text-gray-600 font-medium">
                       <XCircle size={11} className="text-rose-300 shrink-0 mt-0.5" />
                       {w}
                     </li>
@@ -789,7 +789,7 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
         {/* Watch for */}
         {pattern.watchFor?.length > 0 && (
           <div className="pt-3 border-t border-gray-50">
-            <p className="text-[9px] uppercase font-black text-amber-600 tracking-widest mb-2 flex items-center gap-1.5">
+            <p className="text-[10px] uppercase font-black text-amber-600 tracking-widest mb-2 flex items-center gap-1.5">
               <Eye size={10} /> Watch For
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -1264,13 +1264,13 @@ export default function ArchitecturalChromatics() {
                       <div key={id} className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl shadow-sm" style={{ backgroundColor: hue?.hex ? `${hue.hex}09` : 'white' }}>
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: hue?.hex }}>{hue?.name}</p>
-                          <p className="text-[11px] text-gray-500 leading-snug">{plain}</p>
+                          <p className="text-xs text-gray-500 leading-snug">{plain}</p>
                         </div>
                       </div>
                     );
                   })}
                   <div className="flex items-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-                    <p className="text-[11px] text-gray-500 italic leading-snug">
+                    <p className="text-xs text-gray-500 italic leading-snug">
                       A stack heavy on Cognition and Velocity with nothing in Trust isn't missing a tool — it's missing a <em>conversation</em>.
                     </p>
                   </div>
@@ -1295,14 +1295,14 @@ export default function ArchitecturalChromatics() {
                     <ColorWheelMini hues={['cognition', 'velocity', 'interface']} />
                     <div className="text-center">
                       <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Typical Early Stack</p>
-                      <p className="text-[9px] text-gray-400 mt-0.5">3 of 7 roles covered</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">3 of 7 roles covered</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-3">
                     <ColorWheelMini hues={['intent', 'logic', 'cognition', 'memory', 'trust', 'interface']} />
                     <div className="text-center">
                       <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Production-Ready</p>
-                      <p className="text-[9px] text-gray-400 mt-0.5">6 of 7 roles covered</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">6 of 7 roles covered</p>
                     </div>
                   </div>
                 </div>
@@ -1329,7 +1329,7 @@ export default function ArchitecturalChromatics() {
                         <PatternDiagram patternId={patId} color={hue?.hex ?? '#6b7280'} size={44} />
                         <div>
                           <p className="text-xs font-black text-gray-800 mb-1.5">{pat.name}</p>
-                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${typeStyle}`}>
+                          <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${typeStyle}`}>
                             {pat.type}
                           </span>
                         </div>
@@ -1372,11 +1372,11 @@ export default function ArchitecturalChromatics() {
             <div className="shrink-0 flex flex-col items-center gap-5">
               <ColorWheelLabeled activeHue={activeHue} />
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-gray-400">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-gray-400">
                   <div className="w-6 h-px bg-emerald-400" />
                   Adjacent — reinforces
                 </div>
-                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-gray-400">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-gray-400">
                   <svg width="24" height="2"><line x1="0" y1="1" x2="24" y2="1" stroke="#f87171" strokeWidth="1.5" strokeDasharray="4 2" /></svg>
                   Opposite — tensions
                 </div>
@@ -1412,8 +1412,8 @@ export default function ArchitecturalChromatics() {
                         <span className="w-2 h-2 rounded-full shrink-0 inline-block" style={{ backgroundColor: hue.hex }} />
                         <span style={{ color: activeHue === hue.id ? hue.hex : undefined }}>{hue.name}</span>
                       </p>
-                      <p className="text-[9px] text-gray-500 leading-tight">{hue.description}</p>
-                      <p className="text-[9px] text-gray-400 italic mt-1">{HUE_EXAMPLES[hue.id]}</p>
+                      <p className="text-[10px] text-gray-500 leading-tight">{hue.description}</p>
+                      <p className="text-[10px] text-gray-400 italic mt-1">{HUE_EXAMPLES[hue.id]}</p>
                     </div>
                   </button>
                 ))}
@@ -1443,7 +1443,7 @@ export default function ArchitecturalChromatics() {
               <div>
                 <p className="text-xs font-black uppercase text-gray-900 tracking-wider mb-0.5">{hue.name}</p>
                 <p className="text-[10px] text-gray-500 max-w-[140px] whitespace-normal leading-tight">{hue.description}</p>
-                <p className="text-[9px] text-gray-400 max-w-[140px] whitespace-normal leading-tight mt-0.5 italic">{HUE_EXAMPLES[hue.id]}</p>
+                <p className="text-[10px] text-gray-400 max-w-[140px] whitespace-normal leading-tight mt-0.5 italic">{HUE_EXAMPLES[hue.id]}</p>
               </div>
             </button>
           ))}
@@ -1478,7 +1478,7 @@ export default function ArchitecturalChromatics() {
                   {activeDimensions.length > 0 && (
                     <button
                       onClick={() => setActiveDimensions([])}
-                      className="text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-gray-700 transition-colors"
+                      className="text-[10px] font-black uppercase tracking-wider text-gray-400 hover:text-gray-700 transition-colors"
                     >
                       Clear
                     </button>
@@ -1501,7 +1501,7 @@ export default function ArchitecturalChromatics() {
                             : 'bg-white border-gray-100 text-gray-600 hover:border-gray-300 hover:text-gray-900'}`}
                       >
                         <span className="text-[10px] font-black uppercase tracking-wider">{DIM_LABELS[dim]}</span>
-                        <span className={`text-[9px] font-bold tabular-nums shrink-0 ${isActive ? 'text-gray-400' : 'text-gray-300'}`}>
+                        <span className={`text-[10px] font-bold tabular-nums shrink-0 ${isActive ? 'text-gray-400' : 'text-gray-300'}`}>
                           {matchCount}
                         </span>
                       </button>
@@ -1543,12 +1543,12 @@ export default function ArchitecturalChromatics() {
               {compactMode && (
                 <div className="flex items-center gap-4 px-4 mb-2">
                   <div className="w-1 shrink-0" />
-                  <div className="w-44 shrink-0"><p className="text-[9px] uppercase font-black text-gray-400 tracking-widest">Tool</p></div>
+                  <div className="w-44 shrink-0"><p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Tool</p></div>
                   <div className="w-6 shrink-0" />
-                  <div className="w-20 shrink-0"><p className="text-[9px] uppercase font-black text-gray-400 tracking-widest">Complexity</p></div>
-                  <div className="w-16 shrink-0"><p className="text-[9px] uppercase font-black text-gray-400 tracking-widest">Trust</p></div>
-                  <div className="flex-1"><p className="text-[9px] uppercase font-black text-gray-400 tracking-widest">Patterns</p></div>
-                  <div className="w-20 text-right shrink-0"><p className="text-[9px] uppercase font-black text-gray-400 tracking-widest">Conflicts</p></div>
+                  <div className="w-20 shrink-0"><p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Complexity</p></div>
+                  <div className="w-16 shrink-0"><p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Trust</p></div>
+                  <div className="flex-1"><p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Patterns</p></div>
+                  <div className="w-20 text-right shrink-0"><p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Conflicts</p></div>
                 </div>
               )}
 
@@ -1955,7 +1955,7 @@ export default function ArchitecturalChromatics() {
 
             {/* Hues */}
             <div>
-              <p className="text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Hues</p>
+              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Hues</p>
               <div className="flex gap-1.5 flex-wrap">
                 {mixAnalytics?.dominantHues.map(h => {
                   const hue = DATA.hues.find(hu => hu.id === h);
@@ -1965,16 +1965,16 @@ export default function ArchitecturalChromatics() {
                 })}
               </div>
               {mixAnalytics?.harmony.label && (
-                <p className="text-[9px] text-indigo-400 font-black uppercase tracking-wider mt-1.5">{mixAnalytics.harmony.label}</p>
+                <p className="text-[10px] text-indigo-400 font-black uppercase tracking-wider mt-1.5">{mixAnalytics.harmony.label}</p>
               )}
             </div>
 
             {/* Complexity + Trust bars */}
             <div>
-              <p className="text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Load</p>
+              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Load</p>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] text-gray-600 uppercase font-black w-16 tracking-wider">Complexity</span>
+                  <span className="text-[10px] text-gray-600 uppercase font-black w-16 tracking-wider">Complexity</span>
                   <div className="flex gap-0.5">
                     {Array.from({ length: mixAnalytics?.maxScore ?? 0 }).map((_, i) => (
                       <div key={i} className={`w-2 h-1.5 rounded-full ${i < (mixAnalytics?.complexityScore ?? 0) ? 'bg-amber-400' : 'bg-white/10'}`} />
@@ -1982,7 +1982,7 @@ export default function ArchitecturalChromatics() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] text-gray-600 uppercase font-black w-16 tracking-wider">Trust</span>
+                  <span className="text-[10px] text-gray-600 uppercase font-black w-16 tracking-wider">Trust</span>
                   <div className="flex gap-0.5">
                     {Array.from({ length: mixAnalytics?.maxScore ?? 0 }).map((_, i) => (
                       <div key={i} className={`w-2 h-1.5 rounded-full ${i < (mixAnalytics?.trustScore ?? 0) ? 'bg-teal-400' : 'bg-white/10'}`} />
@@ -1994,7 +1994,7 @@ export default function ArchitecturalChromatics() {
 
             {/* Best pattern match */}
             <div>
-              <p className="text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Closest Pattern</p>
+              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Closest Pattern</p>
               {mixAnalytics?.bestPattern ? (
                 <div className="flex items-center gap-2">
                   <div className="opacity-70">
@@ -2004,33 +2004,33 @@ export default function ArchitecturalChromatics() {
                       size={22}
                     />
                   </div>
-                  <p className="text-[9px] text-white font-bold leading-tight">{mixAnalytics.bestPattern.name}</p>
+                  <p className="text-[10px] text-white font-bold leading-tight">{mixAnalytics.bestPattern.name}</p>
                 </div>
               ) : (
-                <p className="text-[9px] text-gray-600 italic">Select more tools</p>
+                <p className="text-[10px] text-gray-600 italic">Select more tools</p>
               )}
             </div>
 
             {/* Health */}
             <div>
-              <p className="text-[9px] uppercase text-gray-500 mb-2 font-black tracking-widest">Health</p>
+              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Health</p>
               <div className="space-y-1.5">
                 {(mixAnalytics?.conflicts.length ?? 0) > 0 && (
                   <div className="flex items-start gap-1.5 text-rose-400">
                     <ZapOff size={11} strokeWidth={3} className="shrink-0 mt-0.5" />
-                    <span className="text-[9px] font-black uppercase leading-tight">{mixAnalytics!.conflicts[0]}</span>
+                    <span className="text-[10px] font-black uppercase leading-tight">{mixAnalytics!.conflicts[0]}</span>
                   </div>
                 )}
                 {mixAnalytics?.warnings.map(w => (
                   <div key={w.type} className="flex items-start gap-1.5 text-amber-400">
                     <AlertTriangle size={11} strokeWidth={3} className="shrink-0 mt-0.5" />
-                    <span className="text-[9px] font-black uppercase leading-tight">{w.type}</span>
+                    <span className="text-[10px] font-black uppercase leading-tight">{w.type}</span>
                   </div>
                 ))}
                 {(mixAnalytics?.conflicts.length ?? 0) === 0 && (mixAnalytics?.warnings.length ?? 0) === 0 && (
                   <div className="flex items-center gap-1.5 text-emerald-400">
                     <ShieldCheck size={11} strokeWidth={3} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">High Resonance</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">High Resonance</span>
                   </div>
                 )}
               </div>
@@ -2091,7 +2091,7 @@ export default function ArchitecturalChromatics() {
 
               {/* Relationship web */}
               <div className="mb-10 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                <p className="text-[9px] uppercase font-black text-gray-400 tracking-widest mb-3">Relationship Map</p>
+                <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-3">Relationship Map</p>
                 <RelationshipWeb tool={inspectedTool} />
               </div>
 
