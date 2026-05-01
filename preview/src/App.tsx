@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './index.css'
 import ArchitecturalChromatics from './ArchitecturalChromatics'
 import DataEngineeringChromatics from './DataEngineeringChromatics'
+import AgentHarnessChromatics from './AgentHarnessChromatics'
 
 function getRoute(): string {
   return window.location.hash.replace('#', '') || '/'
@@ -17,5 +18,6 @@ export default function App() {
   }, [])
 
   if (route === '/data-engineering') return <DataEngineeringChromatics />
+  if (route === '/agent-harness') return <AgentHarnessChromatics />
   return <ArchitecturalChromatics />
 }

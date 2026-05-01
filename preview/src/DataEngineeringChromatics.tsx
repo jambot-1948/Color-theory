@@ -1090,12 +1090,20 @@ export default function ArchitecturalChromatics() {
             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
               Data Engineering Atlas v{DATA.site.version}
             </span>
-            <a
-              href="#/"
-              className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
-            >
-              ← AI Stacks
-            </a>
+            <div className="flex gap-4">
+              <a
+                href="#/"
+                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
+              >
+                ← AI Stacks
+              </a>
+              <a
+                href="#/agent-harness"
+                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
+              >
+                Agent Harness →
+              </a>
+            </div>
           </div>
           <h1 className="text-6xl font-black text-gray-900 mb-5 tracking-tight max-w-4xl">
             Data Engineering stacks are{' '}
