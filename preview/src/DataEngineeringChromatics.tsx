@@ -16,7 +16,7 @@ import {
   Database,
   Eye,
 } from 'lucide-react';
-import { architecturalChromaticsData as DATA } from './architectural-chromatics-data';
+import { dataEngineeringChromaticsData as DATA } from './data-engineering-chromatics-data';
 
 // --- SMALL INDICATORS ---
 
@@ -64,7 +64,7 @@ const DIM_LABELS: Record<string, string> = {
   clarity:         'Clarity',
   adaptability:    'Adaptability',
   operationalLoad: 'Operational Load',
-  trustSurface:    'Trust Surface',
+  trustSurface:    'Data Quality',
 };
 
 const DIM_DESCRIPTIONS: Record<string, string> = {
@@ -75,18 +75,18 @@ const DIM_DESCRIPTIONS: Record<string, string> = {
   clarity:         'Single-role focus — no secondary hue',
   adaptability:    'Appears in 2 or more patterns',
   operationalLoad: 'Low-to-medium operational burden',
-  trustSurface:    'High trust and observability contribution',
+  trustSurface:    'High observability and quality contribution',
 };
 
 // Plain-language examples per hue — used in palette explainer and filter bar
 const HUE_EXAMPLES: Record<string, string> = {
-  intent:    'prompts, goals, decisions',
-  logic:     'orchestrators, workflows',
-  cognition: 'LLMs, reasoning engines',
-  memory:    'vector stores, retrieval',
-  interface: 'UIs, dashboards',
-  velocity:  'deployment, build tools',
-  trust:     'evals, guardrails, logging',
+  ingest:     'connectors, streams, CDC',
+  transform:  'SQL models, distributed compute',
+  orchestrate:'DAGs, asset dependencies',
+  store:      'warehouses, lakes, table formats',
+  serve:      'query engines, semantic layers',
+  observe:    'data quality, lineage, anomaly detection',
+  govern:     'catalog, access control, compliance',
 };
 
 // Pattern type → badge color
@@ -101,13 +101,13 @@ const PATTERN_TYPE_STYLES: Record<string, string> = {
 
 // Each hue's position on a 7-segment wheel (degrees, 0 = top, clockwise)
 const HUE_ANGLES: Record<string, number> = {
-  intent: 0,
-  memory: 51.4,
-  interface: 102.9,
-  velocity: 154.3,
-  trust: 205.7,
-  logic: 257.1,
-  cognition: 308.6,
+  ingest:      0,
+  transform:   51.4,
+  orchestrate: 102.9,
+  store:       154.3,
+  serve:       205.7,
+  observe:     257.1,
+  govern:      308.6,
 };
 
 const SEGMENT_SWEEP = 360 / 7; // 51.43°
@@ -272,156 +272,86 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
   const props = { fill: color, stroke: color };
 
   const diagrams: Record<string, React.ReactElement> = {
-    conductor: (
-      // Hub and spoke — a central node orchestrating surrounding nodes
+    'medallion-architecture': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        <circle cx="40" cy="40" r="9" {...props} />
-        {[[-18,-18],[18,-18],[18,18],[-18,18],[0,-22],[22,0],[0,22],[-22,0]].slice(0,4).map(([dx,dy],i) => (
-          <g key={i}>
-            <line x1="40" y1="40" x2={40+(dx!)} y2={40+(dy!)} stroke={color} strokeWidth="1.5" />
-            <circle cx={40+(dx!)} cy={40+(dy!)} r="5" fill="none" stroke={color} strokeWidth="1.5" />
-          </g>
-        ))}
+        <rect x="12" y="57" width="56" height="9" rx="2" fill={color} opacity={0.35} />
+        <rect x="12" y="40" width="56" height="9" rx="2" fill={color} opacity={0.6} />
+        <rect x="12" y="23" width="56" height="9" rx="2" fill={color} opacity={1} />
+        <line x1="40" y1="55" x2="40" y2="52" stroke={color} strokeWidth="1.5" />
+        <polygon points="37,52 40,46 43,52" {...props} />
+        <line x1="40" y1="38" x2="40" y2="35" stroke={color} strokeWidth="1.5" />
+        <polygon points="37,35 40,29 43,35" {...props} />
       </svg>
     ),
-    'reflective-loop': (
-      // Circular feedback arrow — generate, evaluate, refine
+    'lambda-architecture': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        <path d="M40 14 A26 26 0 1 1 14 40" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
-        <polygon points="10,32 14,44 20,34" {...props} />
-        <circle cx="40" cy="40" r="5" {...props} opacity="0.4"/>
+        <circle cx="40" cy="12" r="6" {...props} />
+        <line x1="37" y1="17" x2="22" y2="36" stroke={color} strokeWidth="1.5" />
+        <line x1="43" y1="17" x2="58" y2="36" stroke={color} strokeWidth="1.5" />
+        <circle cx="20" cy="42" r="5" fill={color} opacity={0.7} />
+        <circle cx="60" cy="42" r="5" fill={color} opacity={0.7} />
+        <line x1="22" y1="46" x2="37" y2="64" stroke={color} strokeWidth="1.5" />
+        <line x1="58" y1="46" x2="43" y2="64" stroke={color} strokeWidth="1.5" />
+        <circle cx="40" cy="70" r="5" {...props} />
       </svg>
     ),
-    'long-memory-system': (
-      // Stacked layers with retrieval arrow — depth of stored context
+    'kappa-architecture': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        {[54, 42, 30].map((y, i) => (
-          <rect key={i} x="14" y={y} width="52" height="9" rx="2" {...props} opacity={1 - i * 0.25} />
-        ))}
-        <line x1="40" y1="28" x2="40" y2="12" stroke={color} strokeWidth="2" />
-        <polygon points="35,17 40,8 45,17" {...props} />
+        <path d="M10,40 C22,15 58,65 70,40" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="10" cy="40" r="5" {...props} />
+        <circle cx="40" cy="28" r="4" fill={color} opacity={0.5} />
+        <circle cx="70" cy="40" r="5" {...props} />
+        <polygon points="66,36 73,40 66,44" {...props} />
       </svg>
     ),
-    'balanced-stack': (
-      // Seven equal columns — one per hue, all represented
+    'data-swamp': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        {DATA.hues.map((hue, i) => (
-          <rect key={hue.id} x={6 + i * 10} y="18" width="7" height="44" rx="1.5" fill={hue.hex} opacity="0.85" />
-        ))}
+        <rect x="10" y="22" width="60" height="34" rx="3" fill="none" stroke={color} strokeWidth="1.5" />
+        <path d="M14,33 Q24,28 34,33 Q44,38 54,33 Q64,28 70,33" fill="none" stroke={color} strokeWidth="1.5" opacity={0.8} />
+        <path d="M14,42 Q24,47 34,42 Q44,37 54,42 Q64,47 70,42" fill="none" stroke={color} strokeWidth="1.5" opacity={0.6} />
+        <line x1="22" y1="56" x2="22" y2="67" stroke={color} strokeWidth="1.5" opacity={0.5} />
+        <line x1="40" y1="56" x2="40" y2="71" stroke={color} strokeWidth="1.5" opacity={0.5} />
+        <line x1="58" y1="56" x2="58" y2="64" stroke={color} strokeWidth="1.5" opacity={0.5} />
       </svg>
     ),
-    'bright-demo': (
-      // Starburst / spotlight — brilliant surface, fast to appear
+    'hollow-warehouse': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        {[0,45,90,135,180,225,270,315].map((a, i) => {
-          const r1 = 18, r2 = 34;
-          const p1 = polarToXY(40, 40, r1, a);
-          const p2 = polarToXY(40, 40, r2, a);
-          return <line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={color} strokeWidth="1.5" opacity="0.5" />;
-        })}
-        <circle cx="40" cy="40" r="14" {...props} />
-        <circle cx="40" cy="40" r="22" fill="none" stroke={color} strokeWidth="1" opacity="0.3" />
+        <rect x="8" y="14" width="64" height="52" rx="4" fill="none" stroke={color} strokeWidth="1.5" />
+        <rect x="28" y="30" width="24" height="20" rx="2" fill={color} opacity={0.5} />
       </svg>
     ),
-    'thin-wrapper': (
-      // Thin border around a small core — mostly shell, little inside
+    'semantic-spine': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        <rect x="10" y="10" width="60" height="60" rx="4" fill="none" stroke={color} strokeWidth="1.5" />
-        <rect x="30" y="30" width="20" height="20" rx="2" {...props} opacity="0.6" />
+        <line x1="36" y1="10" x2="36" y2="70" stroke={color} strokeWidth="2.5" />
+        <line x1="36" y1="22" x2="58" y2="18" stroke={color} strokeWidth="1.5" />
+        <circle cx="61" cy="18" r="4" {...props} />
+        <line x1="36" y1="38" x2="58" y2="38" stroke={color} strokeWidth="1.5" />
+        <circle cx="61" cy="38" r="4" {...props} />
+        <line x1="36" y1="54" x2="58" y2="56" stroke={color} strokeWidth="1.5" />
+        <circle cx="61" cy="56" r="4" {...props} />
+        <line x1="36" y1="38" x2="14" y2="38" stroke={color} strokeWidth="1.5" opacity={0.5} />
+        <circle cx="11" cy="38" r="3" fill={color} opacity={0.5} />
       </svg>
     ),
-    'velocity-stack': (
-      // Stacked chevrons pointing upward — momentum, speed
+    'pipeline-pileup': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        {[0, 1, 2].map(i => (
-          <polygon key={i} points="40,8 62,28 18,28" transform={`translate(0, ${i * 18})`} {...props} opacity={1 - i * 0.28} />
-        ))}
+        <line x1="8" y1="28" x2="64" y2="28" stroke={color} strokeWidth="2" />
+        <polygon points="60,24 68,28 60,32" {...props} />
+        <line x1="8" y1="40" x2="64" y2="40" stroke={color} strokeWidth="2" opacity={0.65} />
+        <polygon points="60,36 68,40 60,44" fill={color} opacity={0.65} />
+        <line x1="8" y1="52" x2="64" y2="52" stroke={color} strokeWidth="2" opacity={0.35} />
+        <polygon points="60,48 68,52 60,56" fill={color} opacity={0.35} />
+        <line x1="28" y1="28" x2="28" y2="52" stroke={color} strokeWidth="1" strokeDasharray="3 2" opacity={0.5} />
+        <line x1="48" y1="28" x2="48" y2="40" stroke={color} strokeWidth="1" strokeDasharray="3 2" opacity={0.5} />
       </svg>
     ),
-    'muddy-mix': (
-      // Three overlapping circles — unclear boundaries, tangled ownership
+    'observability-first': (
       <svg viewBox="0 0 80 80" width={size} height={size}>
-        <circle cx="28" cy="33" r="20" {...props} opacity="0.35" />
-        <circle cx="52" cy="33" r="20" {...props} opacity="0.35" />
-        <circle cx="40" cy="52" r="20" {...props} opacity="0.35" />
-        <circle cx="28" cy="33" r="20" fill="none" stroke={color} strokeWidth="1" />
-        <circle cx="52" cy="33" r="20" fill="none" stroke={color} strokeWidth="1" />
-        <circle cx="40" cy="52" r="20" fill="none" stroke={color} strokeWidth="1" />
-      </svg>
-    ),
-    'orchestration-pileup': (
-      // Shrinking layers stacking downward — multiple systems competing
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        {[[10,62,8],[16,50,8],[22,38,8],[28,26,8]].map(([x,y,h], i) => (
-          <rect key={i} x={x} y={y} width={80 - x * 2} height={h} rx="2" {...props} opacity={1 - i * 0.18} />
-        ))}
-        <line x1="40" y1="22" x2="40" y2="8" stroke={color} strokeWidth="1.5" strokeDasharray="3 2" opacity="0.4"/>
-      </svg>
-    ),
-    'hollow-core': (
-      // Bold ring with empty center — polished shell, no substance beneath
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <circle cx="40" cy="40" r="30" fill="none" stroke={color} strokeWidth="10" />
-        <circle cx="40" cy="40" r="8" fill="none" stroke={color} strokeWidth="1" strokeDasharray="3 3" opacity="0.35" />
-      </svg>
-    ),
-    'trust-gap': (
-      // Chain with a broken link — capability without oversight
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <rect x="8" y="32" width="22" height="16" rx="8" fill="none" stroke={color} strokeWidth="2.5" />
-        <rect x="50" y="32" width="22" height="16" rx="8" fill="none" stroke={color} strokeWidth="2.5" />
-        <line x1="30" y1="40" x2="36" y2="40" stroke={color} strokeWidth="2" strokeDasharray="2 2" opacity="0.5" />
-        <line x1="44" y1="40" x2="50" y2="40" stroke={color} strokeWidth="2" strokeDasharray="2 2" opacity="0.5" />
-        <line x1="38" y1="28" x2="42" y2="28" stroke={color} strokeWidth="2" opacity="0.6" />
-        <line x1="38" y1="52" x2="42" y2="52" stroke={color} strokeWidth="2" opacity="0.6" />
-      </svg>
-    ),
-    'retrieval-illusion': (
-      // A solid shape and its slightly-off dashed mirror — surface grounding, hidden drift
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <rect x="10" y="18" width="26" height="44" rx="3" {...props} />
-        <rect x="44" y="24" width="26" height="44" rx="3" fill="none" stroke={color} strokeWidth="1.5" strokeDasharray="4 3" opacity="0.6" />
-        <line x1="36" y1="40" x2="44" y2="40" stroke={color} strokeWidth="1" strokeDasharray="2" opacity="0.4" />
-      </svg>
-    ),
-    'durable-spine': (
-      // Central column with symmetric branches — reliability and structure
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <rect x="35" y="8" width="10" height="64" rx="3" {...props} />
-        {[18, 32, 46].map(y => (
-          <g key={y}>
-            <rect x="14" y={y} width="21" height="5" rx="2" {...props} opacity="0.7" />
-            <rect x="45" y={y} width="21" height="5" rx="2" {...props} opacity="0.7" />
-          </g>
-        ))}
-      </svg>
-    ),
-    'cognitive-core': (
-      // Central filled circle with orbiting nodes — model-centric architecture
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <circle cx="40" cy="40" r="26" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.35" />
-        <circle cx="40" cy="40" r="12" {...props} />
-        {[0, 120, 240].map((a, i) => {
-          const p = polarToXY(40, 40, 26, a);
-          return <circle key={i} cx={p.x} cy={p.y} r="5" {...props} opacity="0.7" />;
-        })}
-      </svg>
-    ),
-    'governance-shell': (
-      // Concentric rings — protective layer wrapped around core behavior
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <circle cx="40" cy="40" r="32" fill="none" stroke={color} strokeWidth="2" />
-        <circle cx="40" cy="40" r="22" fill="none" stroke={color} strokeWidth="2" opacity="0.6" />
-        <circle cx="40" cy="40" r="10" {...props} opacity="0.85" />
-      </svg>
-    ),
-    'modular-palette': (
-      // Four clean separated squares — clear boundaries, replaceable parts
-      <svg viewBox="0 0 80 80" width={size} height={size}>
-        <rect x="8" y="8" width="27" height="27" rx="3" {...props} opacity="0.9" />
-        <rect x="45" y="8" width="27" height="27" rx="3" {...props} opacity="0.7" />
-        <rect x="8" y="45" width="27" height="27" rx="3" {...props} opacity="0.55" />
-        <rect x="45" y="45" width="27" height="27" rx="3" {...props} opacity="0.4" />
+        <line x1="6" y1="40" x2="74" y2="40" stroke={color} strokeWidth="1.5" opacity={0.3} />
+        <rect x="26" y="24" width="28" height="32" rx="3" fill="none" stroke={color} strokeWidth="2" />
+        <path d="M33,40 L38,46 L48,33" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <polygon points="20,36 26,40 20,44" {...props} />
+        <polygon points="60,36 54,40 60,44" {...props} />
       </svg>
     ),
   };
@@ -1158,29 +1088,29 @@ export default function ArchitecturalChromatics() {
               ))}
             </div>
             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
-              Architectural Atlas v{DATA.site.version}
+              Data Engineering Atlas v{DATA.site.version}
             </span>
             <a
-              href="#/data-engineering"
+              href="#/"
               className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
             >
-              Data Engineering →
+              ← AI Stacks
             </a>
           </div>
           <h1 className="text-6xl font-black text-gray-900 mb-5 tracking-tight max-w-4xl">
-            Modern systems are{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#C84C3A] to-[#4A6FA5]">Chromatic.</span>
+            Data Engineering stacks are{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#D9512A] to-[#4A5A9A]">Chromatic.</span>
           </h1>
           <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl leading-snug">
-            A reference tool for AI stack composition built on a simple premise: how things combine matters more than what they are individually.
+            A reference tool for data stack composition built on a simple premise: which pipeline roles you cover matters more than which tools fill them.
           </p>
           <p className="text-xs text-gray-400 font-medium mb-8 border-l-2 border-gray-200 pl-3 max-w-xl leading-relaxed">
             <span className="font-black text-gray-500">Chromatic</span> /krəˈmatɪk/ — of or relating to color.
-            Here: the property that determines how tools harmonize, contrast, or conflict when combined in a system.
+            Here: the property that determines how pipeline roles harmonize, create gaps, or conflict when composed into a data stack.
           </p>
           <p className="text-xl text-gray-500 max-w-3xl leading-relaxed mb-10">
-            Every AI tool is a pigment. Some blend naturally — others muddy the palette.
-            Select, combine, and stress-test stacks the way a painter mixes colors: by harmony, tension, and intent.
+            Every data tool is a pigment. Some blend naturally — others create maintenance debt and blame cycles.
+            Map your stack against the seven roles of data engineering to see what's missing before the pipeline shows you.
             Know your stack before you commit to it.
           </p>
           <div className="flex flex-wrap gap-4">
@@ -1236,13 +1166,13 @@ export default function ArchitecturalChromatics() {
               {/* Block 1 — the vocabulary problem */}
               <div className="max-w-3xl">
                 <p className="text-xl font-black text-gray-900 mb-4 leading-snug">
-                  There's a vocabulary problem at the center of AI stack design.
+                  There's a vocabulary problem at the center of data stack design.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3">
-                  When a system misbehaves in production, the diagnostic conversation usually stalls — not because the answer is hard to find, but because there's no agreed framework for describing what went wrong.
+                  When a pipeline fails in production — or worse, silently produces wrong numbers — the postmortem usually stalls. Not because the root cause is hard to find, but because there's no shared language for describing what role was missing.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed">
-                  Color theory gives you that framework. Not because AI and paint have anything in common, but because the structural problems are the same: too many things doing the same job, whole categories of responsibility left uncovered, or combinations that look right but produce mud.
+                  Color theory gives you that framework. Not because data pipelines and paint have anything in common, but because the structural failure modes are the same: too many tools competing for the same responsibility, whole categories of ownership left uncovered, or combinations that look sophisticated but produce mud.
                 </p>
               </div>
 
@@ -1252,17 +1182,17 @@ export default function ArchitecturalChromatics() {
                   Hues are roles, not brands
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
-                  The seven hues aren't tool categories — they're categories of <em>architectural responsibility</em>. Every production AI system needs most of them covered, in some form, by something.
+                  The seven hues aren't tool categories — they're categories of <em>pipeline responsibility</em>. Every production data system needs most of them covered, in some form, by something.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl">
                   {([
-                    { id: 'intent',    plain: 'Who frames the problem and shapes what the model is trying to do' },
-                    { id: 'logic',     plain: 'Who controls the flow — retries, branching, sequencing' },
-                    { id: 'cognition', plain: 'Who reasons and generates' },
-                    { id: 'memory',    plain: 'Who holds context across time and retrieval' },
-                    { id: 'interface', plain: 'Who faces the user' },
-                    { id: 'velocity',  plain: 'Who keeps delivery moving' },
-                    { id: 'trust',     plain: "Who verifies the system is doing what you think it's doing" },
+                    { id: 'ingest',     plain: 'Who brings raw data in from the world' },
+                    { id: 'transform',  plain: 'Who shapes data into meaning' },
+                    { id: 'orchestrate',plain: 'Who sequences and schedules the work' },
+                    { id: 'store',      plain: 'Who holds data at rest' },
+                    { id: 'serve',      plain: 'Who delivers data to consumers' },
+                    { id: 'observe',    plain: 'Who watches whether data is correct and complete' },
+                    { id: 'govern',     plain: 'Who controls access, catalog, and compliance' },
                   ] as { id: string; plain: string }[]).map(({ id, plain }) => {
                     const hue = DATA.hues.find(h => h.id === id);
                     return (
@@ -1276,7 +1206,7 @@ export default function ArchitecturalChromatics() {
                   })}
                   <div className="flex items-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
                     <p className="text-xs text-gray-500 italic leading-snug">
-                      A stack heavy on Cognition and Velocity with nothing in Trust isn't missing a tool — it's missing a <em>conversation</em>.
+                      A stack heavy on Ingest and Store with nothing in Observe isn't missing a tool — it's missing <em>accountability</em>.
                     </p>
                   </div>
                 </div>
@@ -1289,22 +1219,22 @@ export default function ArchitecturalChromatics() {
                     Coverage is a diagnostic
                   </p>
                   <p className="text-base text-gray-600 leading-relaxed mb-3">
-                    When you plot your current stack against the wheel, the gaps are the story. Not "we need more tools" — the opposite. The gaps tell you which architectural responsibilities have no owner.
+                    When you plot your stack against the wheel, the gaps tell the story. Not "we need more tools" — the opposite. The gaps show which data responsibilities have no owner.
                   </p>
                   <p className="text-base text-gray-600 leading-relaxed">
-                    A RAG system with no Trust layer means nobody is watching whether retrieval is actually grounding the model. A workflow with no Logic layer means the model is making control-flow decisions it shouldn't. These are the most common failure modes in production AI.
+                    A pipeline with no Observe layer means no one knows if the data arriving is correct. A stack with no Govern layer means no one knows who can access what, or where a number came from. These are the most common failure modes in production data engineering.
                   </p>
                 </div>
                 <div className="flex gap-10 items-end shrink-0">
                   <div className="flex flex-col items-center gap-3">
-                    <ColorWheelMini hues={['cognition', 'velocity', 'interface']} />
+                    <ColorWheelMini hues={['transform', 'store', 'serve']} />
                     <div className="text-center">
                       <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Typical Early Stack</p>
                       <p className="text-[10px] text-gray-400 mt-0.5">3 of 7 roles covered</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-3">
-                    <ColorWheelMini hues={['intent', 'logic', 'cognition', 'memory', 'trust', 'interface']} />
+                    <ColorWheelMini hues={['ingest', 'transform', 'orchestrate', 'store', 'serve', 'observe']} />
                     <div className="text-center">
                       <p className="text-[10px] font-black uppercase tracking-wider text-gray-600">Production-Ready</p>
                       <p className="text-[10px] text-gray-400 mt-0.5">6 of 7 roles covered</p>
@@ -1319,13 +1249,13 @@ export default function ArchitecturalChromatics() {
                   Combinations have names
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-3xl">
-                  It's not just what you have — it's how it combines. Two orchestrators in the same stack is an <em>Orchestration Pileup</em>. A polished UI over a hollow backend is a <em>Hollow Core</em>. Strong cognition with a generate-evaluate-refine loop is a <em>Reflective Loop</em>.
+                  It's not just what you have — it's how it combines. A warehouse full of unvalidated raw data is a <em>Data Swamp</em>. Strong transformation served directly without a quality layer is a <em>Hollow Warehouse</em>. Airflow and Dagster both running in the same stack is a <em>Pipeline Pileup</em>.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
-                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we're building a Bright Demo, not a Durable Spine" and have that mean something to the room.
+                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we have a Governance Gap, not a tooling problem" and have that mean something to the room.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  {(['reflective-loop', 'hollow-core', 'durable-spine'] as string[]).map(patId => {
+                  {(['medallion-architecture', 'hollow-warehouse', 'semantic-spine'] as string[]).map(patId => {
                     const pat = DATA.patterns.find(p => p.id === patId);
                     const hue = DATA.hues.find(h => h.id === pat?.hues[0]);
                     const typeStyle = PATTERN_TYPE_STYLES[pat?.type ?? 'foundational'];
@@ -1346,7 +1276,7 @@ export default function ArchitecturalChromatics() {
 
               {/* Bridge — latency acknowledgment */}
               <p className="text-sm text-gray-400 italic leading-relaxed max-w-2xl">
-                A muddy color mix is obvious in seconds. A muddy stack takes 18 months to reveal itself. That gap is exactly why naming the patterns matters before you build.
+                A muddy color mix is obvious in seconds. A muddy pipeline takes 18 months to become a compliance incident. That gap is exactly why naming the patterns matters before you build.
               </p>
 
               {/* Block 5 — the payoff */}
@@ -1356,14 +1286,14 @@ export default function ArchitecturalChromatics() {
                 </p>
                 <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                   <p className="text-sm text-gray-500 font-mono leading-relaxed mb-4">
-                    You're at a client site. Someone asks why the system keeps drifting off-task.
-                    The stack is Vercel + OpenAI + Supabase. Beautiful demo. No Logic, no Trust.
+                    You're at a client site. The data team says they can't trust the numbers from the new warehouse.
+                    The stack is Fivetran + dbt + Snowflake + Trino. Well-modeled transformation. No quality gates, no catalog.
                   </p>
                   <p className="text-base text-gray-800 font-black leading-relaxed">
-                    That's not a model problem. That's a Hollow Core.
+                    That's not a modeling problem. That's a Governance Gap.
                   </p>
                   <p className="text-sm text-gray-500 leading-relaxed mt-4">
-                    You don't need to enumerate every missing component. You just need to know which hues are absent and which pattern you're looking at. The rest follows.
+                    You don't need to audit every table. You just need to know which hues are absent and which pattern you're looking at. The rest follows.
                   </p>
                 </div>
               </div>
