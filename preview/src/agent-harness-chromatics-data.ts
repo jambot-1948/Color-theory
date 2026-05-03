@@ -163,7 +163,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "medium",
       pairsWellWith: ["postgresql", "langfuse"],
       conflictsWith: ["kubernetes"],
-      patterns: ["observable-agent", "batch-processor"],
+      patterns: ["observable-agent", "silent-agent"],
       notes: "Simple for low-latency use cases; limited observability by default. Cold starts can be an issue.",
     },
     {
@@ -179,7 +179,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["redis", "langfuse", "temporal"],
       conflictsWith: [],
-      patterns: ["resilient-loop", "real-time-responder"],
+      patterns: ["resilient-loop", "observable-agent"],
       notes:
         "Best-in-class developer experience. Good for ML-heavy workloads. Excellent observability out of the box.",
     },
@@ -195,7 +195,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "low",
       pairsWellWith: ["kubernetes", "vault"],
       conflictsWith: [],
-      patterns: ["bulletproof-pipeline"],
+      patterns: ["distributed-agent"],
       notes: "Foundational technology; rarely stands alone. Enables reproducibility and portability.",
     },
     {
@@ -211,7 +211,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["docker", "temporal", "vault", "opentelemetry"],
       conflictsWith: ["lambda"],
-      patterns: ["distributed-agent", "bulletproof-pipeline"],
+      patterns: ["distributed-agent", "secured-harness"],
       notes:
         "Steep learning curve; powerful once mastered. Overhead for small workloads; essential for enterprise scale.",
     },
@@ -227,7 +227,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "low",
       pairsWellWith: ["modal", "kubernetes", "temporal"],
       conflictsWith: ["postgresql"],
-      patterns: ["persistent-memory", "real-time-responder"],
+      patterns: ["persistent-memory", "resilient-loop"],
       notes: "Perfect for fast access to recent state; data loss on restart. Use for non-critical context.",
     },
     {
@@ -242,7 +242,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["lambda", "temporal", "vault"],
       conflictsWith: [],
-      patterns: ["persistent-memory", "bulletproof-pipeline"],
+      patterns: ["persistent-memory", "secured-harness"],
       notes: "ACID guarantees; durable; queryable. Slower than Redis but data survives restarts.",
     },
     {
@@ -257,7 +257,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["modal", "temporal", "kubernetes"],
       conflictsWith: [],
-      patterns: ["observable-agent", "resilient-loop", "bulletproof-pipeline"],
+      patterns: ["observable-agent", "resilient-loop"],
       notes:
         "Purpose-built for LLM workloads. Easy integration; provides cost and quality tracking out of the box.",
     },
@@ -274,7 +274,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["kubernetes", "postgresql", "langfuse", "vault"],
       conflictsWith: [],
-      patterns: ["resilient-loop", "bulletproof-pipeline", "distributed-agent"],
+      patterns: ["resilient-loop", "distributed-agent"],
       notes:
         "Complex but eliminates entire classes of failure modes. Essential for production reliability.",
     },
@@ -288,7 +288,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Vendor-agnostic instrumentation framework for metrics, logs, and traces. Integrates with any backend.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "datadog", "langfuse"],
+      pairsWellWith: ["kubernetes", "temporal", "langfuse"],
       conflictsWith: [],
       patterns: ["observable-agent", "secured-harness"],
       notes: "Avoids vendor lock-in; requires careful setup. Industry standard for observability.",
@@ -305,7 +305,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["kubernetes", "temporal", "opentelemetry"],
       conflictsWith: [],
-      patterns: ["secured-harness", "bulletproof-pipeline"],
+      patterns: ["secured-harness"],
       notes: "Enterprise-grade; complex setup. Essential for compliance and secret rotation.",
     },
     {
@@ -321,7 +321,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "medium",
       pairsWellWith: ["kubernetes", "postgresql", "vault"],
       conflictsWith: [],
-      patterns: ["distributed-swarm", "distributed-agent"],
+      patterns: ["distributed-agent"],
       notes:
         "Powerful for data-parallel workloads; requires cluster thinking. Good for scaling beyond single machine.",
     },
@@ -332,7 +332,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       id: "silent-agent",
       name: "The Silent Agent",
       type: "anti-pattern",
-      hues: ["invocation", "execution"],
+      hues: ["observability"],
       description: "Agent runs with zero logging or monitoring. Failures discovered by users, not systems.",
       strengths: [],
       weaknesses: [
@@ -350,7 +350,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       id: "stateless-learner",
       name: "The Stateless Learner",
       type: "anti-pattern",
-      hues: ["invocation", "execution"],
+      hues: ["state"],
       description: "Agent resets all context and memory on every invocation. Can't learn or maintain continuity.",
       strengths: [],
       weaknesses: [
@@ -368,7 +368,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       id: "cascading-failure",
       name: "The Cascading Failure",
       type: "anti-pattern",
-      hues: ["invocation", "execution"],
+      hues: ["resilience"],
       description: "Single agent error crashes the entire system. No retries, fallbacks, or graceful degradation.",
       strengths: [],
       weaknesses: [
@@ -558,7 +558,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
     {
       id: "bulletproof-pipeline",
       name: "The Bulletproof Pipeline",
-      tools: ["kubernetes", "postgresql", "temporal", "langfuse", "vault"],
+      tools: ["kubernetes", "postgresql", "temporal", "langfuse", "opentelemetry", "vault"],
       patternIds: ["resilient-loop", "secured-harness", "observable-agent"],
       useCase:
         "Production AI agent with full safety guarantees. For mission-critical workloads that can't fail.",

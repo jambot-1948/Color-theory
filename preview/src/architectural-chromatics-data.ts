@@ -93,7 +93,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       name: "Intent",
       colorName: "Red",
       hex: "#C84C3A",
-      description: "Direction, goals, prompting, and decision framing.",
+      description: "Direction, goals, and prompting — the gap most stacks leave implicit.",
     },
     {
       id: "logic",
@@ -155,26 +155,25 @@ export const architecturalChromaticsData: ChromaticsData = {
   // five shades of brown when one common brown is sufficient.
 
   tools: [
-    // INTENT
+    // LOGIC
     {
       id: "langchain",
       name: "LangChain",
-      primaryHue: "intent",
-      secondaryHue: "logic",
+      primaryHue: "logic",
+      secondaryHue: "intent",
       category: "Framework",
       maturity: "production",
       description:
-        "Prompt orchestration and agent scaffolding for LLM applications. The most common entry point for teams building on top of models.",
+        "Orchestration framework for composing LLM calls, tools, and retrieval into sequences. The most common scaffolding layer teams build on top of models.",
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["openai", "pinecone", "langgraph", "langsmith"],
       conflictsWith: ["temporal"],
       patterns: ["conductor", "muddy-mix", "thin-wrapper"],
       notes:
-        "A common entry point. Gets teams moving fast but can create orchestration overlap when paired with heavier workflow engines.",
+        "Gets teams moving fast but creates orchestration overlap when paired with LangGraph or Temporal. Choose one primary orchestration layer and commit.",
     },
 
-    // LOGIC
     {
       id: "langgraph",
       name: "LangGraph",
@@ -215,7 +214,6 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "openai",
       name: "OpenAI",
       primaryHue: "cognition",
-      secondaryHue: "intent",
       category: "Model Provider",
       maturity: "production",
       description:
@@ -301,12 +299,12 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Where Vercel is product-facing, Streamlit is practitioner-facing. Great for getting real feedback fast from technical audiences.",
     },
 
-    // VELOCITY
+    // MEMORY
     {
       id: "supabase",
       name: "Supabase",
-      primaryHue: "velocity",
-      secondaryHue: "memory",
+      primaryHue: "memory",
+      secondaryHue: "velocity",
       category: "Backend Platform",
       maturity: "production",
       description:
@@ -397,10 +395,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["intent", "logic", "cognition", "memory", "interface", "velocity", "trust"],
       description:
-        "A stack with broad coverage across major system roles and no single hue dominating.",
-      strengths: ["resilience", "coverage", "adaptability"],
-      weaknesses: ["slower setup", "more design effort"],
-      watchFor: ["accidental complexity"],
+        "The reference architecture — every major role has an owner, no single hue dominates. Like the three-tier pattern before it: not a ceiling, but a starting point. Teams should know what they're deviating from before they deviate.",
+      strengths: ["clear role ownership", "resilience through coverage", "legible to new team members"],
+      weaknesses: ["slower to stand up", "requires upfront design discipline"],
+      watchFor: ["specializing without knowing why", "gaps that form silently as teams optimize for one hue"],
     },
     {
       id: "bright-demo",
@@ -428,12 +426,12 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "velocity-stack",
       name: "The Velocity Stack",
       type: "high-velocity",
-      hues: ["velocity", "interface", "cognition"],
+      hues: ["velocity", "interface"],
       description:
-        "A stack optimized for shipping quickly and learning fast.",
-      strengths: ["iteration speed", "developer momentum"],
-      weaknesses: ["architecture drift", "scale friction"],
-      watchFor: ["thin boundaries", "operational shortcuts"],
+        "The scaffold is up — backend, auth, deployment — but the cognition layer isn't committed yet. The frame exists; the intelligence doesn't.",
+      strengths: ["fast infrastructure foundation", "reversible model choice"],
+      weaknesses: ["no AI value delivered yet", "risk of building around the wrong model"],
+      watchFor: ["no cognition layer decided", "interface shipped before model strategy is clear"],
     },
     {
       id: "muddy-mix",
@@ -455,7 +453,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Multiple workflow systems compete for control, making the control plane hard to understand.",
       strengths: [],
       weaknesses: ["unclear flow", "high complexity", "maintenance drag"],
-      watchFor: ["LangGraph alongside Temporal", "any two orchestrators in one stack"],
+      watchFor: ["LangGraph alongside Temporal", "LangChain alongside Temporal", "any two orchestrators owning the same control flow"],
     },
     {
       id: "hollow-core",
@@ -653,7 +651,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "The team argues about which tool should handle X",
       ],
       fix: [
-        "Choose one primary orchestration layer — LangGraph or Temporal, not both",
+        "Choose one primary orchestration layer — LangChain, LangGraph, or Temporal — not multiples",
         "Assign clear responsibility to each tool",
         "Remove tools that duplicate what another already does",
       ],

@@ -179,7 +179,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "low",
       pairsWellWith: ["dbt", "snowflake", "great-expectations"],
       conflictsWith: ["kafka"],
-      patterns: ["medallion-architecture"],
+      patterns: ["tiered-refinery"],
       notes:
         "Solves the connector problem but adds vendor dependency. No streaming support — batch replication only.",
     },
@@ -196,7 +196,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran"],
       conflictsWith: ["spark"],
-      patterns: ["medallion-architecture", "semantic-spine", "observability-first"],
+      patterns: ["tiered-refinery", "semantic-spine", "observability-first"],
       notes:
         "De facto standard for warehouse-based transformation. The built-in test framework gives it a foothold in the Observe hue.",
     },
@@ -228,7 +228,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "low",
       pairsWellWith: ["dbt", "spark", "great-expectations"],
       conflictsWith: ["dagster"],
-      patterns: ["medallion-architecture", "lambda-architecture"],
+      patterns: ["tiered-refinery", "lambda-architecture"],
       notes:
         "Mature and widely deployed. Lacks asset-level lineage and native data awareness — it knows about tasks, not tables.",
     },
@@ -245,7 +245,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["dbt", "great-expectations", "spark", "snowflake"],
       conflictsWith: ["airflow"],
-      patterns: ["medallion-architecture", "observability-first"],
+      patterns: ["tiered-refinery", "observability-first"],
       notes:
         "Higher learning curve than Airflow but the asset model changes the operational and debugging experience fundamentally.",
     },
@@ -262,7 +262,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "medium",
       pairsWellWith: ["dbt", "fivetran", "trino", "great-expectations", "dagster"],
       conflictsWith: [],
-      patterns: ["medallion-architecture", "semantic-spine"],
+      patterns: ["tiered-refinery", "semantic-spine"],
       notes:
         "Default choice for analytical workloads. High storage cost at scale. Compute/storage separation makes it easier to reason about costs.",
     },
@@ -299,6 +299,23 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Enables querying data where it lives. Complexity scales with federation scope — simple federation is easy, complex federation is hard.",
     },
     {
+      id: "cube",
+      name: "Cube",
+      primaryHue: "serve",
+      secondaryHue: "govern",
+      category: "Semantic Layer",
+      maturity: "production",
+      description:
+        "Semantic and metrics API layer between the warehouse and consumers. Enforces consistent metric definitions, caches query results, and controls access.",
+      complexityAdded: "medium",
+      trustContribution: "high",
+      pairsWellWith: ["snowflake", "dbt", "trino", "datahub"],
+      conflictsWith: [],
+      patterns: ["semantic-spine"],
+      notes:
+        "The answer to 'why does revenue look different in every dashboard?' Cube enforces one definition of a metric and serves it to all consumers. Trino queries raw data; Cube serves governed meaning.",
+    },
+    {
       id: "great-expectations",
       name: "Great Expectations",
       primaryHue: "observe",
@@ -310,7 +327,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["dbt", "dagster", "airflow", "snowflake"],
       conflictsWith: [],
-      patterns: ["observability-first", "medallion-architecture"],
+      patterns: ["observability-first", "tiered-refinery"],
       notes:
         "Most effective when integrated at pipeline boundaries, not bolted on at the end. Expectation authoring is a non-trivial skill.",
     },
@@ -335,12 +352,12 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
 
   patterns: [
     {
-      id: "medallion-architecture",
-      name: "Medallion Architecture",
+      id: "tiered-refinery",
+      name: "The Tiered Refinery",
       type: "foundational",
       hues: ["ingest", "transform", "store", "observe"],
       description:
-        "Data promoted through Bronze (raw), Silver (validated), Gold (modeled) quality tiers. Each promotion gate enforces quality.",
+        "Data promoted through progressive quality tiers. Each tier is a gate — raw data enters, validated and modeled data exits.",
       strengths: [
         "Clear promotion criteria and quality contracts",
         "Easy to debug — reprocess from any tier",
@@ -493,7 +510,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       id: "modern-data-stack",
       name: "The Modern Data Stack",
       tools: ["fivetran", "dbt", "snowflake", "great-expectations"],
-      patternIds: ["medallion-architecture"],
+      patternIds: ["tiered-refinery"],
       useCase:
         "Standard analytical stack for a mid-size company. Managed connectors feed a warehouse; SQL models create clean analytical tables.",
       whyItWorks: [
@@ -580,7 +597,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       id: "full-modern-stack",
       name: "The Full Stack",
       tools: ["kafka", "fivetran", "dbt", "dagster", "snowflake", "trino", "great-expectations", "datahub"],
-      patternIds: ["medallion-architecture", "observability-first"],
+      patternIds: ["tiered-refinery", "observability-first"],
       useCase:
         "Production-grade data platform covering all 7 hues. Every architectural responsibility has an owner.",
       whyItWorks: [
@@ -590,8 +607,8 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       whereItBreaks: [
         "High team complexity — requires dedicated data platform engineering to operate",
-        "Kafka and Spark are the operational weight anchors",
-        "Airflow–Dagster overlap risk if both are retained",
+        "Kafka is the primary operational weight anchor — requires managed infrastructure or dedicated cluster ops",
+        "Teams with existing Airflow will be tempted to retain it alongside Dagster — resist; pick one orchestrator",
       ],
     },
   ],

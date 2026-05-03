@@ -520,9 +520,9 @@ const ToolIndexCard = ({
           if (!pat) return null;
           const hue = DATA.hues.find(h => h.id === pat.hues[0]);
           return (
-            <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help">
+            <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help" tabIndex={0}>
               <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={22} />
-              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 transition-opacity z-10">
+              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 group-focus-within/chip:opacity-100 transition-opacity z-10">
                 {pat.name}
               </span>
             </div>
@@ -1078,70 +1078,68 @@ export default function ArchitecturalChromatics() {
   return (
     <div className="min-h-screen bg-[#fcfcfd] text-gray-900 font-sans selection:bg-indigo-100 pb-32">
 
+      {/* DOMAIN NAV */}
+      <nav className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 flex">
+          <a href="#/" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors -mb-px">
+            AI Stack
+          </a>
+          <a href="#/data-engineering" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-gray-900 text-gray-900 -mb-px">
+            Data Engineering
+          </a>
+          <a href="#/agent-harness" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors -mb-px">
+            Agent Harness
+          </a>
+        </div>
+      </nav>
+
       {/* HERO */}
-      <section className="pt-24 pb-16 px-6 border-b border-gray-100 bg-white">
+      <section className="pt-8 pb-6 px-6 border-b border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex gap-1">
               {DATA.hues.slice(0, 3).map(h => (
                 <div key={h.id} className="w-1.5 h-4 rounded-full" style={{ backgroundColor: h.hex }} />
               ))}
             </div>
             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
-              Data Engineering Atlas v{DATA.site.version}
+              Data Engineering Chromatics v{DATA.site.version}
             </span>
-            <div className="flex gap-4">
-              <a
-                href="#/"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
-              >
-                ← AI Stacks
-              </a>
-              <a
-                href="#/agent-harness"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
-              >
-                Agent Harness →
-              </a>
-            </div>
           </div>
-          <h1 className="text-6xl font-black text-gray-900 mb-5 tracking-tight max-w-4xl">
-            Data Engineering stacks are{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#D9512A] to-[#4A5A9A]">Chromatic.</span>
+          <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
+            Data stacks are{' '}
+            <span style={{ color: '#D9512A' }}>Chromatic.</span>
           </h1>
-          <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl leading-snug">
-            A reference tool for data stack composition built on a simple premise: which pipeline roles you cover matters more than which tools fill them.
+          <p className="text-base text-gray-500 font-medium mb-5 max-w-2xl leading-snug">
+            A reference tool for data stack composition. Which pipeline roles you cover matters more than which tools fill them.
           </p>
-          <p className="text-xs text-gray-400 font-medium mb-8 border-l-2 border-gray-200 pl-3 max-w-xl leading-relaxed">
-            <span className="font-black text-gray-500">Chromatic</span> /krəˈmatɪk/ — of or relating to color.
-            Here: the property that determines how pipeline roles harmonize, create gaps, or conflict when composed into a data stack.
-          </p>
-          <p className="text-xl text-gray-500 max-w-3xl leading-relaxed mb-10">
-            Every data tool is a pigment. Some blend naturally — others create maintenance debt and blame cycles.
-            Map your stack against the seven roles of data engineering to see what's missing before the pipeline shows you.
-            Know your stack before you commit to it.
-          </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2" role="tablist">
             <button
+              role="tab"
+              aria-selected={view === 'landscape'}
               onClick={() => setView('landscape')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'landscape' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'landscape' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Explore the Landscape
+              Landscape
             </button>
             <button
+              role="tab"
+              aria-selected={view === 'recipes'}
               onClick={() => setView('recipes')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'recipes' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'recipes' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              View Recipes
+              Recipes
             </button>
             <button
+              role="tab"
+              aria-selected={view === 'diagram'}
               onClick={() => setView('diagram')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'diagram' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'diagram' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Context Diagram
+              Context
             </button>
           </div>
         </div>
@@ -1257,10 +1255,10 @@ export default function ArchitecturalChromatics() {
                   Combinations have names
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-3xl">
-                  It's not just what you have — it's how it combines. A warehouse full of unvalidated raw data is a <em>Data Swamp</em>. Strong transformation served directly without a quality layer is a <em>Hollow Warehouse</em>. Airflow and Dagster both running in the same stack is a <em>Pipeline Pileup</em>.
+                  A warehouse full of unvalidated raw data is a <em>Data Swamp</em>. Strong transformation served directly without a quality layer is a <em>Hollow Warehouse</em>. Airflow and Dagster both running in the same stack is a <em>Pipeline Pileup</em>. The combination makes the pattern.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
-                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we have a Governance Gap, not a tooling problem" and have that mean something to the room.
+                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them precisely is what shifts the conversation: "we have a Governance Gap" lands differently than "there are data quality issues."
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {(['medallion-architecture', 'hollow-warehouse', 'semantic-spine'] as string[]).map(patId => {
@@ -1298,7 +1296,7 @@ export default function ArchitecturalChromatics() {
                     The stack is Fivetran + dbt + Snowflake + Trino. Well-modeled transformation. No quality gates, no catalog.
                   </p>
                   <p className="text-base text-gray-800 font-black leading-relaxed">
-                    That's not a modeling problem. That's a Governance Gap.
+                    Governance Gap. The hues show it; the stack confirms it.
                   </p>
                   <p className="text-sm text-gray-500 leading-relaxed mt-4">
                     You don't need to audit every table. You just need to know which hues are absent and which pattern you're looking at. The rest follows.
@@ -1373,26 +1371,22 @@ export default function ArchitecturalChromatics() {
       </section>
 
       {/* HUE LEGEND — sticky */}
-      <section className="bg-white/90 border-b border-gray-100 py-8 overflow-x-auto sticky top-0 z-30 shadow-sm backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 flex gap-10 whitespace-nowrap items-center">
-          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100">
-            The Palette
+      <section className="bg-white/90 border-b border-gray-100 py-3 overflow-x-auto sticky top-0 z-30 shadow-sm backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 flex gap-6 whitespace-nowrap items-center">
+          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100 shrink-0">
+            Palette
           </div>
           {DATA.hues.map(hue => (
             <button
               key={hue.id}
               onClick={() => setActiveHue(activeHue === hue.id ? null : hue.id)}
-              className={`group flex items-start gap-4 text-left transition-all ${activeHue && activeHue !== hue.id ? 'opacity-30 grayscale' : 'opacity-100'}`}
+              className={`group flex items-center gap-2 text-left transition-all ${activeHue && activeHue !== hue.id ? 'opacity-30 grayscale' : 'opacity-100'}`}
             >
               <div
-                className="w-2.5 h-12 rounded-full transition-transform group-hover:scale-y-110"
+                className="w-2 h-5 rounded-full transition-transform group-hover:scale-y-110 shrink-0"
                 style={{ backgroundColor: hue.hex }}
               />
-              <div>
-                <p className="text-xs font-black uppercase text-gray-900 tracking-wider mb-0.5">{hue.name}</p>
-                <p className="text-[10px] text-gray-500 max-w-[140px] whitespace-normal leading-tight">{hue.description}</p>
-                <p className="text-[10px] text-gray-400 max-w-[140px] whitespace-normal leading-tight mt-0.5 italic">{HUE_EXAMPLES[hue.id]}</p>
-              </div>
+              <span className="text-[10px] font-black uppercase text-gray-900 tracking-wider">{hue.name}</span>
             </button>
           ))}
         </div>
@@ -1880,15 +1874,15 @@ export default function ArchitecturalChromatics() {
                 return (
                   <div key={id} className="w-12 h-12 rounded-2xl border-2 border-gray-900 bg-white flex items-center justify-center text-xs font-black text-gray-900 group relative cursor-pointer hover:-translate-y-1 transition-transform">
                     {tool?.name.substring(0, 2).toUpperCase()}
-                    <button onClick={() => toggleToolSelection(id)} className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                      <X size={10} strokeWidth={4} />
+                    <button onClick={() => toggleToolSelection(id)} aria-label={`Remove ${tool?.name ?? 'tool'}`} className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X size={10} strokeWidth={4} aria-hidden="true" />
                     </button>
                   </div>
                 );
               })}
               {Array.from({ length: 5 - selectedTools.length }).map((_, i) => (
                 <div key={i} className="w-12 h-12 rounded-2xl border-2 border-dashed border-gray-700 flex items-center justify-center text-gray-600">
-                  <Plus size={16} />
+                  <Plus size={16} aria-hidden="true" />
                 </div>
               ))}
             </div>

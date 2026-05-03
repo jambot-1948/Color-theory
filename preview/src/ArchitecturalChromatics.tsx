@@ -590,9 +590,9 @@ const ToolIndexCard = ({
           if (!pat) return null;
           const hue = DATA.hues.find(h => h.id === pat.hues[0]);
           return (
-            <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help">
+            <div key={pId} title={pat.name} className="group/chip relative shrink-0 cursor-help" tabIndex={0}>
               <PatternDiagram patternId={pId} color={hue?.hex ?? '#6b7280'} size={22} />
-              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 transition-opacity z-10">
+              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/chip:opacity-100 group-focus-within/chip:opacity-100 transition-opacity z-10">
                 {pat.name}
               </span>
             </div>
@@ -1148,70 +1148,68 @@ export default function ArchitecturalChromatics() {
   return (
     <div className="min-h-screen bg-[#fcfcfd] text-gray-900 font-sans selection:bg-indigo-100 pb-32">
 
+      {/* DOMAIN NAV */}
+      <nav className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 flex">
+          <a href="#/" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-gray-900 text-gray-900 -mb-px">
+            AI Stack
+          </a>
+          <a href="#/data-engineering" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors -mb-px">
+            Data Engineering
+          </a>
+          <a href="#/agent-harness" className="px-4 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors -mb-px">
+            Agent Harness
+          </a>
+        </div>
+      </nav>
+
       {/* HERO */}
-      <section className="pt-24 pb-16 px-6 border-b border-gray-100 bg-white">
+      <section className="pt-8 pb-6 px-6 border-b border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex gap-1">
               {DATA.hues.slice(0, 3).map(h => (
                 <div key={h.id} className="w-1.5 h-4 rounded-full" style={{ backgroundColor: h.hex }} />
               ))}
             </div>
             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
-              Architectural Atlas v{DATA.site.version}
+              Architectural Chromatics v{DATA.site.version}
             </span>
-            <div className="flex gap-4">
-              <a
-                href="#/data-engineering"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
-              >
-                Data Eng →
-              </a>
-              <a
-                href="#/agent-harness"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-gray-500 transition-colors"
-              >
-                Harness →
-              </a>
-            </div>
           </div>
-          <h1 className="text-6xl font-black text-gray-900 mb-5 tracking-tight max-w-4xl">
+          <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
             Modern systems are{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#C84C3A] to-[#4A6FA5]">Chromatic.</span>
+            <span style={{ color: '#C84C3A' }}>Chromatic.</span>
           </h1>
-          <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl leading-snug">
-            A reference tool for AI stack composition built on a simple premise: how things combine matters more than what they are individually.
+          <p className="text-base text-gray-500 font-medium mb-5 max-w-2xl leading-snug">
+            A reference tool for AI stack composition. How things combine matters more than what they are individually.
           </p>
-          <p className="text-xs text-gray-400 font-medium mb-8 border-l-2 border-gray-200 pl-3 max-w-xl leading-relaxed">
-            <span className="font-black text-gray-500">Chromatic</span> /krəˈmatɪk/ — of or relating to color.
-            Here: the property that determines how tools harmonize, contrast, or conflict when combined in a system.
-          </p>
-          <p className="text-xl text-gray-500 max-w-3xl leading-relaxed mb-10">
-            Every AI tool is a pigment. Some blend naturally — others muddy the palette.
-            Select, combine, and stress-test stacks the way a painter mixes colors: by harmony, tension, and intent.
-            Know your stack before you commit to it.
-          </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2" role="tablist">
             <button
+              role="tab"
+              aria-selected={view === 'landscape'}
               onClick={() => setView('landscape')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'landscape' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'landscape' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Explore the Landscape
+              Landscape
             </button>
             <button
+              role="tab"
+              aria-selected={view === 'recipes'}
               onClick={() => setView('recipes')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'recipes' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'recipes' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              View Recipes
+              Recipes
             </button>
             <button
+              role="tab"
+              aria-selected={view === 'diagram'}
               onClick={() => setView('diagram')}
-              className={`px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all
-                ${view === 'diagram' ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+                ${view === 'diagram' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Context Diagram
+              Context
             </button>
           </div>
         </div>
@@ -1327,7 +1325,7 @@ export default function ArchitecturalChromatics() {
                   Combinations have names
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-3xl">
-                  It's not just what you have — it's how it combines. Two orchestrators in the same stack is an <em>Orchestration Pileup</em>. A polished UI over a hollow backend is a <em>Hollow Core</em>. Strong cognition with a generate-evaluate-refine loop is a <em>Reflective Loop</em>.
+                  Two orchestrators in the same stack is an <em>Orchestration Pileup</em>. A polished UI over a hollow backend is a <em>Hollow Core</em>. Strong cognition with a generate-evaluate-refine loop is a <em>Reflective Loop</em>. Combinations have consequences.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
                   The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we're building a Bright Demo, not a Durable Spine" and have that mean something to the room.
@@ -1368,7 +1366,7 @@ export default function ArchitecturalChromatics() {
                     The stack is Vercel + OpenAI + Supabase. Beautiful demo. No Logic, no Trust.
                   </p>
                   <p className="text-base text-gray-800 font-black leading-relaxed">
-                    That's not a model problem. That's a Hollow Core.
+                    Hollow Core. The hues name it before you ask another question.
                   </p>
                   <p className="text-sm text-gray-500 leading-relaxed mt-4">
                     You don't need to enumerate every missing component. You just need to know which hues are absent and which pattern you're looking at. The rest follows.
@@ -1443,26 +1441,22 @@ export default function ArchitecturalChromatics() {
       </section>
 
       {/* HUE LEGEND — sticky */}
-      <section className="bg-white/90 border-b border-gray-100 py-8 overflow-x-auto sticky top-0 z-30 shadow-sm backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 flex gap-10 whitespace-nowrap items-center">
-          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100">
-            The Palette
+      <section className="bg-white/90 border-b border-gray-100 py-3 overflow-x-auto sticky top-0 z-30 shadow-sm backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 flex gap-6 whitespace-nowrap items-center">
+          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100 shrink-0">
+            Palette
           </div>
           {DATA.hues.map(hue => (
             <button
               key={hue.id}
               onClick={() => setActiveHue(activeHue === hue.id ? null : hue.id)}
-              className={`group flex items-start gap-4 text-left transition-all ${activeHue && activeHue !== hue.id ? 'opacity-30 grayscale' : 'opacity-100'}`}
+              className={`group flex items-center gap-2 text-left transition-all ${activeHue && activeHue !== hue.id ? 'opacity-30 grayscale' : 'opacity-100'}`}
             >
               <div
-                className="w-2.5 h-12 rounded-full transition-transform group-hover:scale-y-110"
+                className="w-2 h-5 rounded-full transition-transform group-hover:scale-y-110 shrink-0"
                 style={{ backgroundColor: hue.hex }}
               />
-              <div>
-                <p className="text-xs font-black uppercase text-gray-900 tracking-wider mb-0.5">{hue.name}</p>
-                <p className="text-[10px] text-gray-500 max-w-[140px] whitespace-normal leading-tight">{hue.description}</p>
-                <p className="text-[10px] text-gray-400 max-w-[140px] whitespace-normal leading-tight mt-0.5 italic">{HUE_EXAMPLES[hue.id]}</p>
-              </div>
+              <span className="text-[10px] font-black uppercase text-gray-900 tracking-wider">{hue.name}</span>
             </button>
           ))}
         </div>
@@ -1477,7 +1471,7 @@ export default function ArchitecturalChromatics() {
             {/* Sidebar */}
             <aside className="lg:col-span-3 space-y-12">
               <div>
-                <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Filter Spectrum</h4>
+                <h4 className="text-[10px] font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Filter</h4>
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                   <input
@@ -1492,7 +1486,7 @@ export default function ArchitecturalChromatics() {
 
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em]">Dimensions</h4>
+                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em]">Properties</h4>
                   {activeDimensions.length > 0 && (
                     <button
                       onClick={() => setActiveDimensions([])}
@@ -1685,13 +1679,13 @@ export default function ArchitecturalChromatics() {
                     <div className="p-10 flex-1 space-y-12">
                       {/* Use Case */}
                       <div>
-                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-3 tracking-widest">Application Spectrum</h4>
+                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-3 tracking-widest">Use Case</h4>
                         <p className="text-sm font-bold text-gray-700">{recipe.useCase}</p>
                       </div>
 
                       {/* Tools */}
                       <div>
-                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Pigments</h4>
+                        <h4 className="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Tools</h4>
                         <div className="flex flex-wrap gap-2">
                           {recipe.tools.map(tId => {
                             const tool = DATA.tools.find(t => t.id === tId);
@@ -1950,15 +1944,15 @@ export default function ArchitecturalChromatics() {
                 return (
                   <div key={id} className="w-12 h-12 rounded-2xl border-2 border-gray-900 bg-white flex items-center justify-center text-xs font-black text-gray-900 group relative cursor-pointer hover:-translate-y-1 transition-transform">
                     {tool?.name.substring(0, 2).toUpperCase()}
-                    <button onClick={() => toggleToolSelection(id)} className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                      <X size={10} strokeWidth={4} />
+                    <button onClick={() => toggleToolSelection(id)} aria-label={`Remove ${tool?.name ?? 'tool'}`} className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X size={10} strokeWidth={4} aria-hidden="true" />
                     </button>
                   </div>
                 );
               })}
               {Array.from({ length: 5 - selectedTools.length }).map((_, i) => (
                 <div key={i} className="w-12 h-12 rounded-2xl border-2 border-dashed border-gray-700 flex items-center justify-center text-gray-600">
-                  <Plus size={16} />
+                  <Plus size={16} aria-hidden="true" />
                 </div>
               ))}
             </div>
@@ -1989,7 +1983,7 @@ export default function ArchitecturalChromatics() {
 
             {/* Complexity + Trust bars */}
             <div>
-              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Load</p>
+              <p className="text-[10px] uppercase text-gray-500 mb-2 font-black tracking-widest">Ops Load</p>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-gray-600 uppercase font-black w-16 tracking-wider">Complexity</span>
@@ -2174,7 +2168,7 @@ export default function ArchitecturalChromatics() {
                       )}
                       {inspectedTool.conflictsWith.length > 0 && (
                         <div>
-                          <p className="text-[10px] font-black uppercase text-rose-500 mb-1 tracking-wide">Incompatible Hues</p>
+                          <p className="text-[10px] font-black uppercase text-rose-500 mb-1 tracking-wide">Incompatible Tools</p>
                           <p className="text-xs text-gray-500 font-medium leading-relaxed">
                             {inspectedTool.conflictsWith.map(id => DATA.tools.find(t => t.id === id)?.name).filter(Boolean).join(', ')}
                           </p>
@@ -2226,7 +2220,7 @@ export default function ArchitecturalChromatics() {
                   <Database size={14} />
                 </div>
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-tighter">
-                  Reference Metadata v{DATA.site.version}
+                  v{DATA.site.version}
                 </span>
               </div>
               <button
