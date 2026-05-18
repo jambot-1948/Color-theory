@@ -44,7 +44,7 @@ const TrustScale = ({ level }: { level: string }) => {
   );
 };
 
-// Evaluation dimension filter predicates — each maps a dimension name to a tool test
+// Evaluation dimension filter predicates - each maps a dimension name to a tool test
 const DIM_FILTER: Record<string, (t: typeof DATA.tools[number]) => boolean> = {
   harmony:         t => t.pairsWellWith.length >= 3,
   contrast:        t => t.conflictsWith.length > 0,
@@ -72,13 +72,13 @@ const DIM_DESCRIPTIONS: Record<string, string> = {
   contrast:        'Creates productive architectural tension',
   complexity:      'Low complexity to adopt and operate',
   durability:      'Production-ready maturity',
-  clarity:         'Single-role focus — no secondary hue',
+  clarity:         'Single-role focus - no secondary hue',
   adaptability:    'Appears in 2 or more patterns',
   operationalLoad: 'Low-to-medium operational burden',
   trustSurface:    'High trust and observability contribution',
 };
 
-// Plain-language examples per hue — used in palette explainer and filter bar
+// Plain-language examples per hue - used in palette explainer and filter bar
 const HUE_EXAMPLES: Record<string, string> = {
   intent:    'prompts, goals, decisions',
   logic:     'orchestrators, workflows',
@@ -127,7 +127,7 @@ function wedgePath(cx: number, cy: number, r: number, startDeg: number, endDeg: 
 function computeHarmony(hueIds: string[]): { label: string; meaning: string } {
   const n = hueIds.length;
   if (n === 0) return { label: '', meaning: '' };
-  if (n === 1) return { label: 'Monochromatic', meaning: 'Specialist depth — strong in one role' };
+  if (n === 1) return { label: 'Monochromatic', meaning: 'Specialist depth - strong in one role' };
 
   const angles = hueIds.map(h => HUE_ANGLES[h] ?? 0).sort((a, b) => a - b);
 
@@ -138,7 +138,7 @@ function computeHarmony(hueIds: string[]): { label: string; meaning: string } {
     );
     if (diff <= 60) return { label: 'Analogous', meaning: 'Adjacent roles that reinforce each other' };
     if (diff >= 150) return { label: 'Complementary', meaning: 'Opposite system needs in natural tension' };
-    return { label: 'Split', meaning: 'Coverage with coherence — adjacent contrast' };
+    return { label: 'Split', meaning: 'Coverage with coherence - adjacent contrast' };
   }
 
   if (n === 3) {
@@ -154,7 +154,7 @@ function computeHarmony(hueIds: string[]): { label: string; meaning: string } {
     return { label: 'Analogous+', meaning: 'Clustered roles with extended reach' };
   }
 
-  if (n >= 5) return { label: 'Complex', meaning: 'Broad coverage — requires design discipline' };
+  if (n >= 5) return { label: 'Complex', meaning: 'Broad coverage - requires design discipline' };
   return { label: 'Tetradic', meaning: 'Wide architectural coverage with inherent tension' };
 }
 
@@ -210,7 +210,7 @@ const ColorWheelMini = ({ hues }: { hues: string[] }) => {
   );
 };
 
-// Full labeled color wheel for the palette explainer — annular segments with hue names outside.
+// Full labeled color wheel for the palette explainer - annular segments with hue names outside.
 const ColorWheelLabeled = ({ activeHue }: { activeHue: string | null }) => {
   const cx = 130, cy = 130, outerR = 78, innerR = 26, labelR = 104;
 
@@ -265,7 +265,7 @@ const ColorWheelLabeled = ({ activeHue }: { activeHue: string | null }) => {
 };
 
 // --- PATTERN DIAGRAMS ---
-// One small SVG per pattern — a visual anchor for the architectural concept.
+// One small SVG per pattern - a visual anchor for the architectural concept.
 // Style: monochrome, geometric, readable at small size. Inspired by Alexander's property diagrams.
 
 const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; color: string; size?: number }) => {
@@ -273,7 +273,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
 
   const diagrams: Record<string, React.ReactElement> = {
     conductor: (
-      // Hub and spoke — a central node orchestrating surrounding nodes
+      // Hub and spoke - a central node orchestrating surrounding nodes
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <circle cx="40" cy="40" r="9" {...props} />
         {[[-18,-18],[18,-18],[18,18],[-18,18],[0,-22],[22,0],[0,22],[-22,0]].slice(0,4).map(([dx,dy],i) => (
@@ -285,7 +285,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'reflective-loop': (
-      // Circular feedback arrow — generate, evaluate, refine
+      // Circular feedback arrow - generate, evaluate, refine
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <path d="M40 14 A26 26 0 1 1 14 40" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
         <polygon points="10,32 14,44 20,34" {...props} />
@@ -293,7 +293,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'long-memory-system': (
-      // Stacked layers with retrieval arrow — depth of stored context
+      // Stacked layers with retrieval arrow - depth of stored context
       <svg viewBox="0 0 80 80" width={size} height={size}>
         {[54, 42, 30].map((y, i) => (
           <rect key={i} x="14" y={y} width="52" height="9" rx="2" {...props} opacity={1 - i * 0.25} />
@@ -303,7 +303,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'balanced-stack': (
-      // Seven equal columns — one per hue, all represented
+      // Seven equal columns - one per hue, all represented
       <svg viewBox="0 0 80 80" width={size} height={size}>
         {DATA.hues.map((hue, i) => (
           <rect key={hue.id} x={6 + i * 10} y="18" width="7" height="44" rx="1.5" fill={hue.hex} opacity="0.85" />
@@ -311,7 +311,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'bright-demo': (
-      // Starburst / spotlight — brilliant surface, fast to appear
+      // Starburst / spotlight - brilliant surface, fast to appear
       <svg viewBox="0 0 80 80" width={size} height={size}>
         {[0,45,90,135,180,225,270,315].map((a, i) => {
           const r1 = 18, r2 = 34;
@@ -324,14 +324,14 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'thin-wrapper': (
-      // Thin border around a small core — mostly shell, little inside
+      // Thin border around a small core - mostly shell, little inside
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <rect x="10" y="10" width="60" height="60" rx="4" fill="none" stroke={color} strokeWidth="1.5" />
         <rect x="30" y="30" width="20" height="20" rx="2" {...props} opacity="0.6" />
       </svg>
     ),
     'velocity-stack': (
-      // Stacked chevrons pointing upward — momentum, speed
+      // Stacked chevrons pointing upward - momentum, speed
       <svg viewBox="0 0 80 80" width={size} height={size}>
         {[0, 1, 2].map(i => (
           <polygon key={i} points="40,8 62,28 18,28" transform={`translate(0, ${i * 18})`} {...props} opacity={1 - i * 0.28} />
@@ -339,7 +339,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'muddy-mix': (
-      // Three overlapping circles — unclear boundaries, tangled ownership
+      // Three overlapping circles - unclear boundaries, tangled ownership
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <circle cx="28" cy="33" r="20" {...props} opacity="0.35" />
         <circle cx="52" cy="33" r="20" {...props} opacity="0.35" />
@@ -350,7 +350,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'orchestration-pileup': (
-      // Shrinking layers stacking downward — multiple systems competing
+      // Shrinking layers stacking downward - multiple systems competing
       <svg viewBox="0 0 80 80" width={size} height={size}>
         {[[10,62,8],[16,50,8],[22,38,8],[28,26,8]].map(([x,y,h], i) => (
           <rect key={i} x={x} y={y} width={80 - x * 2} height={h} rx="2" {...props} opacity={1 - i * 0.18} />
@@ -359,14 +359,14 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'hollow-core': (
-      // Bold ring with empty center — polished shell, no substance beneath
+      // Bold ring with empty center - polished shell, no substance beneath
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <circle cx="40" cy="40" r="30" fill="none" stroke={color} strokeWidth="10" />
         <circle cx="40" cy="40" r="8" fill="none" stroke={color} strokeWidth="1" strokeDasharray="3 3" opacity="0.35" />
       </svg>
     ),
     'trust-gap': (
-      // Chain with a broken link — capability without oversight
+      // Chain with a broken link - capability without oversight
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <rect x="8" y="32" width="22" height="16" rx="8" fill="none" stroke={color} strokeWidth="2.5" />
         <rect x="50" y="32" width="22" height="16" rx="8" fill="none" stroke={color} strokeWidth="2.5" />
@@ -377,7 +377,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'retrieval-illusion': (
-      // A solid shape and its slightly-off dashed mirror — surface grounding, hidden drift
+      // A solid shape and its slightly-off dashed mirror - surface grounding, hidden drift
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <rect x="10" y="18" width="26" height="44" rx="3" {...props} />
         <rect x="44" y="24" width="26" height="44" rx="3" fill="none" stroke={color} strokeWidth="1.5" strokeDasharray="4 3" opacity="0.6" />
@@ -385,7 +385,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'durable-spine': (
-      // Central column with symmetric branches — reliability and structure
+      // Central column with symmetric branches - reliability and structure
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <rect x="35" y="8" width="10" height="64" rx="3" {...props} />
         {[18, 32, 46].map(y => (
@@ -397,7 +397,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'cognitive-core': (
-      // Central filled circle with orbiting nodes — model-centric architecture
+      // Central filled circle with orbiting nodes - model-centric architecture
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <circle cx="40" cy="40" r="26" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.35" />
         <circle cx="40" cy="40" r="12" {...props} />
@@ -408,7 +408,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'governance-shell': (
-      // Concentric rings — protective layer wrapped around core behavior
+      // Concentric rings - protective layer wrapped around core behavior
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <circle cx="40" cy="40" r="32" fill="none" stroke={color} strokeWidth="2" />
         <circle cx="40" cy="40" r="22" fill="none" stroke={color} strokeWidth="2" opacity="0.6" />
@@ -416,7 +416,7 @@ const PatternDiagram = ({ patternId, color, size = 80 }: { patternId: string; co
       </svg>
     ),
     'modular-palette': (
-      // Four clean separated squares — clear boundaries, replaceable parts
+      // Four clean separated squares - clear boundaries, replaceable parts
       <svg viewBox="0 0 80 80" width={size} height={size}>
         <rect x="8" y="8" width="27" height="27" rx="3" {...props} opacity="0.9" />
         <rect x="45" y="8" width="27" height="27" rx="3" {...props} opacity="0.7" />
@@ -617,7 +617,7 @@ const ToolIndexCard = ({
       {/* Add button */}
       <button
         onClick={e => { e.stopPropagation(); onToggleSelect(tool.id); }}
-        title={blendFull && !isSelected ? '5/5 — remove a tool to add another' : undefined}
+        title={blendFull && !isSelected ? '5/5 - remove a tool to add another' : undefined}
         className={`p-1.5 rounded-lg border transition-all shrink-0 ${isSelected ? 'text-white' : blendFull ? 'bg-gray-50 border-gray-100 text-gray-200 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'}`}
         style={isSelected ? { backgroundColor: primaryHue.hex, borderColor: primaryHue.hex } : undefined}
       >
@@ -662,7 +662,7 @@ const ToolCard = ({
         </div>
         <button
           onClick={e => { e.stopPropagation(); onToggleSelect(tool.id); }}
-          title={blendFull && !isSelected ? '5/5 — remove a tool to add another' : undefined}
+          title={blendFull && !isSelected ? '5/5 - remove a tool to add another' : undefined}
           className={`p-1.5 rounded-lg border transition-all ${isSelected ? 'text-white shadow-lg' : blendFull ? 'bg-gray-50 border-gray-100 text-gray-200 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
           style={isSelected ? { backgroundColor: primaryHue.hex, borderColor: primaryHue.hex } : undefined}
         >
@@ -672,7 +672,7 @@ const ToolCard = ({
 
       <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-3 leading-relaxed">{tool.description}</p>
 
-      {/* Pattern chips — visual anchors for which patterns this tool participates in */}
+      {/* Pattern chips - visual anchors for which patterns this tool participates in */}
       {tool.patterns.length > 0 && (
         <div className="flex gap-2 flex-wrap mb-4">
           {tool.patterns.map(pId => {
@@ -715,7 +715,7 @@ const PatternCard = ({ pattern }: { pattern: typeof DATA.patterns[number] }) => 
   return (
     <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
 
-      {/* Visual header — diagram + wheel side by side */}
+      {/* Visual header - diagram + wheel side by side */}
       <div className="flex items-stretch border-b border-gray-50" style={{ backgroundColor: `${diagramColor}08` }}>
 
         {/* Pattern diagram */}
@@ -881,7 +881,7 @@ const DataModelDiagram = () => {
       {/* TOOL self-loop (pairs/conflicts) */}
       <path d="M 318,10 C 302,-28 418,-28 402,10" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 2" markerEnd="url(#dm-arr)" />
       <text x="360" y="-8" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">pairs / conflicts</text>
-      {/* PATTERN → HUE (hues[]) — bottom arc */}
+      {/* PATTERN → HUE (hues[]) - bottom arc */}
       <path d="M 617,248 C 617,396 85,396 85,222" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 2" markerEnd="url(#dm-arr)" />
       <text x="355" y="408" textAnchor="middle" fontSize="8" fill="#cbd5e1" fontFamily="system-ui,sans-serif">pattern.hues[ ]</text>
       {/* Nodes */}
@@ -1064,7 +1064,7 @@ export default function ArchitecturalChromatics() {
     const trustScore = tools.reduce((s, t) => s + (lvl[t.trustContribution] ?? 1), 0);
     const maxScore = tools.length * 3;
 
-    // Best pattern match — which named pattern do the most selected tools share?
+    // Best pattern match - which named pattern do the most selected tools share?
     const bestPattern = DATA.patterns
       .map(p => ({ pattern: p, score: tools.filter(t => t.patterns.includes(p.id)).length }))
       .filter(e => e.score > 0)
@@ -1096,13 +1096,13 @@ export default function ArchitecturalChromatics() {
     if (!mixAnalytics || selectedTools.length === 0) return;
     const tools = DATA.tools.filter(t => selectedTools.includes(t.id));
     const lines = [
-      '# Stack Manifest — Architectural Chromatics',
+      '# Stack Manifest - Architectural Chromatics',
       '',
       `**Composition:** ${tools.map(t => t.name).join(' + ')}`,
-      `**Harmony:** ${mixAnalytics.harmony.label} — ${mixAnalytics.harmony.meaning}`,
+      `**Harmony:** ${mixAnalytics.harmony.label} - ${mixAnalytics.harmony.meaning}`,
       `**Complexity:** ${mixAnalytics.complexityScore} / ${mixAnalytics.maxScore}  |  **Trust:** ${mixAnalytics.trustScore} / ${mixAnalytics.maxScore}`,
       mixAnalytics.bestPattern
-        ? `**Closest Pattern:** ${mixAnalytics.bestPattern.name} — ${mixAnalytics.bestPattern.description}`
+        ? `**Closest Pattern:** ${mixAnalytics.bestPattern.name} - ${mixAnalytics.bestPattern.description}`
         : '',
       '',
       '## Tools',
@@ -1127,7 +1127,7 @@ export default function ArchitecturalChromatics() {
       ...(mixAnalytics.conflicts.length > 0 ? [`**Conflicts:** ${mixAnalytics.conflicts.join(', ')}`] : []),
       ...mixAnalytics.warnings.map(w => `**${w.type}:** ${w.msg}`),
       (mixAnalytics.conflicts.length === 0 && mixAnalytics.warnings.length === 0)
-        ? '✓ High Resonance — no conflicts or warnings detected.'
+        ? '✓ High Resonance - no conflicts or warnings detected.'
         : '',
       '',
       '---',
@@ -1177,11 +1177,10 @@ export default function ArchitecturalChromatics() {
             </span>
           </div>
           <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
-            Modern systems are{' '}
-            <span style={{ color: '#C84C3A' }}>Chromatic.</span>
+            Reliability is a <span style={{ color: '#C84C3A' }}>composition problem.</span>
           </h1>
           <p className="text-base text-gray-500 font-medium mb-5 max-w-2xl leading-snug">
-            A reference tool for AI stack composition. How things combine matters more than what they are individually.
+            For technical leads running LLM systems with latency, reliability, and audit pressure.
           </p>
           <div className="flex flex-wrap gap-2" role="tablist">
             <button
@@ -1215,7 +1214,7 @@ export default function ArchitecturalChromatics() {
         </div>
       </section>
 
-      {/* PLAIN ENGLISH — so what / why this framing matters */}
+      {/* PLAIN ENGLISH - so what / why this framing matters */}
       <section className="bg-[#fafafa] border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
 
@@ -1239,31 +1238,32 @@ export default function ArchitecturalChromatics() {
           {soWhatOpen && (
             <div className="pb-16 space-y-16">
 
-              {/* Block 1 — the vocabulary problem */}
+              {/* Block 1 - the vocabulary problem */}
               <div className="max-w-3xl">
                 <p className="text-xl font-black text-gray-900 mb-4 leading-snug">
-                  There's a vocabulary problem at the center of AI stack design.
+                  Teams optimize components, but incidents emerge in the gaps between roles.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3">
-                  When a system misbehaves in production, the diagnostic conversation usually stalls — not because the answer is hard to find, but because there's no agreed framework for describing what went wrong.
+                  You can pick strong tools and still get unstable behavior when role ownership is unclear. Common failures are predictable: retrieval with no verification, orchestration with no guardrails, and interface decisions with no intent discipline.
+                  You might think better tools fix this. They usually do not.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed">
-                  Color theory gives you that framework. Not because AI and paint have anything in common, but because the structural problems are the same: too many things doing the same job, whole categories of responsibility left uncovered, or combinations that look right but produce mud.
+                  That mismatch raises incident cost and slows root-cause analysis. Naming the pattern cuts diagnosis time and de-risks the next decision.
                 </p>
               </div>
 
-              {/* Block 2 — hues are roles, not brands */}
+              {/* Block 2 - hues are roles, not brands */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
                   Hues are roles, not brands
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
-                  The seven hues aren't tool categories — they're categories of <em>architectural responsibility</em>. Every production AI system needs most of them covered, in some form, by something.
+                  The seven hues aren't tool categories - they're categories of <em>architectural responsibility</em>. Every production AI system needs most of them covered, in some form, by something.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl">
                   {([
                     { id: 'intent',    plain: 'Who frames the problem and shapes what the model is trying to do' },
-                    { id: 'logic',     plain: 'Who controls the flow — retries, branching, sequencing' },
+                    { id: 'logic',     plain: 'Who controls the flow - retries, branching, sequencing' },
                     { id: 'cognition', plain: 'Who reasons and generates' },
                     { id: 'memory',    plain: 'Who holds context across time and retrieval' },
                     { id: 'interface', plain: 'Who faces the user' },
@@ -1282,20 +1282,20 @@ export default function ArchitecturalChromatics() {
                   })}
                   <div className="flex items-center p-3 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
                     <p className="text-xs text-gray-500 italic leading-snug">
-                      A stack heavy on Cognition and Velocity with nothing in Trust isn't missing a tool — it's missing a <em>conversation</em>.
+                      A stack heavy on Cognition and Velocity with nothing in Trust isn't missing a tool - it's missing a <em>conversation</em>.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Block 3 — coverage is a diagnostic */}
+              {/* Block 3 - coverage is a diagnostic */}
               <div className="flex flex-col lg:flex-row gap-12 items-start">
                 <div className="flex-1 max-w-xl">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
                     Coverage is a diagnostic
                   </p>
                   <p className="text-base text-gray-600 leading-relaxed mb-3">
-                    When you plot your current stack against the wheel, the gaps are the story. Not "we need more tools" — the opposite. The gaps tell you which architectural responsibilities have no owner.
+                    When you plot your current stack against the wheel, the gaps are the story. Gaps show missing owners, not missing tools.
                   </p>
                   <p className="text-base text-gray-600 leading-relaxed">
                     A RAG system with no Trust layer means nobody is watching whether retrieval is actually grounding the model. A workflow with no Logic layer means the model is making control-flow decisions it shouldn't. These are the most common failure modes in production AI.
@@ -1319,7 +1319,7 @@ export default function ArchitecturalChromatics() {
                 </div>
               </div>
 
-              {/* Block 4 — combinations have names */}
+              {/* Block 4 - combinations have names */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
                   Combinations have names
@@ -1328,7 +1328,7 @@ export default function ArchitecturalChromatics() {
                   Two orchestrators in the same stack is an <em>Orchestration Pileup</em>. A polished UI over a hollow backend is a <em>Hollow Core</em>. Strong cognition with a generate-evaluate-refine loop is a <em>Reflective Loop</em>. Combinations have consequences.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-3xl">
-                  The patterns in this tool are recurring combinations with names — because they show up constantly. Naming them is what lets you say "we're building a Bright Demo, not a Durable Spine" and have that mean something to the room.
+                  The patterns in this tool are recurring combinations with names - because they show up constantly. Naming them is what lets you say "we're building a Bright Demo, not a Durable Spine" and have that mean something to the team. Once named, the fix path becomes obvious.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {(['reflective-loop', 'hollow-core', 'durable-spine'] as string[]).map(patId => {
@@ -1350,12 +1350,12 @@ export default function ArchitecturalChromatics() {
                 </div>
               </div>
 
-              {/* Bridge — latency acknowledgment */}
+              {/* Bridge - latency acknowledgment */}
               <p className="text-sm text-gray-400 italic leading-relaxed max-w-2xl">
                 A muddy color mix is obvious in seconds. A muddy stack takes 18 months to reveal itself. That gap is exactly why naming the patterns matters before you build.
               </p>
 
-              {/* Block 5 — the payoff */}
+              {/* Block 5 - the payoff */}
               <div className="max-w-3xl">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-5">
                   The payoff
@@ -1379,7 +1379,7 @@ export default function ArchitecturalChromatics() {
         </div>
       </section>
 
-      {/* PALETTE EXPLAINER — non-sticky, educational */}
+      {/* PALETTE EXPLAINER - non-sticky, educational */}
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-14">
           <div className="flex flex-col lg:flex-row items-start gap-14">
@@ -1390,11 +1390,11 @@ export default function ArchitecturalChromatics() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-gray-400">
                   <div className="w-6 h-px bg-emerald-400" />
-                  Adjacent — reinforces
+                  Adjacent - reinforces
                 </div>
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-gray-400">
                   <svg width="24" height="2"><line x1="0" y1="1" x2="24" y2="1" stroke="#f87171" strokeWidth="1.5" strokeDasharray="4 2" /></svg>
-                  Opposite — tensions
+                  Opposite - tensions
                 </div>
               </div>
             </div>
@@ -1402,14 +1402,14 @@ export default function ArchitecturalChromatics() {
             {/* Explanation + hue chips */}
             <div className="flex-1">
               <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-5">
-                The Palette — 7 Architectural Roles
+                The Palette - 7 Architectural Roles
               </p>
               <p className="text-base text-gray-600 leading-relaxed mb-3 max-w-2xl">
-                Every tool in an AI system plays an architectural role. These seven roles — mapped as hues on a color wheel — describe what a tool <em>does</em> in a stack, not what it <em>is</em>.
+                Every tool in an AI system plays an architectural role. These seven roles - mapped as hues on a color wheel - describe what a tool <em>does</em> in a stack, not what it <em>is</em>.
               </p>
               <p className="text-sm text-gray-500 leading-relaxed mb-10 max-w-2xl">
-                <strong className="text-gray-700 font-black">Adjacent hues reinforce each other</strong> — they share concerns and compose naturally into cohesive layers.{' '}
-                <strong className="text-gray-700 font-black">Opposite hues create productive tension</strong> — each covers the other's blind spots.
+                <strong className="text-gray-700 font-black">Adjacent hues reinforce each other</strong> - they share concerns and compose naturally into cohesive layers.{' '}
+                <strong className="text-gray-700 font-black">Opposite hues create productive tension</strong> - each covers the other's blind spots.
                 A stack built from a single hue runs deep but fragile. Harmonic coverage across multiple roles builds resilience.
               </p>
 
@@ -1440,7 +1440,7 @@ export default function ArchitecturalChromatics() {
         </div>
       </section>
 
-      {/* HUE LEGEND — sticky */}
+      {/* HUE LEGEND - sticky */}
       <section className="bg-white/90 border-b border-gray-100 py-3 overflow-x-auto sticky top-0 z-30 shadow-sm backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 flex gap-6 whitespace-nowrap items-center">
           <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 pr-4 border-r border-gray-100 shrink-0">
@@ -1603,7 +1603,7 @@ export default function ArchitecturalChromatics() {
                   <div className="flex-1 h-[1px] bg-gray-100" />
                 </div>
                 <p className="text-sm text-gray-500 font-medium mb-12">
-                  Recurring architectural forms — how tools combine, what they produce, and where they break.
+                  Recurring architectural forms - how tools combine, what they produce, and where they break.
                 </p>
 
                 {/* Pattern type groups */}
@@ -1718,7 +1718,7 @@ export default function ArchitecturalChromatics() {
                         </div>
                       )}
 
-                      {/* Pros / cons — always single column, separated by a rule */}
+                      {/* Pros / cons - always single column, separated by a rule */}
                       {isMuddy ? (
                         <div className="space-y-8 pt-2">
                           <div>
@@ -1881,10 +1881,10 @@ export default function ArchitecturalChromatics() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Panel 1 — Metaphor Bridge */}
+              {/* Panel 1 - Metaphor Bridge */}
               <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
                 <div className="px-8 py-6 border-b border-gray-50">
-                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 1 — Conceptual</p>
+                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 1 - Conceptual</p>
                   <h3 className="text-xl font-black text-gray-900">The Metaphor Bridge</h3>
                   <p className="text-xs text-gray-500 font-medium mt-1">Color theory concepts mapped to AI architecture</p>
                 </div>
@@ -1893,10 +1893,10 @@ export default function ArchitecturalChromatics() {
                 </div>
               </div>
 
-              {/* Panel 2 — Data Model */}
+              {/* Panel 2 - Data Model */}
               <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
                 <div className="px-8 py-6 border-b border-gray-50">
-                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 2 — Structural</p>
+                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 2 - Structural</p>
                   <h3 className="text-xl font-black text-gray-900">The Data Model</h3>
                   <p className="text-xs text-gray-500 font-medium mt-1">How Hue, Tool, Pattern, and Recipe relate to each other</p>
                 </div>
@@ -1906,12 +1906,12 @@ export default function ArchitecturalChromatics() {
               </div>
             </div>
 
-            {/* Panel 3 — User Loop */}
+            {/* Panel 3 - User Loop */}
             <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
               <div className="px-8 py-6 border-b border-gray-50">
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 3 — Interaction</p>
+                <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-1">Layer 3 - Interaction</p>
                 <h3 className="text-xl font-black text-gray-900">The Loop</h3>
-                <p className="text-xs text-gray-500 font-medium mt-1">How a consultant moves through the tool — from discovery to a saved, shareable composition</p>
+                <p className="text-xs text-gray-500 font-medium mt-1">How a consultant moves through the tool - from discovery to a saved, shareable composition</p>
               </div>
               <div className="p-8">
                 <UserLoopDiagram />
@@ -1921,7 +1921,7 @@ export default function ArchitecturalChromatics() {
         )}
       </main>
 
-      {/* EMPTY BLEND HINT — only visible when no tools selected */}
+      {/* EMPTY BLEND HINT - only visible when no tools selected */}
       {selectedTools.length === 0 && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2.5 bg-white border border-gray-200 shadow-sm rounded-full px-5 py-3 pointer-events-none z-40">
           <Plus size={12} className="text-indigo-400" />
@@ -1931,7 +1931,7 @@ export default function ArchitecturalChromatics() {
         </div>
       )}
 
-      {/* BLEND PREVIEW BAR — fixed bottom */}
+      {/* BLEND PREVIEW BAR - fixed bottom */}
       <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl bg-gray-900/95 text-white rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] transition-all duration-700 z-50 p-5 border border-white/10 backdrop-blur-xl
         ${selectedTools.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-40 opacity-0 pointer-events-none'}`}>
         <div className="flex flex-col lg:flex-row items-center gap-10">
@@ -1962,7 +1962,7 @@ export default function ArchitecturalChromatics() {
             </div>
           </div>
 
-          {/* Analysis — 4 columns */}
+          {/* Analysis - 4 columns */}
           <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
 
             {/* Hues */}
