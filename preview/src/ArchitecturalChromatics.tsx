@@ -1178,10 +1178,10 @@ export default function ArchitecturalChromatics() {
             </span>
           </div>
           <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
-            Reliability is a <span style={{ color: '#C84C3A' }}>composition problem.</span>
+            Tools are table stakes. <span style={{ color: '#C84C3A' }}>Combination is the skill.</span>
           </h1>
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
-            For technical leads running LLM systems with latency, reliability, and audit pressure.
+            For PMs and the teams they work with.
           </p>
         </div>
       </section>

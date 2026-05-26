@@ -1101,10 +1101,10 @@ export default function ArchitecturalChromatics() {
             </span>
           </div>
           <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
-            Agent reliability is a <span style={{ color: '#6A4C93' }}>harness design problem.</span>
+            Tools are table stakes. <span style={{ color: '#6A4C93' }}>Combination is the skill.</span>
           </h1>
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
-            For platform teams running agents under uptime, cost, and security pressure.
+            For PMs and the teams they work with.
           </p>
         </div>
       </section>

@@ -1108,10 +1108,10 @@ export default function ArchitecturalChromatics() {
             </span>
           </div>
           <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
-            Data reliability is a <span style={{ color: '#D9512A' }}>composition problem.</span>
+            Tools are table stakes. <span style={{ color: '#D9512A' }}>Combination is the skill.</span>
           </h1>
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
-            For data engineering leads shipping pipelines under SLA, lineage, and compliance pressure.
+            For PMs and the teams they work with.
           </p>
         </div>
       </section>
