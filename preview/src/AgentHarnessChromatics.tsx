@@ -1106,7 +1106,10 @@ export default function ArchitecturalChromatics() {
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
             For PMs and the teams they work with.
           </p>
-          <div className="mt-8 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
+          <p className="mt-6 max-w-2xl text-sm text-gray-400 italic leading-relaxed">
+            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model — understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
+          </p>
+          <div className="mt-6 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
             <p className="text-sm text-gray-600 leading-relaxed">
               Every agent system needs seven roles covered: something triggering the agent, something executing its tasks, something managing its state, something observing what it's doing, something handling failures, something scaling it under load, and something controlling what it can access and at what cost.
             </p>

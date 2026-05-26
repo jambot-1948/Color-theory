@@ -1183,7 +1183,10 @@ export default function ArchitecturalChromatics() {
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
             For PMs and the teams they work with.
           </p>
-          <div className="mt-8 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
+          <p className="mt-6 max-w-2xl text-sm text-gray-400 italic leading-relaxed">
+            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model — understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
+          </p>
+          <div className="mt-6 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
             <p className="text-sm text-gray-600 leading-relaxed">
               Every AI system needs seven roles covered: someone framing the problem, someone controlling the flow, something reasoning and generating, something holding memory, something facing the user, something keeping delivery moving, and something watching whether the system is doing what you think it is.
             </p>
