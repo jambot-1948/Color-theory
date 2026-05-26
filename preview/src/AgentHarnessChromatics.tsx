@@ -1106,6 +1106,17 @@ export default function ArchitecturalChromatics() {
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
             For PMs and the teams they work with.
           </p>
+          <div className="mt-8 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Every agent system needs seven roles covered: something triggering the agent, something executing its tasks, something managing its state, something observing what it's doing, something handling failures, something scaling it under load, and something controlling what it can access and at what cost.
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              The tools that fill those roles change constantly. The roles don't.
+            </p>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Start with <strong className="text-gray-700">Landscape</strong> to see which tools cover which roles. Move to <strong className="text-gray-700">Recipes</strong> to see how real stacks come together. Use <strong className="text-gray-700">Context</strong> if you want to understand how the framework itself was built.
+            </p>
+          </div>
         </div>
       </section>
 

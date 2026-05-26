@@ -1113,6 +1113,17 @@ export default function ArchitecturalChromatics() {
           <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
             For PMs and the teams they work with.
           </p>
+          <div className="mt-8 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Every data platform needs seven roles covered: something bringing data in, something transforming it, something orchestrating when and how it moves, something storing it, something serving it to the people who need it, something watching whether it's healthy, and something ensuring it meets compliance and quality standards.
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              The tools that fill those roles change constantly. The roles don't.
+            </p>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Start with <strong className="text-gray-700">Landscape</strong> to see which tools cover which roles. Move to <strong className="text-gray-700">Recipes</strong> to see how real stacks come together. Use <strong className="text-gray-700">Context</strong> if you want to understand how the framework itself was built.
+            </p>
+          </div>
         </div>
       </section>
 
