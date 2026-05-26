@@ -1,0 +1,55 @@
+<svg width="280" height="320" viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="280" height="320" fill="white"/>
+
+  <!-- All connections between all 7 nodes — the muddy tangle -->
+  <!-- Intent(140,35) Logic(207,77) Cognition(223,149) Memory(177,217) Interface(103,217) Velocity(57,149) Trust(73,77) -->
+
+  <!-- Intent connections -->
+  <line x1="140" y1="35" x2="207" y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="140" y1="35" x2="223" y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="140" y1="35" x2="177" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="140" y1="35" x2="103" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="140" y1="35" x2="57"  y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="140" y1="35" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Logic connections -->
+  <line x1="207" y1="77" x2="223" y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="207" y1="77" x2="177" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="207" y1="77" x2="103" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="207" y1="77" x2="57"  y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="207" y1="77" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Cognition connections -->
+  <line x1="223" y1="149" x2="177" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="223" y1="149" x2="103" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="223" y1="149" x2="57"  y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="223" y1="149" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Memory connections -->
+  <line x1="177" y1="217" x2="103" y2="217" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="177" y1="217" x2="57"  y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="177" y1="217" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Interface connections -->
+  <line x1="103" y1="217" x2="57"  y2="149" stroke="#d1d5db" stroke-width="1.2"/>
+  <line x1="103" y1="217" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Velocity connections -->
+  <line x1="57"  y1="149" x2="73"  y2="77"  stroke="#d1d5db" stroke-width="1.2"/>
+
+  <!-- Nodes — colored per role, drawn last so they sit on top of lines -->
+  <circle cx="140" cy="35"  r="14" fill="#6366F1" opacity="0.85"/>  <!-- Intent -->
+  <circle cx="207" cy="77"  r="14" fill="#3B82F6" opacity="0.85"/>  <!-- Logic -->
+  <circle cx="223" cy="149" r="14" fill="#10B981" opacity="0.85"/>  <!-- Cognition -->
+  <circle cx="177" cy="217" r="14" fill="#F59E0B" opacity="0.85"/>  <!-- Memory -->
+  <circle cx="103" cy="217" r="14" fill="#F43F5E" opacity="0.85"/>  <!-- Interface -->
+  <circle cx="57"  cy="149" r="14" fill="#F97316" opacity="0.85"/>  <!-- Velocity -->
+  <circle cx="73"  cy="77"  r="14" fill="#8B5CF6" opacity="0.85"/>  <!-- Trust -->
+
+  <!-- Pattern name -->
+  <text x="140" y="264" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="900" fill="#111827" letter-spacing="0.12em">THE MUDDY MIX</text>
+
+  <!-- Caption -->
+  <text x="140" y="284" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6b7280">Tools added for good reasons.</text>
+  <text x="140" y="298" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#6b7280">Nobody owned how they relate.</text>
+</svg>
