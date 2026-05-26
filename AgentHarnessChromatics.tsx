@@ -1107,7 +1107,7 @@ export default function ArchitecturalChromatics() {
             For PMs and the teams they work with.
           </p>
           <p className="mt-6 max-w-2xl text-sm text-gray-400 italic leading-relaxed">
-            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model — understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
+            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model: understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
           </p>
           <div className="mt-6 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -1192,7 +1192,7 @@ export default function ArchitecturalChromatics() {
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3">
                   You can run capable agents and still get unstable operations when harness ownership is unclear. Common failures are predictable: silent retries that hide errors, missing traces that block root-cause work, and weak recovery paths that turn one fault into a full outage.
-                  You might think better agent logic will fix this. It usually does not.
+                  You're going to be hearing a lot more about agents. The problems that follow won't be about the agents. They'll be about the harness.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed">
                   That mismatch increases downtime, cloud spend, and incident fatigue. Naming the pattern cuts diagnosis time and de-risks the next decision.

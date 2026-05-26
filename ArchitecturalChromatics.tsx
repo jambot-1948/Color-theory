@@ -1184,7 +1184,7 @@ export default function ArchitecturalChromatics() {
             For PMs and the teams they work with.
           </p>
           <p className="mt-6 max-w-2xl text-sm text-gray-400 italic leading-relaxed">
-            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model — understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
+            I built this because the AI tool landscape moves faster than anyone can track tool by tool. What actually compounds is the mental model: understanding the patterns well enough to know what to build for, what to listen for, and where to intervene.
           </p>
           <div className="mt-6 max-w-2xl space-y-3 border-l-2 border-gray-200 pl-5">
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -1269,7 +1269,7 @@ export default function ArchitecturalChromatics() {
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed mb-3">
                   You can pick strong tools and still get unstable behavior when role ownership is unclear. Common failures are predictable: retrieval with no verification, orchestration with no guardrails, and interface decisions with no intent discipline.
-                  You might think better tools fix this. They usually do not.
+                  You might think a better model fixes this. The gap is almost never the model.
                 </p>
                 <p className="text-base text-gray-600 leading-relaxed">
                   That mismatch raises incident cost and slows root-cause analysis. Naming the pattern cuts diagnosis time and de-risks the next decision.
