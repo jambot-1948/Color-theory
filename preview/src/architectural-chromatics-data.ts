@@ -93,7 +93,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       name: "Intent",
       colorName: "Red",
       hex: "#C84C3A",
-      description: "Direction, goals, and prompting — the gap most stacks leave implicit.",
+      description: "Direction, goals, prompting, and decision framing.",
     },
     {
       id: "logic",
@@ -155,25 +155,26 @@ export const architecturalChromaticsData: ChromaticsData = {
   // five shades of brown when one common brown is sufficient.
 
   tools: [
-    // LOGIC
+    // INTENT
     {
       id: "langchain",
       name: "LangChain",
-      primaryHue: "logic",
-      secondaryHue: "intent",
+      primaryHue: "intent",
+      secondaryHue: "logic",
       category: "Framework",
       maturity: "production",
       description:
-        "Orchestration framework for composing LLM calls, tools, and retrieval into sequences. The most common scaffolding layer teams build on top of models.",
+        "Prompt orchestration and agent scaffolding for LLM applications. The most common entry point for teams building on top of models.",
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["openai", "pinecone", "langgraph", "langsmith"],
       conflictsWith: ["temporal"],
       patterns: ["conductor", "muddy-mix", "thin-wrapper"],
       notes:
-        "Gets teams moving fast but creates orchestration overlap when paired with LangGraph or Temporal. Choose one primary orchestration layer and commit.",
+        "A common entry point. Gets teams moving fast but can create orchestration overlap when paired with heavier workflow engines.",
     },
 
+    // LOGIC
     {
       id: "langgraph",
       name: "LangGraph",
@@ -214,6 +215,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "openai",
       name: "OpenAI",
       primaryHue: "cognition",
+      secondaryHue: "intent",
       category: "Model Provider",
       maturity: "production",
       description:
@@ -299,12 +301,12 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Where Vercel is product-facing, Streamlit is practitioner-facing. Great for getting real feedback fast from technical audiences.",
     },
 
-    // MEMORY
+    // VELOCITY
     {
       id: "supabase",
       name: "Supabase",
-      primaryHue: "memory",
-      secondaryHue: "velocity",
+      primaryHue: "velocity",
+      secondaryHue: "memory",
       category: "Backend Platform",
       maturity: "production",
       description:
@@ -362,7 +364,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["logic", "cognition", "memory"],
       description:
-        "A central orchestration layer coordinates cognition and memory into a coherent system.",
+        "You have a model that can reason and a store that can retrieve, but without structure every call is uncoordinated — inconsistent behavior, repeated work, no audit trail. A single orchestration layer owns control flow: it decides when to think, when to retrieve, and in what order.",
       strengths: ["clarity", "control", "repeatability"],
       weaknesses: ["rigidity", "orchestration complexity"],
       watchFor: ["missing trust layer", "workflow sprawl"],
@@ -373,7 +375,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["cognition", "trust", "intent"],
       description:
-        "A generate-evaluate-refine cycle that improves output quality over time.",
+        "A model produces outputs, but you have no way to know if they're good until they reach a user. Shipping without evaluation is guessing. Build measurement into the generation cycle — generate, evaluate against criteria, refine. Quality becomes a property of the system, not a hope.",
       strengths: ["quality", "measurability", "continuous improvement"],
       weaknesses: ["latency", "cost"],
       watchFor: ["slow feedback loops", "overfitting to evals"],
@@ -384,7 +386,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["cognition", "memory"],
       description:
-        "A model layer paired with retrieval or persistent context to extend effective memory.",
+        "Models are stateless by default — every call starts from scratch. But real problems require context that spans sessions, documents, histories. Pair the model with a retrieval layer: the model reasons, the store remembers. Together they behave as if they have persistent context. The risk is the store: it's only as good as what's indexed.",
       strengths: ["context depth", "grounding", "knowledge recall"],
       weaknesses: ["retrieval drift", "false confidence"],
       watchFor: ["bad source data", "weak chunking and indexing"],
@@ -395,10 +397,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["intent", "logic", "cognition", "memory", "interface", "velocity", "trust"],
       description:
-        "The reference architecture — every major role has an owner, no single hue dominates. Like the three-tier pattern before it: not a ceiling, but a starting point. Teams should know what they're deviating from before they deviate.",
-      strengths: ["clear role ownership", "resilience through coverage", "legible to new team members"],
-      weaknesses: ["slower to stand up", "requires upfront design discipline"],
-      watchFor: ["specializing without knowing why", "gaps that form silently as teams optimize for one hue"],
+        "Every team has a dominant skill, and stacks reflect the org chart more than the problem. Engineers favor Logic and Cognition; product teams favor Interface; platform teams favor Trust. A balanced stack is a deliberate audit against that gravity — fill the role gaps before they become failure modes.",
+      strengths: ["resilience", "coverage", "adaptability"],
+      weaknesses: ["slower setup", "more design effort"],
+      watchFor: ["accidental complexity"],
     },
     {
       id: "bright-demo",
@@ -406,7 +408,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "high-velocity",
       hues: ["interface", "velocity", "cognition"],
       description:
-        "A fast, polished AI experience that looks complete quickly but often lacks depth underneath.",
+        "You need to show something real before you can justify building the full architecture. Lead with Interface and Cognition, get to a working experience fast, and accept the structural gaps as known temporary debt. The failure mode is when the demo becomes the product.",
       strengths: ["speed", "wow factor", "product momentum"],
       weaknesses: ["fragility", "limited observability", "shallow structure"],
       watchFor: ["missing trust", "missing workflow control"],
@@ -417,7 +419,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "high-velocity",
       hues: ["interface", "cognition"],
       description:
-        "A user interface wrapped around a model with minimal additional architecture.",
+        "The model already does the heavy lifting — complex architecture around it feels like overhead when a simple interface serves the same user. Ship the wrapper. Own that differentiation comes from the product decision, not the stack. When users want behavior the model can't provide out of the box, you'll have no architecture to extend.",
       strengths: ["simplicity", "speed to market"],
       weaknesses: ["weak defensibility", "limited differentiation"],
       watchFor: ["feature stagnation", "model dependence"],
@@ -426,12 +428,12 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "velocity-stack",
       name: "The Velocity Stack",
       type: "high-velocity",
-      hues: ["velocity", "interface"],
+      hues: ["velocity", "interface", "cognition"],
       description:
-        "The scaffold is up — backend, auth, deployment — but the cognition layer isn't committed yet. The frame exists; the intelligence doesn't.",
-      strengths: ["fast infrastructure foundation", "reversible model choice"],
-      weaknesses: ["no AI value delivered yet", "risk of building around the wrong model"],
-      watchFor: ["no cognition layer decided", "interface shipped before model strategy is clear"],
+        "You don't know yet what the right architecture is. Building for permanence before you understand the problem means building the wrong thing carefully. Optimize for iteration speed and validated learning. The debt is acceptable — until the team stops treating the shortcuts as temporary.",
+      strengths: ["iteration speed", "developer momentum"],
+      weaknesses: ["architecture drift", "scale friction"],
+      watchFor: ["thin boundaries", "operational shortcuts"],
     },
     {
       id: "muddy-mix",
@@ -439,7 +441,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "anti-pattern",
       hues: ["intent", "logic", "cognition", "memory", "trust"],
       description:
-        "Too many overlapping tools or roles combined without clear separation of responsibility.",
+        "Each tool was added for a good reason. The problem isn't the tools — it's that nobody assigned ownership of how they relate. Responsibility diffuses across the stack until debugging requires understanding three systems simultaneously and the team argues about which tool should handle what.",
       strengths: ["apparent flexibility"],
       weaknesses: ["confusion", "debugging pain", "team disagreement"],
       watchFor: ["duplicate orchestration", "tool sprawl", "vague ownership"],
@@ -450,10 +452,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "anti-pattern",
       hues: ["logic"],
       description:
-        "Multiple workflow systems compete for control, making the control plane hard to understand.",
+        "The team started with one orchestration tool. As requirements grew, they added another. Each made sense in isolation. Together they create a control plane nobody fully understands — unclear who owns flow, high complexity, and maintenance that compounds with every change.",
       strengths: [],
       weaknesses: ["unclear flow", "high complexity", "maintenance drag"],
-      watchFor: ["LangGraph alongside Temporal", "LangChain alongside Temporal", "any two orchestrators owning the same control flow"],
+      watchFor: ["LangGraph alongside Temporal", "any two orchestrators in one stack"],
     },
     {
       id: "hollow-core",
@@ -461,7 +463,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "anti-pattern",
       hues: ["interface", "velocity"],
       description:
-        "A system that looks polished but lacks strong memory, trust, or durable logic underneath.",
+        "Demo quality is high, so leadership assumes production readiness. The gap between what's visible and what's structural doesn't surface until scale or failure — and by then the architecture is already load-bearing.",
       strengths: ["presentation quality", "early momentum"],
       weaknesses: ["fragility", "thin substance"],
       watchFor: ["demo-first architecture", "no observability layer"],
@@ -472,7 +474,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "anti-pattern",
       hues: ["trust"],
       description:
-        "A capable system with too little observability, evaluation, or governance.",
+        "Observability feels optional when the system is working. It becomes essential the moment something goes wrong — and by then you can't see what went wrong, how far it spread, or whether the fix worked.",
       strengths: ["speed before failure"],
       weaknesses: ["silent errors", "low confidence", "scaling risk"],
       watchFor: ["production without tracing or evals"],
@@ -483,7 +485,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "anti-pattern",
       hues: ["memory", "cognition"],
       description:
-        "A retrieval-based system that appears grounded but is weakened by poor indexing, poor sources, or bad retrieval design.",
+        "The model cites sources. It seems grounded. But the retrieval pipeline is producing plausible results from bad data — and confident wrong answers are worse than honest uncertainty. The system appears to know more than it does.",
       strengths: ["surface grounding"],
       weaknesses: ["misleading confidence", "bad answers with citations"],
       watchFor: ["low-quality sources", "untuned retrieval pipelines"],
@@ -494,7 +496,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["logic", "trust"],
       description:
-        "A strong workflow and observability backbone that supports serious production behavior.",
+        "Systems that work in development fail in production because development never tests partial failures, retries, or what breaks at 3am. Building for the happy path is building for demos. Invest in workflow durability and observability before you need them — the cost of adding them after a production incident is always higher.",
       strengths: ["reliability", "auditability", "operational confidence"],
       weaknesses: ["slower build speed", "higher complexity"],
       watchFor: ["overengineering too early"],
@@ -505,7 +507,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["cognition", "trust", "intent"],
       description:
-        "A model-centric architecture with surrounding systems focused on improving and constraining cognition.",
+        "The model is the product, but running it without constraint produces inconsistent behavior. Surrounding it with too much structure obscures what it actually does. Keep the model central; wrap it in evaluation and intent systems that improve its behavior without hiding it.",
       strengths: ["strong model leverage", "high capability ceiling"],
       weaknesses: ["centralized model dependence"],
       watchFor: ["weak memory and workflow support"],
@@ -516,7 +518,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["trust", "intent", "logic"],
       description:
-        "A safety, validation, or compliance layer wrapped around core system behavior.",
+        "Systems that work technically can still violate policy, produce unsafe outputs, or fail audits. Governance bolted on after the fact is always fragile — it fights the architecture instead of being part of it. Design the governance layer as a first-class architectural concern, not an afterthought.",
       strengths: ["policy control", "safer deployment", "higher confidence"],
       weaknesses: ["more friction", "slower iteration"],
       watchFor: ["governance bolted on too late"],
@@ -527,7 +529,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["intent", "logic", "memory", "trust"],
       description:
-        "A cleanly separated composition where each tool has a legible role and boundaries are clear.",
+        "Stacks accumulate tools organically and boundaries blur over time. Nobody can explain what owns what, and every new addition compounds the confusion. Enforce legible boundaries from the start — each tool has one primary role, and overlap is named explicitly when it exists. Requires ongoing discipline; without it, stacks drift back into overlap.",
       strengths: ["clarity", "replaceability", "evolution over time"],
       weaknesses: ["requires design discipline"],
       watchFor: ["drift back into overlap"],
@@ -651,7 +653,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "The team argues about which tool should handle X",
       ],
       fix: [
-        "Choose one primary orchestration layer — LangChain, LangGraph, or Temporal — not multiples",
+        "Choose one primary orchestration layer — LangGraph or Temporal, not both",
         "Assign clear responsibility to each tool",
         "Remove tools that duplicate what another already does",
       ],

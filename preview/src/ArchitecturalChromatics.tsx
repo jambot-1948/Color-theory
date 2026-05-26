@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Search,
   AlertTriangle,
@@ -969,6 +969,7 @@ export default function ArchitecturalChromatics() {
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [inspectedTool, setInspectedTool] = useState<typeof DATA.tools[number] | null>(null);
   const [view, setView] = useState<'landscape' | 'recipes' | 'diagram'>('landscape');
+  const contentRef = useRef<HTMLDivElement>(null);
   const [compactMode, setCompactMode] = useState(false);
   const [blendCopied, setBlendCopied] = useState(false);
   const [pendingBlendRecipe, setPendingBlendRecipe] = useState<string | null>(null);
@@ -1179,40 +1180,49 @@ export default function ArchitecturalChromatics() {
           <h1 className="text-5xl font-black text-gray-900 mb-3 tracking-tight max-w-4xl">
             Reliability is a <span style={{ color: '#C84C3A' }}>composition problem.</span>
           </h1>
-          <p className="text-base text-gray-500 font-medium mb-5 max-w-2xl leading-snug">
+          <p className="text-base text-gray-500 font-medium max-w-2xl leading-snug">
             For technical leads running LLM systems with latency, reliability, and audit pressure.
           </p>
-          <div className="flex flex-wrap gap-2" role="tablist">
+        </div>
+      </section>
+
+      {/* VIEW TABS — sticky, always visible alongside the content they control */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-1 py-3" role="tablist">
             <button
               role="tab"
               aria-selected={view === 'landscape'}
-              onClick={() => setView('landscape')}
-              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+              onClick={() => { setView('landscape'); contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`px-5 py-2.5 rounded-lg font-black text-xs uppercase tracking-widest transition-colors text-left
                 ${view === 'landscape' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Landscape
+              <span className="block">Landscape</span>
+              <span className={`block text-[9px] font-medium normal-case tracking-normal mt-0.5 ${view === 'landscape' ? 'opacity-70' : 'opacity-50'}`}>explore tools + patterns</span>
             </button>
             <button
               role="tab"
               aria-selected={view === 'recipes'}
-              onClick={() => setView('recipes')}
-              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+              onClick={() => { setView('recipes'); contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`px-5 py-2.5 rounded-lg font-black text-xs uppercase tracking-widest transition-colors text-left
                 ${view === 'recipes' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Recipes
+              <span className="block">Recipes</span>
+              <span className={`block text-[9px] font-medium normal-case tracking-normal mt-0.5 ${view === 'recipes' ? 'opacity-70' : 'opacity-50'}`}>ready-made stacks</span>
             </button>
             <button
               role="tab"
               aria-selected={view === 'diagram'}
-              onClick={() => setView('diagram')}
-              className={`px-5 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-colors
+              onClick={() => { setView('diagram'); contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`px-5 py-2.5 rounded-lg font-black text-xs uppercase tracking-widest transition-colors text-left
                 ${view === 'diagram' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'}`}
             >
-              Context
+              <span className="block">Context</span>
+              <span className={`block text-[9px] font-medium normal-case tracking-normal mt-0.5 ${view === 'diagram' ? 'opacity-70' : 'opacity-50'}`}>how the framework works</span>
             </button>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* PLAIN ENGLISH - so what / why this framing matters */}
       <section className="bg-[#fafafa] border-b border-gray-100">
@@ -1462,7 +1472,7 @@ export default function ArchitecturalChromatics() {
         </div>
       </section>
 
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main ref={contentRef} className="max-w-7xl mx-auto px-6 py-16">
 
         {/* LANDSCAPE VIEW */}
         {view === 'landscape' && (
@@ -1635,9 +1645,9 @@ export default function ArchitecturalChromatics() {
         {view === 'recipes' && (
           <div className="space-y-16">
             <div className="text-center max-w-2xl mx-auto mb-20">
-              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Canonical Starter Recipes</h2>
+              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Recipes That Work</h2>
               <p className="text-gray-500 font-medium">
-                Pre-vetted tool combinations that achieve high harmonic resonance for specific organizational goals.
+                Real stacks with known trade-offs. Start here if you already know your use case.
               </p>
             </div>
 
@@ -1668,7 +1678,7 @@ export default function ArchitecturalChromatics() {
                           )}
                           <span className={`text-[10px] font-black uppercase tracking-[0.2em]
                             ${isMuddy ? 'text-rose-600' : 'text-indigo-500'}`}>
-                            {isMuddy ? 'Anti-Pattern' : 'Canonical Recipe'}
+                            {isMuddy ? 'Anti-Pattern' : 'Recipe'}
                           </span>
                         </div>
                         <h3 className="text-3xl font-black text-gray-900 tracking-tight">{recipe.name}</h3>
@@ -1703,7 +1713,7 @@ export default function ArchitecturalChromatics() {
                       {/* Missing Hues */}
                       {!isMuddy && recipe.missingHues && recipe.missingHues.length > 0 && (
                         <div>
-                          <h4 className="text-[10px] uppercase font-black text-amber-500 mb-4 tracking-widest">Spectral Gaps</h4>
+                          <h4 className="text-[10px] uppercase font-black text-amber-500 mb-4 tracking-widest">Missing Roles</h4>
                           <div className="flex flex-wrap gap-2">
                             {recipe.missingHues.map(hId => {
                               const hue = DATA.hues.find(h => h.id === hId);
