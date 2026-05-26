@@ -33,8 +33,12 @@ jobs:
         working-directory: preview
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: preview/dist
-          force_orphan: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan gh-pages-tmp
+          git rm -rf . --quiet
+          cp -r preview/dist/. .
+          git add -A
+          git commit -m "Deploy to GitHub Pages [skip ci]"
+          git push origin HEAD:gh-pages --force
