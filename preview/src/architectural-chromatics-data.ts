@@ -157,6 +157,23 @@ export const architecturalChromaticsData: ChromaticsData = {
   tools: [
     // INTENT
     {
+      id: "openai-agents-sdk",
+      name: "OpenAI Agents SDK",
+      primaryHue: "intent",
+      secondaryHue: "logic",
+      category: "Agent Runtime",
+      maturity: "production",
+      description:
+        "Agent runtime for tools, handoffs, sessions, guardrails, and built-in tracing. Uses the Responses API by default for OpenAI models.",
+      complexityAdded: "medium",
+      trustContribution: "medium",
+      pairsWellWith: ["openai"],
+      conflictsWith: [],
+      patterns: ["conductor", "long-memory-system"],
+      notes:
+        "Use when the SDK should own the agent loop. Compare its built-in tracing and guardrails with separate products before adding duplicate layers.",
+    },
+    {
       id: "langchain",
       name: "LangChain",
       primaryHue: "intent",
@@ -164,14 +181,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Framework",
       maturity: "production",
       description:
-        "Prompt orchestration and agent scaffolding for LLM applications. The most common entry point for teams building on top of models.",
+        "Agent framework with model and tool integrations. Its agent runtime uses LangGraph primitives; use LangGraph directly when you need finer workflow control.",
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["openai", "pinecone", "langgraph", "langsmith"],
-      conflictsWith: ["temporal"],
+      conflictsWith: [],
       patterns: ["conductor", "muddy-mix", "thin-wrapper"],
       notes:
-        "A common entry point. Gets teams moving fast but can create orchestration overlap when paired with heavier workflow engines.",
+        "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs.",
     },
 
     // LOGIC
@@ -181,16 +198,16 @@ export const architecturalChromaticsData: ChromaticsData = {
       primaryHue: "logic",
       secondaryHue: "intent",
       category: "Orchestrator",
-      maturity: "emerging",
+      maturity: "production",
       description:
         "Graph-based orchestration for stateful agent and multi-step workflow control. Lets you define agent behavior as explicit state machines.",
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["langchain", "openai", "pinecone", "langsmith"],
-      conflictsWith: ["temporal"],
+      conflictsWith: [],
       patterns: ["conductor", "orchestration-pileup", "modular-palette"],
       notes:
-        "Very strong for agent flow control. Easy to overlap with other workflow engines — choose one orchestration layer and commit.",
+        "Useful for explicit agent state and transitions. It can sit inside a broader durable workflow, but the boundary between the two must be designed.",
     },
     {
       id: "temporal",
@@ -204,10 +221,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       complexityAdded: "high",
       trustContribution: "high",
       pairsWellWith: ["openai", "claude", "pinecone", "guardrails"],
-      conflictsWith: ["langgraph", "langchain"],
+      conflictsWith: [],
       patterns: ["durable-spine", "governance-shell", "conductor"],
       notes:
-        "The right backbone when reliability and auditability are non-negotiable. High setup cost — earns its weight in regulated or production-critical systems.",
+        "Durable execution for workflows with long waits, retries, and recovery needs. Can coordinate an agent runtime without replacing its internal reasoning loop.",
     },
 
     // COGNITION
@@ -219,14 +236,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Model Provider",
       maturity: "production",
       description:
-        "General-purpose cognition layer for reasoning, generation, summarization, and transformation. The default model choice for most stacks.",
+        "Model and API platform for reasoning, generation, summarization, and multimodal work. Choose a model and API mode for the specific task.",
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith"],
       conflictsWith: [],
       patterns: ["bright-demo", "thin-wrapper", "conductor", "cognitive-core"],
       notes:
-        "Easy to start with, powerful, but easy to over-rely on without stronger control and trust layers. Low complexity added — the model is someone else's problem.",
+        "The Responses API and Agents SDK offer different levels of control. Model capability does not replace application evaluation, tracing, or policy decisions.",
     },
     {
       id: "claude",
@@ -236,14 +253,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Model Provider",
       maturity: "production",
       description:
-        "Reasoning-focused model layer with strong performance on structured language tasks and safer output behavior by design.",
+        "Model platform for language, reasoning, and tool-use workloads. Safety and reliability still depend on evaluation and application controls.",
       complexityAdded: "low",
       trustContribution: "medium",
       pairsWellWith: ["langsmith", "guardrails", "temporal"],
       conflictsWith: [],
       patterns: ["reflective-loop", "cognitive-core", "governance-shell"],
       notes:
-        "Often a better fit than OpenAI where clarity, structure, and safer behavior matter — particularly in regulated or high-stakes contexts.",
+        "Compare candidate models on your own tasks, cost, latency, and policy requirements rather than assuming one provider is inherently safer.",
     },
 
     // MEMORY
@@ -255,7 +272,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Vector Database",
       maturity: "production",
       description:
-        "Managed vector database for retrieval-based memory systems. The standard choice when you need a model to recall from a body of knowledge.",
+        "Managed vector database for semantic retrieval over indexed content. It can support an agent's knowledge access, but is not conversation memory by itself.",
       complexityAdded: "medium",
       trustContribution: "medium",
       pairsWellWith: ["openai", "claude", "langchain", "langgraph"],
@@ -274,7 +291,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Frontend Platform",
       maturity: "production",
       description:
-        "Interface and deployment layer that makes AI applications feel polished quickly. The standard for product-oriented, JavaScript-first AI apps.",
+        "Next.js application framework with Vercel deployment for web-facing AI products. Hosting and framework are separate choices, even when used together.",
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["openai", "supabase"],
@@ -291,7 +308,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "UI Framework",
       maturity: "production",
       description:
-        "Rapid UI for Python and data-heavy AI applications. The standard for internal tools, technical proof-of-concepts, and data-facing workflows.",
+        "Python framework for quickly building interactive data and AI applications, especially practitioner-facing tools and prototypes.",
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["openai", "supabase"],
@@ -317,7 +334,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       conflictsWith: [],
       patterns: ["bright-demo", "velocity-stack"],
       notes:
-        "Fast, practical, and very effective for getting products moving. The go-to backend for any team that doesn't want to build infrastructure from scratch.",
+        "Managed backend can shorten prototyping time. Assess data access, auth policy, and operating requirements before treating it as the long-term backend.",
     },
 
     // TRUST
@@ -336,7 +353,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       conflictsWith: [],
       patterns: ["reflective-loop", "durable-spine", "conductor", "trust-gap"],
       notes:
-        "One of the cleanest ways to make LLM systems legible. Low cost to add, high cost not to — especially once you're in production.",
+        "Trace and evaluation coverage make agent behavior easier to inspect. Scope retention, sensitive inputs, and integration cost for the deployment.",
     },
     {
       id: "guardrails",
@@ -386,7 +403,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["cognition", "memory"],
       description:
-        "Models are stateless by default — every call starts from scratch. But real problems require context that spans sessions, documents, histories. Pair the model with a retrieval layer: the model reasons, the store remembers. Together they behave as if they have persistent context. The risk is the store: it's only as good as what's indexed.",
+        "A retrieval store can supply relevant indexed documents to a model, but it does not automatically preserve conversation history or agent state. Use retrieval for source knowledge and a separate session strategy when continuity across turns is required. Evaluate the index and retrieval results, not just the final answer.",
       strengths: ["context depth", "grounding", "knowledge recall"],
       weaknesses: ["retrieval drift", "false confidence"],
       watchFor: ["bad source data", "weak chunking and indexing"],
@@ -538,6 +555,22 @@ export const architecturalChromaticsData: ChromaticsData = {
 
   recipes: [
     {
+      id: "lean-agent-runtime",
+      name: "The Lean Knowledge Agent",
+      tools: ["openai", "openai-agents-sdk", "pinecone"],
+      patternIds: ["long-memory-system"],
+      useCase: "A small agent that answers from an indexed knowledge base with one runtime responsible for tool calls and handoffs.",
+      whyItWorks: [
+        "The Agents SDK owns the agent loop and includes tracing",
+        "A retrieval tool gives the model access to indexed knowledge",
+        "The smaller stack keeps orchestration ownership visible",
+      ],
+      whereItBreaks: [
+        "Retrieval quality and access control still require testing",
+        "A Pinecone index is not conversation memory or an evaluation system",
+      ],
+    },
+    {
       id: "bright-demo-recipe",
       name: "The Bright Demo",
       tools: ["vercel", "supabase", "openai"],
@@ -653,7 +686,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "The team argues about which tool should handle X",
       ],
       fix: [
-        "Choose one primary orchestration layer — LangGraph or Temporal, not both",
+        "Assign LangGraph agent-state control and Temporal outer recovery separately, or remove the redundant layer",
         "Assign clear responsibility to each tool",
         "Remove tools that duplicate what another already does",
       ],

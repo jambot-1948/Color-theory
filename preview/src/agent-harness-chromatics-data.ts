@@ -162,9 +162,9 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       complexityAdded: "low",
       trustContribution: "medium",
       pairsWellWith: ["postgresql", "langfuse"],
-      conflictsWith: ["kubernetes"],
+      conflictsWith: [],
       patterns: ["observable-agent", "silent-agent"],
-      notes: "Simple for low-latency use cases; limited observability by default. Cold starts can be an issue.",
+      notes: "Useful for event-triggered work. Check execution time, cold starts, and instrumentation for the workload; it can coexist with container-based services.",
     },
     {
       id: "modal",
@@ -210,10 +210,10 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       complexityAdded: "high",
       trustContribution: "high",
       pairsWellWith: ["docker", "temporal", "vault", "opentelemetry"],
-      conflictsWith: ["lambda"],
+      conflictsWith: [],
       patterns: ["distributed-agent", "secured-harness"],
       notes:
-        "Steep learning curve; powerful once mastered. Overhead for small workloads; essential for enterprise scale.",
+        "Steep learning curve and meaningful operating overhead. Use when container orchestration is warranted; it is not required merely because a system is large.",
     },
     {
       id: "redis",
@@ -222,13 +222,13 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "In-Memory Store",
       maturity: "production",
       description:
-        "Fast, ephemeral key-value store for agent session state, conversation context, and temporary data.",
+        "Fast in-memory data store for agent sessions, caches, and short-lived context; durability depends on the persistence configuration.",
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["modal", "kubernetes", "temporal"],
-      conflictsWith: ["postgresql"],
+      conflictsWith: [],
       patterns: ["persistent-memory", "resilient-loop"],
-      notes: "Perfect for fast access to recent state; data loss on restart. Use for non-critical context.",
+      notes: "RDB snapshots and append-only persistence are available. Decide whether Redis is a cache, a session store, or a durable system of record before pairing it with PostgreSQL.",
     },
     {
       id: "postgresql",
@@ -243,7 +243,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       pairsWellWith: ["lambda", "temporal", "vault"],
       conflictsWith: [],
       patterns: ["persistent-memory", "secured-harness"],
-      notes: "ACID guarantees; durable; queryable. Slower than Redis but data survives restarts.",
+      notes: "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility.",
     },
     {
       id: "langfuse",
@@ -276,7 +276,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["resilient-loop", "distributed-agent"],
       notes:
-        "Complex but eliminates entire classes of failure modes. Essential for production reliability.",
+        "Durable execution can simplify retries and recovery for long-running work. Not every production agent needs a separate workflow engine.",
     },
     {
       id: "opentelemetry",
@@ -504,7 +504,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       whereItBreaks: [
         "No resilience if an agent fails mid-batch — whole batch may need restart",
         "Lambda cold starts add latency if frequency is unpredictable",
-        "No observability into individual agent runs during batch",
+        "Individual runs need trace correlation and alerting; adding Langfuse alone does not wire every failure path",
       ],
       missingHues: ["resilience", "scaling"],
       upgradePath: [
@@ -526,7 +526,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Langfuse tracks quality of individual responses",
       ],
       whereItBreaks: [
-        "Redis data loss if instance restarts — session context is lost",
+        "Session context can be lost if Redis persistence and recovery are not configured for the requirement",
         "Temporal adds operational complexity",
       ],
       missingHues: ["security", "scaling"],
@@ -557,16 +557,16 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
     },
     {
       id: "bulletproof-pipeline",
-      name: "The Bulletproof Pipeline",
+      name: "The Resilient Production Harness",
       tools: ["kubernetes", "postgresql", "temporal", "langfuse", "opentelemetry", "vault"],
       patternIds: ["resilient-loop", "secured-harness", "observable-agent"],
       useCase:
-        "Production AI agent with full safety guarantees. For mission-critical workloads that can't fail.",
+        "A heavily instrumented, recoverable agent harness for workloads with strict operational requirements. No tool combination guarantees safety or zero failures.",
       whyItWorks: [
         "Kubernetes provides high availability and auto-recovery",
         "PostgreSQL durably stores state",
         "Temporal handles retries, timeouts, and state versioning",
-        "Langfuse and OpenTelemetry provide full visibility",
+        "Langfuse and OpenTelemetry can expose model and infrastructure traces when instrumented end to end",
         "Vault manages secrets securely",
       ],
       whereItBreaks: [

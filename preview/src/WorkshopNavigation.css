@@ -1,0 +1,4 @@
+ .bw-header a.bw-brand{height:100%;display:flex;align-items:center;gap:13px;border:0;color:#1b2825;font-size:14px;font-weight:750;text-decoration:none;white-space:nowrap}
+@media(max-width:760px){.bw-header nav{justify-content:space-between;gap:8px;overflow:visible}.bw-header a{font-size:11px}}
+@media(max-width:760px){.bw-header a.bw-brand{height:58px}}
+@media(max-width:360px){.bw-header nav{gap:4px}.bw-header a{font-size:10px}}

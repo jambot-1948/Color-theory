@@ -162,7 +162,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "high",
       trustContribution: "medium",
       pairsWellWith: ["spark", "dagster", "iceberg"],
-      conflictsWith: ["fivetran"],
+      conflictsWith: [],
       patterns: ["kappa-architecture", "lambda-architecture"],
       notes:
         "High operational overhead. Consider managed Kafka (Confluent, MSK) for most teams. Overkill for batch-only analytical workloads.",
@@ -178,10 +178,26 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["dbt", "snowflake", "great-expectations"],
-      conflictsWith: ["kafka"],
+      conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
-        "Solves the connector problem but adds vendor dependency. No streaming support — batch replication only.",
+        "Managed ingestion reduces connector maintenance. Event connectors can ingest Kafka data, but latency and delivery behavior depend on the connector and destination.",
+    },
+    {
+      id: "openflow",
+      name: "Snowflake Openflow",
+      primaryHue: "ingest",
+      category: "Managed Ingestion",
+      maturity: "production",
+      description:
+        "Snowflake-managed data-integration service for ingesting data through configured connectors and runtimes.",
+      complexityAdded: "medium",
+      trustContribution: "medium",
+      pairsWellWith: ["snowflake"],
+      conflictsWith: [],
+      patterns: ["tiered-refinery"],
+      notes:
+        "Openflow second-generation deployments and runtimes are generally available. Compare its connector coverage and operating model with Fivetran for each source.",
     },
     {
       id: "dbt",
@@ -195,10 +211,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "low",
       trustContribution: "high",
       pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran"],
-      conflictsWith: ["spark"],
+      conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine", "observability-first"],
       notes:
-        "De facto standard for warehouse-based transformation. The built-in test framework gives it a foothold in the Observe hue.",
+        "SQL-first transformation remains a strong fit for warehouse models. dbt v2 and dbt platform add faster development and managed deployment options; validate project compatibility before upgrading.",
     },
     {
       id: "spark",
@@ -211,7 +227,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "high",
       trustContribution: "low",
       pairsWellWith: ["kafka", "iceberg", "dagster"],
-      conflictsWith: ["dbt"],
+      conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
         "Right for scale-out compute. Overkill for warehouse-based analytical workloads where dbt is simpler and faster to iterate.",
@@ -227,10 +243,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["dbt", "spark", "great-expectations"],
-      conflictsWith: ["dagster"],
+      conflictsWith: [],
       patterns: ["tiered-refinery", "lambda-architecture"],
       notes:
-        "Mature and widely deployed. Lacks asset-level lineage and native data awareness — it knows about tasks, not tables.",
+        "Airflow 3 supports asset-aware and event-driven scheduling. Dagster remains an alternative asset-centered orchestrator; using both is a boundary and operations decision, not a tool incompatibility.",
     },
     {
       id: "dagster",
@@ -244,10 +260,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       complexityAdded: "medium",
       trustContribution: "high",
       pairsWellWith: ["dbt", "great-expectations", "spark", "snowflake"],
-      conflictsWith: ["airflow"],
+      conflictsWith: [],
       patterns: ["tiered-refinery", "observability-first"],
       notes:
-        "Higher learning curve than Airflow but the asset model changes the operational and debugging experience fundamentally.",
+        "Asset-centered orchestration with lineage and backfills. If Airflow is already present, assign clear ownership before adding a second orchestrator.",
     },
     {
       id: "snowflake",
@@ -264,7 +280,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine"],
       notes:
-        "Default choice for analytical workloads. High storage cost at scale. Compute/storage separation makes it easier to reason about costs.",
+        "Cloud warehouse with native dbt project execution and Openflow ingestion options. Compare the managed native path with external orchestration and connector platforms for the workload.",
     },
     {
       id: "iceberg",
@@ -317,12 +333,12 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
     },
     {
       id: "great-expectations",
-      name: "Great Expectations",
+      name: "GX Core",
       primaryHue: "observe",
       category: "Data Quality",
       maturity: "production",
       description:
-        "Data quality framework for defining, testing, and documenting expectations about data at pipeline checkpoints.",
+        "GX Core data-validation framework for defining, running, and documenting expectations at pipeline checkpoints.",
       complexityAdded: "medium",
       trustContribution: "high",
       pairsWellWith: ["dbt", "dagster", "airflow", "snowflake"],
@@ -507,6 +523,22 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
 
   recipes: [
     {
+      id: "snowflake-native-stack",
+      name: "The Snowflake-Native Stack",
+      tools: ["openflow", "snowflake", "dbt", "great-expectations"],
+      patternIds: ["tiered-refinery", "observability-first"],
+      useCase: "An analytical pipeline that keeps ingestion and dbt execution close to Snowflake, with explicit data validation.",
+      whyItWorks: [
+        "Openflow supplies managed connector ingestion",
+        "Snowflake can run dbt projects natively, with its tasks handling straightforward schedules",
+        "GX Core adds validation beyond model-level tests where needed",
+      ],
+      whereItBreaks: [
+        "Check Openflow connector support and deployment requirements for each source",
+        "Use an external orchestrator when work crosses systems or native tasks do not cover recovery needs",
+      ],
+    },
+    {
       id: "modern-data-stack",
       name: "The Modern Data Stack",
       tools: ["fivetran", "dbt", "snowflake", "great-expectations"],
@@ -514,12 +546,12 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       useCase:
         "Standard analytical stack for a mid-size company. Managed connectors feed a warehouse; SQL models create clean analytical tables.",
       whyItWorks: [
-        "Low operational overhead — all three core tools are managed or low-infra",
+        "Low operational overhead when connector and dbt execution are managed",
         "Fast to stand up and iterate",
-        "Strong ecosystem integrations (Fivetran → dbt → Snowflake is well-worn)",
+        "Fivetran loads Snowflake; dbt transforms and tests warehouse data",
       ],
       whereItBreaks: [
-        "No streaming — all batch replication",
+        "Streaming latency is not specified; choose connector sync behavior against freshness needs",
         "Data quality is optional unless you enforce Great Expectations at promotion gates",
         "No governance layer — access control and lineage are manual",
       ],
@@ -606,9 +638,9 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Open serving layer (Trino) decoupled from the warehouse",
       ],
       whereItBreaks: [
-        "High team complexity — requires dedicated data platform engineering to operate",
+        "High team complexity — requires clear ownership and operating capacity",
         "Kafka is the primary operational weight anchor — requires managed infrastructure or dedicated cluster ops",
-        "Teams with existing Airflow will be tempted to retain it alongside Dagster — resist; pick one orchestrator",
+        "If Airflow is retained alongside Dagster, define which platform owns each schedule and recovery path",
       ],
     },
   ],

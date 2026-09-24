@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import './index.css'
 import ArchitecturalChromatics from './ArchitecturalChromatics'
-import DataEngineeringChromatics from './DataEngineeringChromatics'
-import AgentHarnessChromatics from './AgentHarnessChromatics'
+import BlendWorkshop from './BlendWorkshop'
+import PartsReference from './PartsReference'
+import FrontDoor from './FrontDoor'
 
 function getRoute(): string {
   return window.location.hash.replace('#', '') || '/'
@@ -17,7 +18,11 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handler)
   }, [])
 
-  if (route === '/data-engineering') return <DataEngineeringChromatics />
-  if (route === '/agent-harness') return <AgentHarnessChromatics />
-  return <ArchitecturalChromatics />
+  if (route === '/' || route === '') return <FrontDoor />
+  if (route === '/ai-systems') return <BlendWorkshop key="ai" edition="ai" />
+  if (route === '/data-engineering') return <BlendWorkshop key="data" edition="data" />
+  if (route === '/agent-harness') return <BlendWorkshop key="harness" edition="harness" />
+  if (route === '/reference') return <PartsReference />
+  if (route === '/original') return <ArchitecturalChromatics />
+  return <FrontDoor />
 }
