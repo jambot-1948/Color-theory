@@ -38,7 +38,7 @@ Fit is judged at the level the build is decided at:
 | **Snap** (seated, ✓) | A pairing with an earlier part is recorded, authored for a recipe story or growth stage, or the whole set is a curated non-cautionary recipe | `pairsWellWith`, `assemblyStories`, `growthTracks`, `recipes` |
 | **Loose** (lifted, dashed seam, ~) | Nothing recorded either way. Unproven, not wrong. | absence of data |
 | **Forced** (pushed off its studs, red, ✕) | A recorded or authored tension | `conflictsWith`, tension links |
-| Dashed outline | A missing part | `recipe.missingHues`, stage `missing`, or an empty tier beneath an occupied one |
+| Pale placeholder brick with dashed edge, plus a "Missing parts" callout above the scene | A missing part | `recipe.missingHues`, stage `missing`, or an empty tier beneath an occupied one |
 | Hanging brick | Nothing sits beneath it yet | geometry |
 | Crossed outline | Part removed at this growth stage | stage `remove` |
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, Minus, Plus } from 'lucide-react'
 import SiteHeader from './SiteHeader'
 import { BrickScene } from './bricks/Brick'
+import { MissingCallout } from './bricks/ManualBoard'
 import { editionTiers, readBuild, verdictCopy, type EditionId } from './bricks/buildModel'
 import { blueprintMatch, encodeSlots, isCaution, slotLinks, slotTools, slotsFromTools } from './bricks/capabilityModel'
 import { editionIds, editionInfo } from './bricks/editions'
@@ -42,7 +43,7 @@ function StageDetail({ edition, stage }: { edition: EditionId, stage: GrowthStag
   const parent = stage.from && growthTracks[edition].stages.find(item => item.id === stage.from)
   return <section className="gr-detail" aria-live="polite">
     <div className="gr-detail-scene">
-      <div className="mb-page-top"><div className={`mb-stamp is-${reading.verdict}`}><small>{stage.horizon.toUpperCase()}{parent ? ` · FROM ${parent.name.toUpperCase()}` : ''}</small><strong>{verdictCopy[reading.verdict].label}</strong></div></div>
+      <div className="mb-page-top"><div className={`mb-stamp is-${reading.verdict}`}><small>{stage.horizon.toUpperCase()}{parent ? ` · FROM ${parent.name.toUpperCase()}` : ''}</small><strong>{verdictCopy[reading.verdict].label}</strong></div><MissingCallout data={data} gaps={reading.gaps} /></div>
       <BrickScene bricks={bricks} plate={{ w: 12, d: 6 }} unit={20} label={`${stage.name}. ${verdictCopy[reading.verdict].label}.`} showArrow={false} showBadges="all" maxTier={editionTiers[edition].length} />
       <div className="mb-tiers">{editionTiers[edition].map((tier, index) => <span key={tier.name}><b>T{index + 1}</b>{tier.name}</span>)}</div>
     </div>
@@ -59,7 +60,7 @@ function StageDetail({ edition, stage }: { edition: EditionId, stage: GrowthStag
         {reading.seats.filter(item => item.seat === 'clash').map(item => <li key={item.tool.id} className="is-clash">{item.tool.name} is forced against {item.partner?.name}. {item.link?.note}</li>)}
         {reading.shared.map(([first, second]) => <li key={`${first.id}-${second.id}`} className="is-loose">{first.name} and {second.name} both take the {hue(first.primaryHue)?.name} job.</li>)}
         {reading.seats.filter(item => item.seat === 'loose').length > 0 && <li className="is-loose">No recorded partner: {reading.seats.filter(item => item.seat === 'loose').map(item => item.tool.name).join(', ')}.</li>}
-        {reading.gaps.length > 0 && <li className="is-gap">Outlined, still missing: {reading.gaps.map(id => hue(id)?.name ?? id).join(', ')}.</li>}
+        {reading.gaps.length > 0 && <li className="is-gap">Still missing, shown as pale placeholder bricks: {reading.gaps.map(id => hue(id)?.name ?? id).join(', ')}.</li>}
       </ul>
       <a className="gr-open" href={`?build=${encodeSlots(slots)}${editionInfo[edition].href}`}>Open this model in the assembly <ArrowRight size={15} /></a>
     </div>

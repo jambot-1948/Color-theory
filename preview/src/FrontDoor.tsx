@@ -56,7 +56,7 @@ export default function FrontDoor() {
         <div><span>02</span><h3>Snap</h3><p>The brick locks onto an earlier part because a pairing or curated recipe is recorded.</p></div>
         <div><span>03</span><h3>Loose</h3><p>It sits on the model, but nothing recorded says it locks. Not wrong, just unproven.</p></div>
         <div><span>04</span><h3>Forced</h3><p>Pushed off its studs by a recorded tension, usually two parts claiming the same job.</p></div>
-        <div><span>05</span><h3>Outline</h3><p>A dashed brick is a part the model is missing. A hanging brick has nothing underneath it yet.</p></div>
+        <div><span>05</span><h3>Placeholder</h3><p>A pale, dashed brick is a part the model is missing, and each one is named in a missing-parts box. A hanging brick has nothing underneath it yet.</p></div>
       </div><p className="fd-boundary">Stacking shows relationships and tiers. It is not runtime wiring or data flow. <a href="#/growth">See how models grow over time</a>.</p></div></section>
 
       <section className="fd-editions" aria-labelledby="fd-editions-title"><div className="fd-section-inner"><div className="fd-section-heading"><h2 id="fd-editions-title">Choose a system</h2><p>Explore a curated assembly, then change the parts to test your own combination.</p></div><div className="fd-edition-list">{editions.map(edition => <a key={edition.name} href={edition.href}><span className="fd-edition-name">{edition.name}</span><span className="fd-edition-detail">{edition.detail}</span><span className="fd-edition-count">{edition.data.tools.length} parts · {edition.data.recipes.length} examples</span><ArrowRight size={19} /></a>)}</div></div></section>

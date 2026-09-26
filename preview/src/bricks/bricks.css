@@ -32,3 +32,9 @@
 .mb-seat.is-base{border-left-color:#9aa7a0;background:#f4f6f5}
 .mb-seat.is-finished{border-left-color:#1d2420;background:#f4f6f5}
 .mb-seat ul{margin:6px 0 0;padding-left:16px}
+.mb-page-top{flex-wrap:wrap}
+.mb-missing{display:flex;flex-direction:column;gap:5px;padding:7px 12px 8px;border:1.5px dashed #b5c0b9;border-radius:6px;background:#fafbfa}
+.mb-missing small{font-size:9px;font-weight:800;letter-spacing:.04em;color:#617068}
+.mb-missing ul{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;padding:0;list-style:none}
+.mb-missing li{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#33443b}
+.mb-missing .iso-icon{width:34px}

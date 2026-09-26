@@ -41,7 +41,7 @@ function Studs({ box, fill, side, stroke, p, dashed }: { box: Box, fill: string,
     const cyTop = cyBase - STUD_HEIGHT * p.unit
     return <g key={`${i}-${j}`}>
       {!dashed && <><ellipse cx={cx} cy={cyBase} rx={rx} ry={ry} fill={side} /><rect x={cx - rx} y={cyTop} width={rx * 2} height={cyBase - cyTop} fill={side} /></>}
-      <ellipse cx={cx} cy={dashed ? cyBase : cyTop} rx={rx} ry={ry} fill={dashed ? 'none' : fill} stroke={stroke} strokeWidth={dashed ? 0.6 : 0.5} strokeDasharray={dashed ? '1.6 1.6' : undefined} />
+      <ellipse cx={cx} cy={dashed ? cyBase : cyTop} rx={rx} ry={ry} fill={fill} stroke={stroke} strokeWidth={dashed ? 0.6 : 0.5} strokeDasharray={dashed ? '1.6 1.6' : undefined} />
     </g>
   })}</g>
 }
@@ -81,10 +81,12 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   const box = displaced(brick.box, brick.state)
   const { x, y, z, w, d, h } = box
   const ghost = brick.state === 'ghost' || brick.state === 'removed'
-  const top = ghost ? 'none' : lighten(brick.hex, 0.18)
-  const left = ghost ? 'none' : brick.hex
-  const right = ghost ? 'none' : darken(brick.hex, 0.22)
-  const stroke = brick.state === 'clash' ? SEAT_COLORS.clash : ghost ? darken(brick.hex, 0.1) : darken(brick.hex, 0.5)
+  // A missing part is a pale placeholder brick: solid enough to hide what is behind it, so its label stays legible.
+  const placeholder = brick.state === 'ghost'
+  const top = placeholder ? lighten(brick.hex, 0.9) : ghost ? 'none' : lighten(brick.hex, 0.18)
+  const left = placeholder ? lighten(brick.hex, 0.82) : ghost ? 'none' : brick.hex
+  const right = placeholder ? lighten(brick.hex, 0.74) : ghost ? 'none' : darken(brick.hex, 0.22)
+  const stroke = brick.state === 'clash' ? SEAT_COLORS.clash : ghost ? darken(brick.hex, 0.2) : darken(brick.hex, 0.5)
   const strokeWidth = brick.isNew ? 1.5 : 0.8
   const dash = ghost ? '3 2.5' : undefined
   const P = (px: number, py: number, pz: number) => p.point(px, py, pz)
@@ -93,12 +95,12 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   const rightFace = pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)])
   const lines = labelLines(brick.label, w)
   const fontSize = p.unit * (ghost ? 0.4 : lines.length > 1 ? 0.46 : 0.54)
-  const ink = ghost ? darken(brick.hex, 0.15) : inkOn(brick.hex)
+  const ink = ghost ? darken(brick.hex, 0.45) : inkOn(brick.hex)
   const floating = brick.restsAt !== undefined && brick.state !== 'ghost' && brick.restsAt < brick.box.z - 0.05
   const footprint = floating ? [P(x, y, brick.restsAt!), P(x + w, y, brick.restsAt!), P(x + w, y + d, brick.restsAt!), P(x, y + d, brick.restsAt!)] : []
   const hangers = floating ? [[P(x, y + d, z), P(x, y + d, brick.restsAt!)], [P(x + w, y + d, z), P(x + w, y + d, brick.restsAt!)], [P(x + w, y, z), P(x + w, y, brick.restsAt!)]] : []
 
-  return <g className={`iso-brick is-${brick.state}${brick.isNew ? ' is-new' : ''}`}>
+  return <g className={`iso-brick is-${brick.state}${brick.isNew ? ' is-new' : ''}`} opacity={placeholder ? 0.9 : undefined}>
     {floating && <g className="iso-hanger" aria-hidden="true"><path d={pathFrom(footprint)} fill="rgba(29,36,32,.06)" stroke="#8b978f" strokeWidth=".8" strokeDasharray="2.5 2" />{hangers.map(([from, to], index) => <line key={index} x1={from[0]} y1={from[1]} x2={to[0]} y2={to[1]} stroke="#8b978f" strokeWidth=".8" strokeDasharray="2.5 2" />)}</g>}
     {brick.state === 'loose' && <path d={pathFrom([P(x, y + d, brick.box.z), P(x + w, y + d, brick.box.z), P(x + w, y, brick.box.z)]).replace(' Z', '')} fill="none" stroke={SEAT_COLORS.loose} strokeWidth="1" strokeDasharray="2 2" />}
     <path d={leftFace} fill={left} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />

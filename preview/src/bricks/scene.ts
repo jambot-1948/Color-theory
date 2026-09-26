@@ -42,7 +42,7 @@ export function sceneBricks({ edition, data, tools, layoutTools, links, ghostHue
       const state: SceneBrick['state'] = isRemoved ? 'removed' : !showSeats ? 'seated' : seat === 'clash' ? 'clash' : seat === 'loose' ? 'loose' : 'seated'
       return { id: part.tool.id, box: part.box, hex: part.hex, label: part.tool.name, sticker: stickerFor(part.tool), tag: part.hueName, state, isNew: newIds.includes(part.tool.id), badge: isRemoved || !showSeats ? undefined : seat }
     }),
-    ...ghosts.map((ghost, index) => ({ id: `ghost-${ghost.hue}-${index}`, box: ghost.box, hex: ghost.hex, label: `${ghost.hueName}?`, tag: 'Missing', state: 'ghost' as const })),
+    ...ghosts.map((ghost, index) => ({ id: `ghost-${ghost.hue}-${index}`, box: ghost.box, hex: ghost.hex, label: ghost.hueName, tag: 'Missing', state: 'ghost' as const })),
   ]
   return withSupport(bricks)
 }

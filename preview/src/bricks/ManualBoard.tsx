@@ -32,6 +32,7 @@ export default function ManualBoard({ edition, data, tools, step, links, ghostHu
         <span><b>1x</b><strong>{current.name}</strong><small>{current.category}</small></span>
       </div>}
       {finished && tools.length > 0 && <div className={`mb-stamp is-${reading.verdict}`}><small>FINISHED MODEL</small><strong>{verdict.label}</strong></div>}
+      {finished && <MissingCallout data={data} gaps={reading.gaps} />}
     </div>
     <BrickScene
       bricks={bricks}
@@ -59,7 +60,7 @@ export function SeatNote({ edition, data, tools, step, links, ghostHues, caution
         {clashes.map(item => <li key={item.tool.id}>{item.tool.name} is forced against {item.partner?.name}. {item.link?.note}</li>)}
         {loose.length > 0 && <li>No recorded partner: {loose.join(', ')}.</li>}
         {reading.shared.map(([first, second]) => <li key={`${first.id}-${second.id}`}>{first.name} and {second.name} both take the {hueName(first.primaryHue)} job. Name the boundary.</li>)}
-        {reading.gaps.length > 0 && <li>Missing parts shown as outlines: {reading.gaps.map(hueName).join(', ')}.</li>}
+        {reading.gaps.length > 0 && <li>Missing parts, shown as pale placeholder bricks: {reading.gaps.map(hueName).join(', ')}.</li>}
       </ul></div></div>
   }
   const item = reading.seats[step - 1]
@@ -71,4 +72,16 @@ export function SeatNote({ edition, data, tools, step, links, ghostHues, caution
     clash: [`Forced against ${item.partner?.name}`, item.link?.note ?? 'A tension is recorded between these parts.'],
   }[item.seat]
   return <div className={`mb-seat is-${item.seat}`}><div><strong>{copy[0]}</strong>{copy[1]}</div></div>
+}
+
+// Names the missing parts outside the scene, like a manual's parts box, so they read without decoding the model.
+export function MissingCallout({ data, gaps }: { data: WorkshopData, gaps: string[] }) {
+  if (!gaps.length) return null
+  return <div className="mb-missing" aria-label={`Missing parts: ${gaps.map(id => data.hues.find(hue => hue.id === id)?.name ?? id).join(', ')}`}>
+    <small>MISSING PARTS</small>
+    <ul>{gaps.map(id => {
+      const hue = data.hues.find(item => item.id === id)
+      return <li key={id}><BrickIcon hex={hue?.hex ?? '#8a948f'} unit={6} ghost /><span>{hue?.name ?? id}</span></li>
+    })}</ul>
+  </div>
 }
