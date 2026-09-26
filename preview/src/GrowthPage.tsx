@@ -55,7 +55,7 @@ function StageDetail({ edition, stage }: { edition: EditionId, stage: GrowthStag
         {added.map(id => { const tool = tools.find(item => item.product?.id === id); const info = tool && hue(tool.primaryHue); return tool && info ? <div key={id} className="gr-change is-add"><Plus size={14} /><i style={{ background: info.hex }} /><span><strong>{tool.name}</strong><small>{tool.product?.name} · {info.name}</small></span></div> : null })}
         {removedTools.map(tool => { const info = hue(tool.primaryHue); return <div key={tool.id} className="gr-change is-remove"><Minus size={14} /><i style={{ background: info?.hex }} /><span><strong>{tool.name}</strong><small>{tool.product?.name} taken off the model</small></span></div> })}
       </div>
-      <dl className="gr-notes"><div><dt>Why now</dt><dd>{stage.why}</dd></div><div><dt>Watch for</dt><dd>{stage.watch}</dd></div>{recipe && <div><dt>Matches</dt><dd>{recipe.name}, a curated {editionInfo[edition].title.toLowerCase()} recipe.</dd></div>}</dl>
+      <dl className="gr-notes"><div><dt>Why now</dt><dd>{stage.why}</dd></div><div><dt>Watch for</dt><dd>{stage.watch}</dd></div>{recipe && <div><dt>Matches</dt><dd>{recipe.name}, a curated {isCaution(data, recipe) ? 'cautionary ' : ''}recipe in {editionInfo[edition].title}.</dd></div>}</dl>
       <ul className="gr-reading">
         {reading.seats.filter(item => item.seat === 'clash').map(item => <li key={item.tool.id} className="is-clash">{item.tool.name} is forced against {item.partner?.name}. {item.link?.note}</li>)}
         {reading.shared.map(([first, second]) => <li key={`${first.id}-${second.id}`} className="is-loose">{first.name} and {second.name} both take the {hue(first.primaryHue)?.name} job.</li>)}
@@ -94,7 +94,7 @@ export default function GrowthPage({ edition }: { edition: EditionId }) {
         })}
       </div>
       <StageDetail key={`${edition}-${selected.id}`} edition={edition} stage={selected} />
-      <p className="gr-caveat">These paths are authored illustrations built from the curated tool data. They are not the only healthy order, and the time horizons are typical rather than prescriptive.</p>
+      <p className="gr-caveat">Height shows tier, not call order or data flow. These paths are authored illustrations built from the curated tool data. They are not the only healthy order, and the time horizons are typical rather than prescriptive.</p>
     </main>
   </div>
 }

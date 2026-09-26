@@ -78,14 +78,14 @@ export interface FDChromaticsData {
 }
 
 // Product claims reviewed September 26, 2026 against official documentation and official GitHub repositories.
-// pairsWellWith records documented integrations or clearly standard combinations, declared on both tools.
+// pairsWellWith records documented integrations (official SDKs, drivers, providers, operators, or docs), declared on both tools.
 // It is a curated affinity, not a compatibility certification or a data-flow arrow.
 export const foundationsData: FDChromaticsData = {
   site: {
     name: "Foundations Chromatics",
     version: "0.1",
     tagline:
-      "A framework for the application and delivery foundation that every AI and data system sits on.",
+      "A framework for the application and delivery foundation that AI and data systems sit on.",
     description:
       "Foundations Chromatics is a reference guide to the general application stack underneath AI and data work: what people use, the services behind it, where data lives, who may do what, how changes ship, where it all runs, and how the team knows it is working. Focus: not any one model or pipeline, but the ordinary foundation they depend on.",
   },
@@ -224,7 +224,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["twelve-factor", "observable-service"],
       notes:
-        "Batteries included, so many early decisions are already made. PostgreSQL is an officially supported database (16 and later at the time of review), and Redis is a built-in cache backend. OpenTelemetry has a Django instrumentation package; Heroku's Python getting-started app is a Django app. Background jobs need a separate tool. Maintained by the Django Software Foundation; BSD-licensed.",
+        "Batteries included, so many early decisions are already made. PostgreSQL is an officially supported database (15 and later as of Django 6.1), and Redis is a built-in cache backend. OpenTelemetry has a Django instrumentation package; Heroku's Python getting-started app is a Django app. Django 6.0 added a tasks interface, but it does not run background jobs itself: production needs a separate worker backend. Maintained by the Django Software Foundation; BSD-licensed.",
     },
     {
       id: "spring-boot",
@@ -240,7 +240,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["twelve-factor", "observable-service"],
       notes:
-        "Auto-configuration speeds setup but hides decisions that still need review. Documents auto-configuration for SQL databases, Redis, and RabbitMQ; Prometheus metrics export and OpenTelemetry (OTLP) tracing through Actuator; building OCI images with Cloud Native Buildpacks; and Kubernetes liveness and readiness probes. Keycloak works through Spring Security's standard OAuth 2.0 and OpenID Connect support. Apache-2.0 licensed.",
+        "Auto-configuration speeds setup but hides decisions that still need review. Documents auto-configuration for SQL databases, Redis, and RabbitMQ; Prometheus metrics export and OpenTelemetry (OTLP) tracing through Actuator; building OCI images with Cloud Native Buildpacks; and Kubernetes liveness and readiness probes. Keycloak's official quickstarts include Spring Boot services secured through Spring Security. Apache-2.0 licensed.",
     },
 
     // ── Data ───────────────────────────────────────────────────────────
@@ -357,7 +357,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["paved-road", "secrets-in-code"],
       notes:
-        "A scan reports known issues; someone must decide which findings block a release. Harbor uses Trivy for image scanning; the trivy-action runs it in GitHub Actions; it can scan Terraform plans. The scanner's own supply chain was compromised on March 19, 2026 (CVE-2026-33634): a malicious v0.69.4 release and hijacked trivy-action and setup-trivy tags. The advisory recommends pinning actions to full commit SHAs. Maintained by Aqua Security; Apache-2.0 licensed.",
+        "A scan reports known issues; someone must decide which findings block a release. Harbor uses Trivy for image scanning; the trivy-action runs it in GitHub Actions; it can scan Terraform plans. The scanner's own supply chain was compromised in March 2026 (CVE-2026-33634): a malicious v0.69.4 release and hijacked trivy-action and setup-trivy tags on March 19, then malicious v0.69.5 and v0.69.6 Docker Hub images on March 22. The advisory recommends pinning actions to full commit SHAs. Maintained by Aqua Security; Apache-2.0 licensed.",
     },
 
     // ── Delivery ───────────────────────────────────────────────────────
@@ -375,7 +375,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["gitops-loop", "secrets-in-code"],
       notes:
-        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; Heroku's GitHub integration can deploy on push. Proprietary SaaS from Microsoft.",
+        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; the Heroku CLI can connect a GitHub repository to a Heroku pipeline. Proprietary SaaS from Microsoft.",
     },
     {
       id: "github-actions",
@@ -391,7 +391,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["paved-road", "secrets-in-code"],
       notes:
-        "Third-party actions run with the workflow's secrets and permissions; pin them to full commit SHAs, as the 2026 trivy-action compromise showed. Official actions exist for Docker builds, Terraform setup, AWS credentials via OIDC, and Vault secrets. Pushing to a registry such as Harbor uses the standard registry login.",
+        "Third-party actions run with the workflow's secrets and permissions; pin them to full commit SHAs, as the 2026 trivy-action compromise showed. Official actions exist for Docker builds, Terraform setup, AWS credentials via OIDC, and Vault secrets. Pushing to Harbor uses a Harbor robot account, which Harbor provides for automation.",
     },
     {
       id: "harbor",
@@ -406,7 +406,7 @@ export const foundationsData: FDChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["trivy", "docker", "github-actions", "kubernetes"],
       conflictsWith: [],
-      patterns: ["paved-road", "gitops-loop"],
+      patterns: ["paved-road"],
       notes:
         "Self-hosted, so the registry becomes a service the team runs. Vulnerability scanning uses Trivy, enabled at install time, and other scanners can be plugged in. Scanning does not block a pull or deploy until a policy is set. A CNCF-hosted project; Apache-2.0 licensed.",
     },
@@ -443,7 +443,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["twelve-factor"],
       notes:
-        "On February 6, 2026 Heroku announced a move to a sustaining engineering model: continued support, security, and stability work, but no new features, and no Enterprise contracts for new customers. Credit-card customers were told nothing changes for them. Weigh that before building a long-lived platform on it. Supports Node.js and Python buildpacks, a GitHub integration for automatic deploys, a Container Registry for Docker images (x86_64 only), and a Terraform provider.",
+        "Less to operate, at the price of a vendor dependency and the platform's limits on how apps run. Offers Node.js and Python buildpacks, a Container Registry for Docker images, pipelines that can be connected to a GitHub repository, and a Terraform provider. Proprietary PaaS.",
     },
     {
       id: "docker",
@@ -455,11 +455,11 @@ export const foundationsData: FDChromaticsData = {
         "Builds and runs OCI container images that package an application with its dependencies.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["nodejs", "spring-boot", "trivy", "github-actions", "harbor", "heroku", "kubernetes"],
+      pairsWellWith: ["nodejs", "spring-boot", "trivy", "github-actions", "harbor", "heroku", "kubernetes", "self-hosted"],
       conflictsWith: [],
       patterns: ["twelve-factor", "secrets-in-code"],
       notes:
-        "Packaging, not a platform on its own: something still has to run, restart, and scale containers. Secrets baked into image layers remain readable from the image. Images are built in CI with docker/build-push-action, scanned by Trivy, stored in a registry such as Harbor, and run on Kubernetes or Heroku.",
+        "Packaging, not a platform on its own: something still has to run, restart, and scale containers. Secrets baked into image layers remain readable from the image. Images can be built in GitHub Actions with docker/build-push-action, scanned by Trivy, stored in a registry such as Harbor, and run on Kubernetes, Heroku, or the team's own machines. Docker Engine installs on Linux servers; on macOS it comes through Docker Desktop, which needs a paid subscription for commercial use in organizations with more than 250 employees or more than $10 million in annual revenue.",
     },
     {
       id: "kubernetes",
@@ -471,11 +471,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source container orchestration: schedules, restarts, and scales containers across a cluster from declarative configuration.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["spring-boot", "rabbitmq", "keycloak", "vault", "trivy", "harbor", "argocd", "docker", "terraform", "aws", "opentelemetry", "prometheus"],
+      pairsWellWith: ["spring-boot", "rabbitmq", "keycloak", "vault", "trivy", "harbor", "argocd", "docker", "terraform", "aws", "opentelemetry", "prometheus", "self-hosted"],
       conflictsWith: [],
       patterns: ["gitops-loop", "platform-before-product"],
       notes:
-        "Steep learning curve and meaningful operating overhead, even when managed (for example Amazon EKS). Use it when container orchestration is warranted, not because it may be needed later. Components emit Prometheus-format metrics; operators exist for Keycloak, RabbitMQ, Vault secrets, and OpenTelemetry. CNCF graduated project; Apache-2.0 licensed.",
+        "Steep learning curve and meaningful operating overhead, even when managed (for example Amazon EKS). Use it when container orchestration is warranted, not because it may be needed later. Components emit Prometheus-format metrics; operators exist for Keycloak, RabbitMQ, Vault secrets, and OpenTelemetry. Runs on premises as well as in a cloud; kubeadm installs it on the team's own Linux hosts, which then carry the cluster's upgrades as well as their own. CNCF graduated project; Apache-2.0 licensed.",
     },
     {
       id: "terraform",
@@ -509,6 +509,22 @@ export const foundationsData: FDChromaticsData = {
       notes:
         "Breadth is the strength and the cost: IAM, networking, and billing need owners from the start. Offers managed PostgreSQL (Amazon RDS) and Kubernetes (Amazon EKS); the Terraform AWS provider manages resources; configure-aws-credentials lets GitHub Actions assume a role through OIDC instead of stored keys; the AWS Distro for OpenTelemetry Collector sends telemetry to CloudWatch and other backends.",
     },
+    {
+      id: "self-hosted",
+      name: "Self-hosted hardware",
+      primaryHue: "platform",
+      category: "On-Prem and Local Hardware",
+      maturity: "production",
+      description:
+        "A generic option, not a vendor product: the team's own servers, workstations, or small machines such as Mac minis, on premises or in a colo, running the stack directly instead of a cloud or managed platform.",
+      complexityAdded: "high",
+      trustContribution: "medium",
+      pairsWellWith: ["docker", "kubernetes", "prometheus"],
+      conflictsWith: [],
+      patterns: ["snowflake-server"],
+      notes:
+        "What you gain: data stays on hardware you control, and most of the cost is paid up front for hardware rather than metered, though power, space, and staff time recur. What you take on is everything a provider would otherwise do: OS and firmware patching, power and network (including what happens in an outage), backups that leave the building and restores that are tested, physical security of the machines, and capacity planning, since more capacity means buying and installing hardware. One machine is one failure domain. Docker can package what runs on it; Kubernetes can run on premises through kubeadm once several machines and services justify a cluster; Prometheus's node_exporter reports the hosts' own disk, memory, and CPU. Terraform is not paired here: it manages resources through provider APIs, and plain hardware has none unless a virtualization or bare-metal layer adds one. Machines set up by hand over SSH drift into snowflake servers, so keep their configuration in version control.",
+    },
 
     // ── Operations ─────────────────────────────────────────────────────
     {
@@ -537,11 +553,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source metrics system: scrapes and stores time series, queries them with PromQL, and evaluates alert rules, with Alertmanager routing notifications.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["spring-boot", "rabbitmq", "argocd", "kubernetes", "opentelemetry", "grafana", "pagerduty"],
+      pairsWellWith: ["spring-boot", "rabbitmq", "argocd", "kubernetes", "opentelemetry", "grafana", "pagerduty", "self-hosted"],
       conflictsWith: [],
       patterns: ["observable-service", "gitops-loop"],
       notes:
-        "Metrics only; logs and traces need other stores. Long-term retention and high availability take extra design. Alertmanager has a PagerDuty receiver; Grafana has a Prometheus data source; the OTLP receiver is off by default. CNCF graduated project; Apache-2.0 licensed.",
+        "Metrics only; logs and traces need other stores. Long-term retention and high availability take extra design. Alertmanager has a PagerDuty receiver; Grafana has a Prometheus data source; the OTLP receiver is off by default. The official node_exporter exposes hardware and OS metrics from Linux and other Unix hosts, which is how Prometheus watches the team's own machines. CNCF graduated project; Apache-2.0 licensed.",
     },
     {
       id: "grafana",
@@ -663,7 +679,7 @@ export const foundationsData: FDChromaticsData = {
       type: "foundational",
       hues: ["service", "data", "platform"],
       description:
-        "The service keeps configuration in the environment, treats databases and caches as attached resources, and runs as stateless processes that a platform can start, stop, and scale. The methodology came out of Heroku; it applies wherever the platform can inject config and replace processes.",
+        "The service keeps configuration in the environment, treats databases and caches as attached resources, and runs as stateless processes that a platform can start, stop, and scale. The methodology was written by people who built the Heroku platform; it applies wherever the platform can inject config and replace processes.",
       strengths: [
         "The same build runs in every environment with different config",
         "Processes can be replaced or scaled without losing state",
@@ -685,7 +701,7 @@ export const foundationsData: FDChromaticsData = {
       type: "structural",
       hues: ["delivery", "platform", "trust"],
       description:
-        "A shared, documented path from commit to running service: one CI template, one registry, scanned base images, infrastructure from reviewed code, and secrets fetched at run time. Teams can leave the road, but staying on it is the easiest option.",
+        "A shared, documented path from commit to running service: one CI template, one registry, scanned base images, infrastructure from reviewed code, and secrets fetched at run time. Teams can leave the road; the aim is that staying on it is the easiest option.",
       strengths: [
         "Security checks happen by default rather than by memory",
         "New services start with delivery and infrastructure already solved",
@@ -709,7 +725,7 @@ export const foundationsData: FDChromaticsData = {
       description:
         "The service emits traces, metrics, and logs from its first release, and a small set of alerts tied to what users notice (errors, latency, saturation) reaches a person on call. The team can answer 'is it working?' without asking a user.",
       strengths: [
-        "Failures are found by alerts, not customers",
+        "More failures are found by alerts before customers report them",
         "Releases can be compared against a baseline",
         "Incidents start from evidence rather than guesses",
       ],
@@ -729,11 +745,11 @@ export const foundationsData: FDChromaticsData = {
       type: "structural",
       hues: ["delivery", "platform", "operations"],
       description:
-        "Desired cluster state lives in Git; a controller applies it and reports drift; telemetry shows whether the change behaved. Rollback is a revert, and every change has a review and a record. The loop only closes if operations signals feed back into the next change.",
+        "Desired cluster state lives in Git; a controller applies it and reports drift; telemetry shows whether the change behaved. Every change is recorded in Git, review can be required before it merges, and many rollbacks become a revert. The loop only closes if operations signals feed back into the next change.",
       strengths: [
-        "Every production change is reviewed and recorded in Git",
+        "Every production change is recorded in Git, and branch protection can require review",
         "Drift between Git and the cluster is visible",
-        "Rollback is a revert rather than a manual procedure",
+        "Rolling back a manifest change is a revert; data and schema changes still need their own plan",
       ],
       weaknesses: [
         "Needs Kubernetes and a controller to run, which is real operating load",
@@ -765,7 +781,6 @@ export const foundationsData: FDChromaticsData = {
         "No login or secrets management beyond the platform's config vars",
         "No CI: nothing tests a change before it deploys",
         "Nothing watches the app in production or pages anyone",
-        "Heroku is in sustaining engineering mode (announced February 2026): supported, but not adding features",
       ],
       missingHues: ["trust", "delivery", "operations"],
       upgradePath: ["auth0", "github-actions", "opentelemetry"],
@@ -779,12 +794,12 @@ export const foundationsData: FDChromaticsData = {
         "The starter app once real users log in and more than one person commits: hosted identity, and a CI workflow that runs tests before a change ships.",
       whyItWorks: [
         "Auth0 handles login through its Next.js and Node.js SDKs, so the team does not store passwords",
-        "GitHub Actions runs tests on every pull request",
+        "A GitHub Actions workflow runs tests on every pull request",
         "The rest of the starter app is unchanged, so the step up is small",
       ],
       whereItBreaks: [
         "Authentication is not authorization: what each user may do is still application code",
-        "The recipe does not say how a passing build reaches Heroku: a deploy step in the workflow, or Heroku's GitHub integration waiting for CI to pass, needs choosing",
+        "The recipe does not say how a passing build reaches Heroku: a deploy step in the workflow or a Heroku-side deploy from GitHub needs choosing",
         "Still nothing watches production or pages anyone when it fails",
       ],
       missingHues: ["operations"],
@@ -796,7 +811,7 @@ export const foundationsData: FDChromaticsData = {
       tools: ["nextjs", "nodejs", "postgresql", "heroku", "auth0", "github-actions", "opentelemetry", "pagerduty"],
       patternIds: ["observable-service"],
       useCase:
-        "The authenticated app with telemetry and on-call: every role has a part, and failures should reach a person before a user reports them.",
+        "The authenticated app with instrumentation and on-call paging: every role has a part, though a telemetry backend with alert rules is still needed before anyone is paged.",
       whyItWorks: [
         "Next.js and the Node.js SDK both emit OpenTelemetry, so front-end server code and back end share one instrumentation standard",
         "PagerDuty routes alerts to whoever is on call and escalates when nobody answers",
@@ -819,7 +834,7 @@ export const foundationsData: FDChromaticsData = {
         "A back-end service shipped as a scanned container image: Django with PostgreSQL and a Redis cache, built and scanned in CI, stored in a private registry, with infrastructure described in Terraform. Think: an API behind another team's front end.",
       whyItWorks: [
         "Django officially supports PostgreSQL and includes a Redis cache backend",
-        "GitHub Actions builds the Docker image and runs Trivy on it before it is pushed",
+        "A GitHub Actions workflow builds the Docker image and scans it with Trivy before pushing it",
         "Harbor stores the image, can rescan it with Trivy, and adds access control and activity auditing",
         "Terraform describes the infrastructure, so environments can be reviewed and rebuilt",
       ],
@@ -844,7 +859,7 @@ export const foundationsData: FDChromaticsData = {
         "Harbor gives the platform one registry with scanning and access control",
         "Vault syncs secrets into Kubernetes through its operator, so they stay out of the Git repository",
         "Prometheus scrapes cluster and application metrics; Grafana shows them; both can page through PagerDuty",
-        "Terraform manages the clusters and can manage Grafana and PagerDuty configuration as code",
+        "Terraform describes the clusters (through the cloud provider's own Terraform provider) and can manage Grafana and PagerDuty configuration as code",
       ],
       whereItBreaks: [
         "This is a platform with no product on it: the services, data, and front ends come from the teams it serves",
@@ -861,7 +876,7 @@ export const foundationsData: FDChromaticsData = {
       tools: ["nodejs", "kubernetes", "argocd", "terraform"],
       patternIds: ["platform-before-product", "unwatched-release"],
       useCase:
-        "(Anti-pattern) One Node.js service, deployed to a Terraform-built Kubernetes cluster through Argo CD. The platform is what a large organisation runs; the product is a single service with no CI, no telemetry, and no login.",
+        "(Anti-pattern) One Node.js service, deployed to a Terraform-built Kubernetes cluster through Argo CD. The platform is sized for many services; the product is a single service with no CI, no telemetry, and no login.",
       whyItHappens: [
         "Kubernetes and GitOps are what the team expects to need eventually, so they start there",
         "Platform work is visible progress while product direction is still unclear",
@@ -871,15 +886,39 @@ export const foundationsData: FDChromaticsData = {
         "Most engineering time goes to the cluster, not the service",
         "Untested changes sync to production because Git is the only gate",
         "Outages are reported by users; there is nothing to look at",
-        "The cluster costs more than the service earns",
+        "The cluster's cost and upkeep are out of proportion to one service",
       ],
       fix: [
         "Add CI first: run tests in GitHub Actions before anything reaches the deploy branch",
         "Instrument the service with OpenTelemetry and alert on what users feel",
-        "Consider a managed platform such as Heroku until there is a second service and a team to run a cluster, keeping Terraform for what remains",
+        "Consider a managed platform (Heroku is this edition's example) until there is a second service and a team to run a cluster, keeping Terraform for what remains",
       ],
       missingHues: ["experience", "data", "trust", "operations"],
       upgradePath: ["github-actions", "opentelemetry", "heroku"],
+    },
+    {
+      id: "self-hosted-app",
+      name: "The Self-Hosted App",
+      tools: ["nextjs", "nodejs", "postgresql", "docker", "self-hosted", "keycloak", "prometheus", "grafana"],
+      patternIds: ["twelve-factor"],
+      useCase:
+        "A web application run on hardware the team owns: containers on its own servers or a small machine in an office or colo, self-hosted login, and metrics with dashboards. Think: data that must stay on premises, or a steady workload where a fixed hardware cost is easier to plan than a metered bill.",
+      whyItWorks: [
+        "Docker packages the app from the official Node.js image, so the machine runs the image that was built rather than a hand-installed copy",
+        "Keeping config in the environment and PostgreSQL as an attached resource lets the app be moved to another machine, or a cloud, later",
+        "Keycloak provides login without a hosted identity vendor and can use PostgreSQL as its database",
+        "Prometheus, with node_exporter, watches the hardware itself as well as services; Grafana shows it and supports Keycloak login",
+      ],
+      whereItBreaks: [
+        "No CI: nothing tests or builds a change before it reaches the machine",
+        "The team owns what a provider would: OS and firmware patching, power, network, backups, physical security, and replacing failed parts",
+        "One machine is one failure domain: a power cut or dead disk takes down the app, its database, login, and the monitoring that would have reported it",
+        "PostgreSQL backups must leave the machine, and restores need testing; if Keycloak shares the server, give it its own database and user",
+        "node_exporter covers the host; Next.js and Node.js need instrumentation before Prometheus sees application metrics, and alerts need a receiver someone watches",
+        "Machines set up by hand over SSH become snowflake servers; keep their setup in version-controlled configuration",
+      ],
+      missingHues: ["delivery"],
+      upgradePath: ["github-actions", "trivy", "opentelemetry"],
     },
   ],
 };

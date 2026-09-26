@@ -4,7 +4,7 @@ import SiteHeader from './SiteHeader'
 import { BrickIcon, BrickScene, type SceneBrick } from './bricks/Brick'
 import { editionTiers, linkBetween, recordedLinks, seatFor, tierOf, type EditionId } from './bricks/buildModel'
 import { editionIds, editionInfo } from './bricks/editions'
-import { capabilityList } from './bricks/capabilityModel'
+import { capabilityList, capabilityOf } from './bricks/capabilityModel'
 import { BRICK_HEIGHT } from './bricks/iso'
 import type { WorkshopData, WorkshopTool } from './workshopData'
 import './bricks/bricks.css'
@@ -16,20 +16,23 @@ const seatText = {
   clash: ['Forced', 'A tension is recorded between these parts.'],
   base: ['', ''],
 } as const
+const sameCapabilityText = ['Same capability', 'Both fill the same brick. In a build they are forced until one is chosen or the work is split.'] as const
 
-function FitBench({ data, first, second, onClear }: { data: WorkshopData, first: WorkshopTool, second?: WorkshopTool, onClear: () => void }) {
+function FitBench({ edition, data, first, second, onClear }: { edition: EditionId, data: WorkshopData, first: WorkshopTool, second?: WorkshopTool, onClear: () => void }) {
   const hue = (tool: WorkshopTool) => data.hues.find(item => item.id === tool.primaryHue)!
   const links = second ? recordedLinks([first, second]) : []
-  const seat = second ? seatFor(second, [first], links).seat : 'base'
+  const sameCapability = Boolean(second && capabilityOf(edition, first.id)?.id === capabilityOf(edition, second.id)?.id)
+  const seat = !second ? 'base' : sameCapability ? 'clash' : seatFor(second, [first], links).seat
+  const text = sameCapability ? sameCapabilityText : seatText[seat]
   const bricks: SceneBrick[] = [
     { id: first.id, box: { x: 1, y: 2, z: 0, w: 4, d: 2, h: BRICK_HEIGHT }, hex: hue(first).hex, label: first.name, tag: hue(first).name, state: 'seated' },
     ...(second ? [{ id: second.id, box: { x: 3, y: 2, z: BRICK_HEIGHT, w: 4, d: 2, h: BRICK_HEIGHT }, hex: hue(second).hex, label: second.name, tag: hue(second).name, state: seat === 'clash' ? 'clash' as const : seat === 'loose' ? 'loose' as const : 'seated' as const, isNew: true, badge: seat }] : []),
   ]
   return <div className="pr-bench" aria-live="polite">
-    <div className="pr-bench-scene"><BrickScene bricks={bricks} plate={{ w: 8, d: 6 }} unit={16} maxTier={2} showArrow={false} frame="tight" showBadges="all" label={second ? `${first.name} with ${second.name}: ${seatText[seat][0]}` : `${first.name} on the bench`} /></div>
+    <div className="pr-bench-scene"><BrickScene bricks={bricks} plate={{ w: 8, d: 6 }} unit={16} maxTier={2} showArrow={false} frame="tight" showBadges="all" label={second ? `${first.name} with ${second.name}: ${text[0]}` : `${first.name} on the bench`} /></div>
     <div className="pr-bench-copy">
       <span className="bw-label">FIT BENCH</span>
-      {second ? <><h3 className={`is-${seat}`}>{seatText[seat][0]}</h3><p><strong>{first.name}</strong> + <strong>{second.name}</strong>. {seatText[seat][1]}</p></> : <><h3>{first.name}</h3><p>{first.description}</p><p className="pr-bench-hint">Pick a second part to test the fit. Parts with a recorded pairing are marked.</p></>}
+      {second ? <><h3 className={`is-${seat}`}>{text[0]}</h3><p><strong>{first.name}</strong> + <strong>{second.name}</strong>. {text[1]}</p></> : <><h3>{first.name}</h3><p>{first.description}</p><p className="pr-bench-hint">Pick a second part to test the fit. Products with a recorded pairing or tension are marked.</p></>}
       <button type="button" onClick={onClear}><X size={13} />Clear bench</button>
     </div>
   </div>
@@ -49,7 +52,7 @@ function Inventory({ edition }: { edition: EditionId }) {
 
   return <section className="pr-edition">
     <div className="pr-heading"><div><h2>{title}</h2><span>{data.hues.length} roles · {capabilityList(edition).length} capabilities · {data.tools.length} products</span></div><a href={href}>Open assembly <ArrowRight size={16} /></a></div>
-    {first && <FitBench data={data} first={first} second={second} onClear={() => setPicked([])} />}
+    {first && <FitBench edition={edition} data={data} first={first} second={second} onClear={() => setPicked([])} />}
     <div className="pr-roles">{tiers.flatMap(tier => tier.hues.map(id => data.hues.find(hue => hue.id === id)!)).filter(Boolean).map(hue => {
       const caps = capabilityList(edition).filter(cap => cap.hue === hue.id)
       return <div className="pr-role" key={hue.id}>

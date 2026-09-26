@@ -99,7 +99,7 @@ export function slotLinks(edition: EditionId, data: WorkshopData, slots: Slot[],
     const story = a && b ? authored.find(link => (link.first === a.id && link.second === b.id) || (link.first === b.id && link.second === a.id)) : undefined
     if (story) return [{ ...base, kind: story.kind, note: story.note }]
     if (first.capability.id === second.capability.id)
-      return [{ ...base, kind: 'tension', note: `${a?.name ?? 'Two products'}${b ? ` and ${b.name}` : ''} both fill ${first.name}. Pick one, or write down which work each one owns.` }]
+      return [{ ...base, kind: 'tension', note: `${a?.name ?? 'Two products'}${b ? ` and ${b.name}` : ''} both fill ${first.name}. Pick one, or split the work between them explicitly; this reference cannot record that split, so it stays marked.` }]
     if (a && b) {
       if (a.conflictsWith.includes(b.id) || b.conflictsWith.includes(a.id)) return [{ ...base, kind: 'tension', note: `${a.name} and ${b.name} have a recorded tension.` }]
       if (a.pairsWellWith.includes(b.id) || b.pairsWellWith.includes(a.id)) return [{ ...base, kind: 'fit', note: `${a.name} and ${b.name} are a curated pairing.` }]

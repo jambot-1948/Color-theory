@@ -15,9 +15,9 @@ Three levels, from why to who:
 A build is a list of capability slots, each optionally filled with a product (`?build=vector-store:pinecone,model-api` in share links; older `?blend=` product links still load). Curated recipes act as **blueprints**: the same capabilities with different products are reported as "Curated blueprint", and the reading names the swapped products.
 
 Fit is judged at the level the build is decided at:
-- **Capability level** (either slot unfilled): the capabilities snap if a curated recipe combines them or any of their products have a recorded pairing.
+- **Capability level** (either slot unfilled): the capabilities snap if a curated non-cautionary recipe combines them or any of their products have a recorded pairing.
 - **Product level** (both filled): only product evidence counts, from authored story links, recorded pairings, or an exact curated recipe. A sound blueprint can therefore loosen once specific products are chosen.
-- **Two products in one capability** (for example Airflow and Dagster) are always forced. That duplication is what the cautionary recipes and growth wrong turns are about.
+- **Two products in one capability** (for example Airflow and Dagster) are forced unless an authored link for that design says otherwise. The data holds no blanket conflict between them; the tension comes from both claiming one capability, which is what the cautionary recipes and growth wrong turns are about.
 
 ## Where it appears
 
@@ -35,21 +35,21 @@ Fit is judged at the level the build is decided at:
 | Brick | A capability; its printed label is the chosen product, or a dashed "choose a product" label | `capabilities.ts` |
 | Brick colour | The capability's role (hue) | `capability.hue` |
 | Brick height | Tier the role belongs to (foundation low, surface high) | `editionTiers` in `src/bricks/buildModel.ts` |
-| **Snap** (seated, ✓) | A pairing with an earlier part is recorded, authored for a recipe story or growth stage, or the whole set is a curated non-cautionary recipe | `pairsWellWith`, `assemblyStories`, `growthTracks`, `recipes` |
+| **Snap** (seated, ✓) | A pairing with an earlier part is recorded, authored for a recipe story or growth stage, or the whole set is a curated non-cautionary recipe; at capability level, also when any product in one capability has a recorded pairing with any product in the other | `pairsWellWith`, `assemblyStories`, `growthTracks`, `recipes` |
 | **Loose** (lifted, dashed seam, ~) | Nothing recorded either way. Unproven, not wrong. | absence of data |
-| **Forced** (pushed off its studs, red, ✕) | A recorded or authored tension | `conflictsWith`, tension links |
+| **Forced** (pushed off its studs, red, ✕) | A recorded or authored tension, or two products in one capability | `conflictsWith`, tension links |
 | Labelled plinth under the baseplate (Foundations only) | The product operating model: teams and ownership that every part rests on | `editionInfo.plateLabel` |
 | Pale placeholder brick with dashed edge, plus a "Missing parts" callout above the scene | A missing part | `recipe.missingHues`, stage `missing`, or an empty tier beneath an occupied one |
 | Hanging brick | Nothing sits beneath it yet | geometry |
 | Crossed outline | Part removed at this growth stage | stage `remove` |
 
-Finished-model verdicts: *Snaps together*, *Holds, with loose parts* (loose parts, gaps, or two parts with the same role and category), *Forced fit*, and *Looks built, reads wrong* (the parts seat, but the set is a named anti-pattern).
+Finished-model verdicts: *Snaps together*, *Holds, with loose parts* (a part with no recorded link to an earlier part), *Holds, parts missing* (every part links, but parts are marked missing), *Forced fit*, and *Looks built, reads wrong* (the parts seat, but the set is a named anti-pattern).
 
 ## Honesty boundaries
 
 `ASSEMBLY_REVIEW.md` warned that an isometric attachment could invent facts the data does not hold. The views guard against that:
 
-- Tiers are a reading aid. Height is not call order or data flow; every page says so.
+- Tiers are a reading aid. Height is not call order or data flow; the manual page, the front page, and the growth page say so.
 - Studs lock only where a relationship is recorded. Unrecorded pairs sit loose instead of being guessed.
 - Tensions in growth "wrong turns" are authored for that design, matching the refresh's position that the products coexist when responsibilities are separated.
 - Growth tracks are illustrations, not prescriptions.
@@ -68,6 +68,6 @@ Finished-model verdicts: *Snaps together*, *Holds, with loose parts* (loose part
 
 ## Battletest questions
 
-- Do the tier assignments match how practitioners picture each domain? (Trust at the top of AI stacks is the most arguable.)
+- Do the tier assignments match how practitioners picture each domain? (Trust at the top of AI applications is the most arguable.)
 - Do the growth stages match real team histories? Collect counter-examples.
 - Are there loose pairs that experts would call a clear snap, or a clear clash? Those are data gaps in `pairsWellWith` / `conflictsWith`.

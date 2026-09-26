@@ -24,5 +24,5 @@ Reviewed September 24, 2026. This is a capability and combination audit, not a r
 ## Still Needs Design Review
 
 - Vendor documentation confirms capabilities, not whether a given pairing is economical, operationally appropriate, or secure for a particular team.
-- The non-AI recipes still use generic explanatory steps. They need authored integration points, ownership, and failure paths before the diagrams can be treated as technical build instructions.
+- All recipes now have authored step stories, but they are editorial. They still need authored integration points, ownership, and failure paths before the diagrams can be treated as technical build instructions.
 - Tool-level `pairsWellWith` remains a curated editorial judgment. It is not a compatibility certification or a data-flow arrow.

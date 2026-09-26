@@ -34,7 +34,7 @@ Collect feedback using the template at the end of `BATTLETEST.md`.
 ## Key Implementation Details
 - 7-segment color wheel with HUE_ANGLES at 51.4° intervals for each domain
 - SVG-based pattern diagrams + interactive color wheel + recipe composer
-- Isometric brick manual (tools as LEGO-style bricks, snap / loose / forced fits, maturity growth tracks). See `BRICKS.md`
+- Isometric brick manual (capabilities are LEGO-style bricks and products are their printed labels; snap / loose / forced fits, maturity growth tracks). See `BRICKS.md`
 - TypeScript with domain-specific HueId union types
 - Tailwind CSS with opacity-aware color rendering
 - GitHub Actions deploy workflow (`/.github/workflows/deploy.yml`)

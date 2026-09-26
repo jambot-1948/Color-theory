@@ -29,7 +29,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
   foundations: {
     edition: 'foundations',
     title: 'An application, from first deploy to owned platform',
-    intro: 'Most applications start on a managed platform and earn each foundation as users arrive: login and tests, then the ability to see failures, and only then a platform of their own.',
+    intro: 'Many applications start on a managed platform and earn each foundation as users arrive: login and tests, then the ability to see failures, and only then a platform of their own.',
     stages: [
       {
         id: 'prototype', horizon: 'Week 1', name: 'Ship it',
@@ -48,14 +48,14 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       {
         id: 'production', horizon: 'Quarter 1', name: 'Watched',
         add: ['opentelemetry', 'pagerduty'],
-        summary: 'Requests are traced, and someone is paged when the service is at risk.',
+        summary: 'Services emit traces and metrics through OpenTelemetry, and alerts page an on-call owner through PagerDuty.',
         why: 'Users now notice downtime before the team does.',
-        watch: 'Alerts need owners and runbooks, or they turn into noise.',
+        watch: 'Telemetry still needs a backend to store it and raise alerts. Alerts need owners and runbooks, or they turn into noise.',
       },
       {
         id: 'scale', horizon: 'Year 1', name: 'Own the platform',
         add: ['kubernetes', 'argocd', 'terraform'], remove: ['heroku'],
-        summary: 'Several services on infrastructure declared in code and deployed through GitOps.',
+        summary: 'Infrastructure declared in code, and deployments driven from Git.',
         why: 'Enough services and teams that one shared, paved road beats each team’s own setup.',
         watch: 'A platform is a product with its own team. Budget for the people, not just the cluster.',
       },
@@ -71,14 +71,14 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
   ai: {
     edition: 'ai',
     title: 'An AI assistant, from demo to durable',
-    intro: 'Most AI products start as a bright demo. Growing up means adding the tiers the demo skipped, not piling more control parts on top.',
+    intro: 'Many AI products start as a bright demo. Growing up means adding the tiers the demo skipped, not piling more control parts on top.',
     stages: [
       {
         id: 'prototype', horizon: 'Week 1', name: 'Prototype',
         add: ['vercel', 'supabase', 'openai'], missing: ['logic', 'trust'],
         summary: 'An interface, app services, and a model. It demos well.',
         why: 'The quickest route to something people can click and react to.',
-        watch: 'No workflow control and no tracing. The outlines mark where Control and Trust parts will need to go.',
+        watch: 'No workflow control and no tracing. The outlines mark where Logic and Trust parts will need to go.',
       },
       {
         id: 'pilot', horizon: 'Month 1', name: 'Pilot',
@@ -90,20 +90,20 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       {
         id: 'production', horizon: 'Quarter 1', name: 'Production',
         add: ['langsmith', 'guardrails'],
-        summary: 'The trust tier: see what the model did and constrain what it may do.',
+        summary: 'The trust tier: see what the model did, and check what goes in and comes out.',
         why: 'Once decisions depend on the output, the team needs traces to debug and checks on inputs and outputs.',
         watch: 'Decide what is safe to record in traces before volume grows.',
       },
       {
         id: 'scale', horizon: 'Year 1', name: 'Scale',
         add: ['temporal'],
-        links: [{ first: 'langgraph', second: 'temporal', kind: 'recipe', note: 'Authored for this stage: LangGraph owns agent state within a run; Temporal owns retries and resumption around it. Temporal documents a LangGraph integration for this split.' }],
+        links: [{ first: 'langgraph', second: 'temporal', kind: 'recipe', note: 'Authored for this stage: LangGraph owns agent state within a run; Temporal owns retries and resumption around it. Temporal’s Python SDK ships an experimental LangGraph plugin that runs graph nodes as Temporal activities.' }],
         summary: 'Durable recovery for work that outlives one request.',
         why: 'Multi-step jobs now run for minutes or hours and must survive restarts.',
         watch: 'Two parts now touch control. It only snaps because the boundary is written down. Keep it that way.',
       },
       {
-        id: 'accretion', horizon: 'Month 2', name: 'Wrong turn: accretion', from: 'pilot', branch: true, caution: true,
+        id: 'accretion', horizon: 'Month 2', name: 'Wrong turn: accretion', from: 'pilot', branch: true, caution: true, missing: ['trust'],
         add: ['langchain', 'temporal'],
         links: [
           { first: 'langchain', second: 'langgraph', kind: 'tension', note: 'A second agent loop is defined in LangChain outside the LangGraph graph, so two places decide the next step.' },
@@ -112,7 +112,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
         ],
         summary: 'A second agent loop appears outside the graph, and a workflow engine is added with no written boundary.',
         why: 'Each addition seemed useful on its own, so parts were layered on instead of replaced or bounded.',
-        watch: 'Three parts now claim the control loop and the oversight tier is still empty. Remove one, or assign boundaries as in Scale.',
+        watch: 'Three parts now claim the control loop, and nothing yet traces or checks what the agent does. Remove one, or assign boundaries as in Scale.',
       },
     ],
   },
@@ -126,7 +126,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
         add: ['fivetran', 'snowflake', 'dbt'], missing: ['observe'],
         summary: 'Managed ingestion into a warehouse, modelled in SQL.',
         why: 'The quickest route from source systems to tables people can query.',
-        watch: 'Only model-level dbt tests, if any. Nothing blocks bad rows from being promoted.',
+        watch: 'dbt tests are the only checks. Under dbt build, a failing error-severity test skips downstream models, but the tested model is already built and warn-level tests block nothing.',
       },
       {
         id: 'pilot', horizon: 'Month 1', name: 'Quality gates',
@@ -138,16 +138,16 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       {
         id: 'production', horizon: 'Quarter 1', name: 'Orchestrated',
         add: ['dagster'], missing: ['govern'],
-        summary: 'Scheduled scripts become assets with lineage and retries.',
+        summary: 'Syncs, dbt runs, and checks become assets with dependencies, lineage, and retries.',
         why: 'Pipelines now depend on each other and failures need to be traced to a source.',
-        watch: 'Keep one orchestrator. A second is how Pipeline Pileup starts.',
+        watch: 'Prefer one orchestrator. A second without a written ownership line is how Pipeline Pileup starts.',
       },
       {
         id: 'scale', horizon: 'Year 1', name: 'Governed & served',
         add: ['datahub', 'cube'],
         summary: 'A catalog for discovery, ownership, and lineage, and a semantic layer so every consumer uses the same metric definitions.',
         why: 'More teams and more consumers need to find, trust, and agree on the same data.',
-        watch: 'Access is still enforced in the warehouse, not the catalog. Coverage decays unless every dataset has a named owner.',
+        watch: 'Access is still enforced in the warehouse, not the catalog. Catalog coverage tends to decay unless each dataset has a named owner.',
       },
       {
         id: 'second-scheduler', horizon: 'Quarter 2', name: 'Wrong turn: second scheduler', from: 'production', branch: true, caution: true,
@@ -169,12 +169,12 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
         add: ['lambda', 'postgresql', 'mcp'], caution: true, missing: ['sandbox', 'permissions'],
         summary: 'A function, a database, and tools the model can call. It works.',
         why: 'Connecting tools is the quickest way to make an agent useful.',
-        watch: 'Nothing isolates what the tools run, nothing gates what they change, and nothing records it.',
+        watch: 'Tools run with whatever the function’s role can reach. Nothing gates what they change, and nothing records it.',
       },
       {
         id: 'pilot', horizon: 'Month 1', name: 'Contained',
         add: ['e2b', 'langfuse'], missing: ['permissions'],
-        summary: 'Model-written code runs in a sandbox, and every run leaves a trace.',
+        summary: 'Model-written code runs in a sandbox, and instrumented runs leave a trace.',
         why: 'The first time the agent runs generated code, it should not run on your hosts.',
         watch: 'Tools can still change real systems with whatever credentials they hold.',
       },

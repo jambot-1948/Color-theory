@@ -160,14 +160,15 @@ export function seatFor(tool: WorkshopTool, earlier: WorkshopTool[], links: Buil
   return { seat: 'loose' }
 }
 
-// Two parts with the same role and category, and no recorded pairing, claim the same job.
+// Two filled parts with the same role and category, and no recorded pairing, claim the same job.
+// Empty capability bricks share the placeholder category "Any product", so they are not compared.
 export function sharedJobs(tools: WorkshopTool[], links: BuildLink[]) {
   return tools.flatMap((first, index) => tools.slice(index + 1)
-    .filter(second => second.primaryHue === first.primaryHue && second.category === first.category && !linkBetween(links, first.id, second.id))
+    .filter(second => first.category !== 'Any product' && second.primaryHue === first.primaryHue && second.category === first.category && !linkBetween(links, first.id, second.id))
     .map(second => [first, second] as const))
 }
 
-export type Verdict = 'clean' | 'loose' | 'forced' | 'caution' | 'empty'
+export type Verdict = 'clean' | 'loose' | 'gaps' | 'forced' | 'caution' | 'empty'
 
 export interface BuildReading {
   verdict: Verdict
@@ -183,15 +184,17 @@ export function readBuild(edition: EditionId, tools: WorkshopTool[], links: Buil
   const verdict: Verdict = !tools.length ? 'empty'
     : seats.some(item => item.seat === 'clash') ? 'forced'
     : options.caution ? 'caution'
-    : seats.some(item => item.seat === 'loose') || shared.length || gaps.length ? 'loose'
+    : seats.some(item => item.seat === 'loose') || shared.length ? 'loose'
+    : gaps.length ? 'gaps'
     : 'clean'
   return { verdict, seats, shared, gaps }
 }
 
 export const verdictCopy: Record<Verdict, { label: string, line: string }> = {
-  clean: { label: 'Snaps together', line: 'Every part locks onto a recorded partner and every tier beneath the top is filled.' },
-  loose: { label: 'Holds, with loose parts', line: 'The model stands, but some parts have no recorded partner, share a job, or rest over an empty tier.' },
-  forced: { label: 'Forced fit', line: 'At least one part is pressed against a recorded tension. It stands only until something pushes on it.' },
-  caution: { label: 'Looks built, reads wrong', line: 'The parts seat, but this combination is a named cautionary pattern. Read what it leaves out.' },
+  clean: { label: 'Snaps together', line: 'Each part links to an earlier one through a recorded pairing, a curated recipe, or an authored note, and nothing is marked missing. Recorded, not tested.' },
+  loose: { label: 'Holds, with loose parts', line: 'The model stands, but at least one part has no recorded link to an earlier part.' },
+  gaps: { label: 'Holds, parts missing', line: 'Each part links to an earlier one, but the model is missing parts it needs.' },
+  forced: { label: 'Forced fit', line: 'At least one pair has a tension authored for this design, or two products fill the same capability. Settle the boundary before relying on it.' },
+  caution: { label: 'Looks built, reads wrong', line: 'This combination is a curated cautionary recipe or an authored wrong turn. Read what it leaves out, whether or not each part seats.' },
   empty: { label: 'Empty baseplate', line: 'Add a part to start the model.' },
 }

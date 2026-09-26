@@ -16,10 +16,10 @@ import { blueprintMatch, capabilityList, decodeSlots, encodeSlots, isCaution, sl
 type Lens = 'Architect' | 'Operator' | 'Consultant'
 // How each edition relates to Foundations. Foundations stays generic; the other editions are where fit is argued.
 const foundationNotes = {
-  foundations: { label: 'GENERIC BY DESIGN', text: 'Foundations names the capabilities every system needs. The products are common examples, not a complete catalogue: if yours is not listed, it fills the same brick. The other tabs are where we argue what fits and what does not.' },
-  ai: { label: 'BUILDS ON FOUNDATIONS', text: 'An AI application still needs a front end, a back end, login, CI, hosting, and monitoring. This tab assumes those are in place and shows what AI adds on top, and where it plugs in.' },
+  foundations: { label: 'GENERIC BY DESIGN', text: 'Foundations names the capabilities every system needs. The products are common examples, not a complete catalogue: if yours does the same job, it fills the same brick. The other tabs are where we argue what fits and what does not.' },
+  ai: { label: 'BUILDS ON FOUNDATIONS', text: 'An AI application still needs login, CI, hosting, and monitoring. This tab assumes those are in place. It includes a light interface and app backend for prototypes, and shows what AI adds on top.' },
   data: { label: 'BUILDS ON FOUNDATIONS', text: 'A data platform still needs identity, source control and CI, infrastructure as code, and monitoring. This tab assumes those are in place and shows what data work adds on top.' },
-  harness: { label: 'BUILDS ON FOUNDATIONS', text: 'An agent harness runs on the same runtime, identity, delivery, and monitoring as any service. This tab assumes those are in place and shows what agents add between the model and the world.' },
+  harness: { label: 'BUILDS ON FOUNDATIONS', text: 'An agent harness shares identity, delivery, and monitoring with any other service. This tab assumes those are in place, covers runtime and secrets where agents change the choice, and shows what agents add between the model and the world.' },
 } as const
 
 // Foundations recipes run to ten parts; keep the tray large enough for them.
@@ -56,15 +56,15 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   const tensions = links.filter(link => link.kind === 'tension').map(link => link.note)
   const swapped = match && !match.exact ? slots.filter(slot => slot.product && !match.recipe.tools.includes(slot.product)).map(slot => data.tools.find(tool => tool.id === slot.product)?.name).filter(Boolean) : []
   const unfilled = tools.filter(tool => !tool.product).map(tool => tool.name)
-  const nextCheck = unfilled.length ? `Choose a product for ${unfilled.join(', ')}. The blueprint holds; the fit depends on which products you pick.` : recipe?.whereItBreaks?.[0] || recipe?.symptoms?.[0] || tensions[0] || 'Confirm who owns each integration point in this composition.'
+  const nextCheck = unfilled.length ? `Choose a product for ${unfilled.join(', ')}.${match ? ` These capabilities match ${match.recipe.name}; whether they still snap depends on the products you pick.` : ' Until you do, fit is judged at the capability level only.'}` : recipe?.whereItBreaks?.[0] || recipe?.symptoms?.[0] || tensions[0] || 'Confirm who owns each integration point in this composition.'
   const readingLabel = recipe
     ? isCaution(data, recipe) ? 'CURATED CAUTION' : match?.exact ? 'CURATED RECIPE' : 'CURATED BLUEPRINT'
-    : tensions.length ? 'RECORDED CONFLICT' : pattern ? 'ROLE RESEMBLANCE' : 'NO PATTERN MATCH'
+    : tensions.length ? 'DESIGN TENSION' : pattern ? 'ROLE RESEMBLANCE' : 'NO PATTERN MATCH'
   const readingTitle = recipe?.name || pattern?.name || 'A new composition'
   const blueprintNote = match && !match.exact ? (swapped.length ? `Same capabilities as ${recipe?.name}, filled with different products: ${swapped.join(', ')}.` : `Same capabilities as ${recipe?.name}. Choose products to compare with the curated build.`) : ''
   const architectText = [blueprintNote, recipe?.useCase || pattern?.description || 'This selection does not yet match a named pattern in the reference.'].filter(Boolean).join(' ')
   const architectDetail = recipe?.whyItWorks?.join(' · ') || recipe?.whyItHappens?.join(' · ') || active.map(id => hues[id].name).join(' · ')
-  const operatorText = recipe?.whereItBreaks?.[0] || recipe?.symptoms?.[0] || tensions[0] || 'No direct conflict is recorded for these parts.'
+  const operatorText = recipe?.whereItBreaks?.[0] || recipe?.symptoms?.[0] || tensions[0] || 'No tension is recorded for these parts.'
   const operatorDetail = recipe?.whereItBreaks?.slice(1).join(' · ') || recipe?.symptoms?.slice(1).join(' · ') || pattern?.weaknesses.join(' · ') || 'Check how each part will be owned and observed.'
   const consultantText = recipe?.useCase || `${tools.map(tool => `${tool.name}${tool.product ? ` (${tool.product.name})` : ''} covers ${hues[tool.primaryHue].name.toLowerCase()}`).join('; ')}.`
   const consultantDetail = recipe?.fix?.[0] || recipe?.whyItWorks?.join(' · ') || pattern?.strengths.join(' · ') || 'The role boundaries need a closer review.'

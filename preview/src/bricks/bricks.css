@@ -38,3 +38,4 @@
 .mb-missing ul{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;padding:0;list-style:none}
 .mb-missing li{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#33443b}
 .mb-missing .iso-icon{width:34px}
+.mb-stamp.is-gaps{color:#56655d}

@@ -46,7 +46,7 @@ export default function ManualBoard({ edition, data, tools, step, links, ghostHu
       plateLabel={editionInfo[edition].plateLabel}
     />
     <div className="mb-tiers" aria-label="Tiers, bottom to top">{editionTiers[edition].map((tier, index) => <span key={tier.name}><b>T{index + 1}</b>{tier.name}</span>)}</div>
-    <div className="mb-page-foot"><span>Height shows tier, not call order. Studs lock only where a pairing is recorded.</span><span>{step}/{tools.length}</span></div>
+    <div className="mb-page-foot"><span>Height shows tier, not call order. Studs lock only where a pairing, recipe, or authored note is recorded.</span><span>{step}/{tools.length}</span></div>
   </div>
 }
 
