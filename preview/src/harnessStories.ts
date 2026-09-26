@@ -13,7 +13,7 @@ export const harnessStories: Record<string, AssemblyStory> = {
     ],
     links: [
       { first: 'lambda', second: 'postgresql', kind: 'fit', note: 'The pairing itself is sound. The caution comes from what this design leaves out, not from the two parts.' },
-      { first: 'lambda', second: 'mcp', kind: 'recipe', note: 'The function connects to MCP servers with its own credentials, so its execution role becomes the only permission boundary.' },
+      { first: 'lambda', second: 'mcp', kind: 'recipe', note: 'The function connects to MCP servers with the credentials it holds, so its execution role and API keys are the only permission boundary.' },
     ],
   },
   'sandboxed-coder': {
@@ -27,7 +27,7 @@ export const harnessStories: Record<string, AssemblyStory> = {
     links: [
       { first: 'mcp', second: 'e2b', kind: 'fit', note: 'The E2B SDK can start an MCP gateway inside a sandbox.' },
       { first: 'mcp', second: 'langfuse', kind: 'fit', note: 'Langfuse documents linking MCP client and server traces through trace context in the _meta field.' },
-      { first: 'e2b', second: 'langfuse', kind: 'recipe', note: 'The recipe traces sandbox runs from the agent code; there is no built-in connection between the two.' },
+      { first: 'e2b', second: 'langfuse', kind: 'recipe', note: 'The recipe traces sandbox runs from the agent code; that instrumentation is application work.' },
       { first: 'mcp', second: 'postgresql', kind: 'recipe', note: 'The recipe stores tool results and session history in PostgreSQL; the schema and read-back are application work.' },
     ],
   },
@@ -42,7 +42,7 @@ export const harnessStories: Record<string, AssemblyStory> = {
       { toolId: 'langfuse', action: 'Record what happened', explanation: 'Trace tool calls and attach the policy and approval outcome, so the audit trail shows why an action ran.' },
     ],
     links: [
-      { first: 'kubernetes', second: 'temporal', kind: 'fit', note: 'Temporal workers can run as long-lived pods; this is a curated pairing.' },
+      { first: 'kubernetes', second: 'temporal', kind: 'fit', note: 'Temporal publishes a Helm chart for Kubernetes, and its workers can run as long-lived pods.' },
       { first: 'kubernetes', second: 'opa', kind: 'fit', note: 'OPA documents Kubernetes admission control. That governs cluster objects, not the agent\'s tool calls.' },
       { first: 'kubernetes', second: 'vault', kind: 'fit', note: 'The Vault Secrets Operator syncs Vault secrets into Kubernetes Secrets.' },
       { first: 'mcp', second: 'opa', kind: 'recipe', note: 'The recipe checks each MCP tool call against OPA. Neither product does this for the other; the harness must route every call through the check.' },
@@ -80,7 +80,7 @@ export const harnessStories: Record<string, AssemblyStory> = {
       { toolId: 'litellm', action: 'Bound model calls', explanation: 'Add fallbacks, budgets, and rate limits in front of providers. Decide whether Temporal or LiteLLM owns model-call retries.' },
     ],
     links: [
-      { first: 'kubernetes', second: 'temporal', kind: 'fit', note: 'Temporal workers can run as long-lived pods; this is a curated pairing.' },
+      { first: 'kubernetes', second: 'temporal', kind: 'fit', note: 'Temporal publishes a Helm chart for Kubernetes, and its workers can run as long-lived pods.' },
       { first: 'temporal', second: 'postgresql', kind: 'fit', note: 'PostgreSQL is a supported Temporal persistence store; agent context and Temporal state should stay separate.' },
       { first: 'temporal', second: 'langfuse', kind: 'fit', note: 'Langfuse documents tracing Temporal workflows through OpenTelemetry.' },
       { first: 'langfuse', second: 'opentelemetry', kind: 'fit', note: 'Langfuse accepts traces on a native OpenTelemetry endpoint.' },
@@ -89,6 +89,26 @@ export const harnessStories: Record<string, AssemblyStory> = {
       { first: 'litellm', second: 'langfuse', kind: 'fit', note: 'Langfuse documents logging every call routed through the LiteLLM proxy.' },
       { first: 'litellm', second: 'postgresql', kind: 'fit', note: 'The LiteLLM proxy uses PostgreSQL for keys and spend tracking, in its own database.' },
       { first: 'temporal', second: 'litellm', kind: 'recipe', note: 'The recipe has Temporal activities call models through the gateway. Both can retry, so assign retries to one layer.' },
+    ],
+  },
+  'local-agent': {
+    recipeId: 'local-agent',
+    steps: [
+      { toolId: 'local-machine', action: 'Provide the machine', explanation: 'A dedicated machine on-site runs the agent under its own account. Anything that machine can reach on the network, the agent\'s tools can reach.' },
+      { toolId: 'mcp', action: 'Connect local tools', explanation: 'stdio MCP servers start as subprocesses on the same machine and take credentials from the environment. Nothing yet decides which calls are allowed.' },
+      { toolId: 'docker', action: 'Run the services', explanation: 'Run PostgreSQL and Langfuse in containers. Containers share one kernel (on macOS, Docker Desktop\'s Linux VM), so a plain container is not a sandbox for model-written code.' },
+      { toolId: 'postgresql', action: 'Keep session history', explanation: 'Store results and decisions so the next run can read them back, and back the database up off the machine.' },
+      { toolId: 'langfuse', action: 'Trace each run', explanation: 'Self-hosted Langfuse records model and MCP tool calls on-site, so unattended runs leave a record someone can review.' },
+    ],
+    links: [
+      { first: 'local-machine', second: 'mcp', kind: 'fit', note: 'The MCP stdio transport has the client launch each server as a local subprocess.' },
+      { first: 'local-machine', second: 'docker', kind: 'fit', note: 'Docker runs on the machine; on macOS the documented install is Docker Desktop, with its own licence terms.' },
+      { first: 'mcp', second: 'docker', kind: 'recipe', note: 'The recipe runs supporting services in containers; whether MCP servers also run in containers is a choice, and a plain container is not a sandbox for untrusted code.' },
+      { first: 'docker', second: 'postgresql', kind: 'recipe', note: 'The recipe runs PostgreSQL from a container image; its data volume is what needs backing up.' },
+      { first: 'mcp', second: 'postgresql', kind: 'recipe', note: 'The recipe stores tool results and session history in PostgreSQL; the schema and read-back are application work.' },
+      { first: 'mcp', second: 'langfuse', kind: 'fit', note: 'Langfuse documents linking MCP client and server traces.' },
+      { first: 'docker', second: 'langfuse', kind: 'fit', note: 'Langfuse publishes a Docker Compose setup for running it on one machine or VM.' },
+      { first: 'postgresql', second: 'langfuse', kind: 'fit', note: 'Self-hosted Langfuse uses PostgreSQL for its own data; keep that database separate from agent context.' },
     ],
   },
   'open-door-agent': {
@@ -100,7 +120,7 @@ export const harnessStories: Record<string, AssemblyStory> = {
     ],
     links: [
       { first: 'mcp', second: 'redis', kind: 'recipe', note: 'The recipe keeps tool results in the Redis session; nothing in it limits which tools a session may call.' },
-      { first: 'modal', second: 'redis', kind: 'fit', note: 'The serverless runtime and the session store are a curated pairing.' },
+      { first: 'modal', second: 'redis', kind: 'recipe', note: 'The recipe has the Modal Function read and write session context in Redis; that connection is application code.' },
       { first: 'mcp', second: 'modal', kind: 'tension', note: 'In this design broad tool access and in-process code execution share one container and its credentials, so one bad completion can reach both.' },
     ],
   },

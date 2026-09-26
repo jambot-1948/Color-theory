@@ -6,13 +6,16 @@ Use an instruction-manual structure to help a consultant understand a tool combi
 
 ## Inventory
 
-| Edition | Tools | Roles | Patterns | Recipes | Reference integrity |
-| --- | ---: | ---: | ---: | ---: | --- |
-| AI stacks | 12 | 7 | 16 | 7 | Tool and pattern IDs resolve |
-| Data engineering | 13 | 7 | 8 | 6 | Tool and pattern IDs resolve |
-| Agent harness | 11 | 7 | 8 | 5 | Tool and pattern IDs resolve |
+| Edition | Products | Capabilities | Roles | Patterns | Recipes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Foundations | 26 | 23 | 7 | 8 | 7 |
+| AI applications | 13 | 9 | 7 | 16 | 8 |
+| Data engineering | 13 | 11 | 7 | 9 | 6 |
+| Agent harness | 19 | 18 | 7 | 10 | 7 |
 
-The three datasets share the same general shape, but their roles and instructions are domain-specific. All three editions now use the assembly interaction grammar. AI stacks have authored recipe-specific stories; data engineering and agent harness use recipe order, tool descriptions, and recorded pairings as a first pass. Their step narratives still need domain review. See `SOFTWARE_REFRESH.md` for the September 2026 capability audit.
+Counts as of the September 26, 2026 credibility pass. Every tool, pattern, and recipe id resolves, every pairing is declared on both tools, and `missingHues` lists roles absent as both primary and secondary role.
+
+The four editions share the same general shape, but their roles and instructions are domain-specific. Foundations is generic by design; the other three build on it. All four editions have authored step stories for every recipe (`assemblyStories`, `dataStories`, `harnessStories`, `foundationsStories`). These are editorial, not technical build instructions, and still need domain review. See `SOFTWARE_REFRESH.md` for the September 2026 capability audit.
 
 ## Evidence Hierarchy
 
@@ -23,7 +26,7 @@ The three datasets share the same general shape, but their roles and instruction
 
 `pairsWellWith` means curated affinity; `conflictsWith` means recorded tension. Neither field identifies a runtime interface, data-flow direction, or required build order. The current assembly diagram's curves show those relationships only. Arrows between numbered steps mean presentation order, not execution order.
 
-## AI Recipe Stories
+## AI Application Recipe Stories
 
 | Example | What the manual should reveal | Crucial check |
 | --- | --- | --- |
@@ -37,11 +40,11 @@ The three datasets share the same general shape, but their roles and instruction
 
 ## Content Gaps Before a Richer Manual
 
-- The prototype now has authored explanatory steps and conceptual links for all six AI-stack recipes. The source data still lacks ports, inputs, outputs, and connection direction. An isometric attachment or runtime arrow would invent those facts today.
+- The prototype has authored explanatory steps and conceptual links for all eight AI-application recipes. The source data still lacks ports, inputs, outputs, and connection direction, so the brick manual shows tiers and recorded relationships only; see `BRICKS.md` "Honesty boundaries".
 - Pattern `watchFor` entries are pattern-level possibilities. They must not be displayed as active failures when the selected tools contradict them.
 - Several positive and cautionary patterns share primary role sets. Role colors alone cannot classify a stack.
 - Three role signatures are shared by multiple patterns: Cognition/Intent/Trust, Cognition/Memory, and Cognition/Interface/Velocity. The Cognition/Memory pair spans a foundational pattern and an anti-pattern, so the conditions around a build matter more than the palette.
-- Seven `pairsWellWith` declarations appear from only one of the two AI tools. The prototype treats either declaration as an undirected affinity; a manual should review these pairs before drawing a specific attachment.
+- All `pairsWellWith` declarations are symmetric in every edition (audited September 26, 2026).
 - A recipe's primary pattern is not necessarily listed on every ingredient tool. `recipe.patternIds` is the authoritative mapping for an exact recipe; per-tool `patterns` is supporting reference data.
 - Secondary roles are present in the tool data but absent from the current assembly part labels. Decide whether they should appear as a second face or capability marker.
 - Product claims such as "standard choice" or categorical scalability judgments should be checked before publication. This review treats them as repository copy, not verified market facts.
@@ -49,7 +52,7 @@ The three datasets share the same general shape, but their roles and instruction
 
 ## Manual Grammar To Develop
 
-- **Part:** A tool, labeled by name, primary role, and category. Shape may distinguish architectural role; vendor branding should not determine geometry.
+- **Part:** A capability brick, coloured by role and labelled with the product that fills it. Vendor branding does not determine geometry.
 - **Placement:** One numbered explanatory step. State what capability is added and which earlier part it relates to.
 - **Connection:** A documented affinity or conflict. Use separate marks for each; unclassified pairs remain unconnected rather than being guessed.
 - **Runtime flow:** Reserved for future recipe-specific, reviewed connection data. Use directional arrows only when a source, destination, and transferred responsibility have been authored.
@@ -58,4 +61,4 @@ The three datasets share the same general shape, but their roles and instruction
 
 ## Next Content Pass
 
-Review the seven authored AI step stories with a domain expert, especially conceptual links that come from one-sided affinity data. Author equivalent step stories for the six data-engineering and five agent-harness recipes; the current generic steps are not technical build instructions. Then specify actual runtime inputs, outputs, ownership, and direction for any recipe that should become a technical manual. The original AI color-theory view remains at `#/original` for comparison.
+Review the authored step stories in all four editions with domain experts. Then specify runtime inputs, outputs, ownership, and direction for any recipe that should become a technical manual. The original AI color-theory view remains at `#/original` for comparison.

@@ -99,7 +99,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       name: "Sandbox",
       colorName: "Teal",
       hex: "#1B998B",
-      description: "Where agent-generated code and commands run — isolated from the host, its secrets, and everything else.",
+      description: "Where agent-generated code and commands run — isolated from the host and its secrets.",
     },
     {
       id: "permissions",
@@ -161,11 +161,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Open protocol, with official SDKs, for exposing tools, resources, and prompts from servers to AI applications. The current specification version is 2026-07-28.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["e2b", "langfuse", "litellm", "promptfoo", "temporal", "letta"],
+      pairsWellWith: ["e2b", "langfuse", "litellm", "promptfoo", "temporal", "letta", "local-machine"],
       conflictsWith: [],
       patterns: ["gated-action", "sandboxed-loop", "open-door"],
       notes:
-        "Standardises how tools are described and called; it does not decide which calls are allowed. The specification says tools represent arbitrary code execution, that hosts must obtain user consent before invoking a tool, and that the protocol itself cannot enforce these principles. Tool descriptions and annotations should be treated as untrusted unless the server is trusted. Official SDKs include TypeScript, Python, C#, Go, and Rust (Tier 1), with further languages at lower support tiers.",
+        "Standardises how tools are described and called; it does not decide which calls are allowed. The specification says tools represent arbitrary code execution, that hosts must obtain user consent before invoking a tool, and that the protocol itself cannot enforce these principles. Tool descriptions and annotations should be treated as untrusted unless the server is trusted. Official SDKs include TypeScript, Python, C#, Go, and Rust (Tier 1), with further languages at lower support tiers. Of the two standard transports, stdio has the client launch the server as a subprocess on the same machine, and the specification says stdio servers should take credentials from the environment rather than its HTTP authorization flow; Streamable HTTP servers can run anywhere.",
     },
 
     // ── Sandbox ────────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["sandboxed-loop"],
       notes:
-        "Isolation covers where code runs, not what it is allowed to reach; network access and credentials placed in a sandbox still need deciding. The SDK can start an MCP gateway inside a sandbox. Hosted by E2B, or self-hosted on AWS or Google Cloud using the published Terraform-based infrastructure. SDK repository is Apache-2.0 licensed.",
+        "Isolation covers where code runs, not what it is allowed to reach; network access and credentials placed in a sandbox still need deciding. The SDK can start an MCP gateway inside a sandbox. Hosted by E2B. The open-source runtime also ships as E2B Embed for a single Linux host with KVM, which E2B describes as an evaluation package rather than a production deployment; production deployments in your own cloud are run by E2B. SDKs and runtime are Apache-2.0 licensed.",
     },
     {
       id: "gvisor",
@@ -199,7 +199,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["sandboxed-loop"],
       notes:
-        "Hardens the container boundary for untrusted workloads; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. Apache-2.0 licensed.",
+        "Adds an isolation layer between untrusted containers and the host kernel; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. Apache-2.0 licensed.",
     },
 
     // ── Permissions ────────────────────────────────────────────────────
@@ -217,7 +217,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["gated-action"],
       notes:
-        "OPA returns decisions; the calling service must enforce them, so every tool path has to ask. It has no built-in agent or MCP integration: checking tool calls against OPA is code the harness owns. Its Kubernetes admission-control use governs cluster objects, not agent actions. CNCF graduated project, Apache-2.0 licensed.",
+        "OPA returns decisions; the calling service must enforce them, so every tool path has to ask, and routing agent tool calls through OPA is code the harness owns. Its Kubernetes admission-control use governs cluster objects, not agent actions. CNCF graduated project, Apache-2.0 licensed.",
     },
     {
       id: "vault",
@@ -229,11 +229,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Centralized secrets management with encryption, access control, audit logging, and dynamic credentials.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "temporal", "postgresql"],
+      pairsWellWith: ["kubernetes", "postgresql"],
       conflictsWith: [],
       patterns: ["gated-action", "open-door"],
       notes:
-        "Complex to operate. One option for secret rotation, dynamic credentials (including generated PostgreSQL logins), and audit; smaller footprints may not need it. Scoped, short-lived credentials limit what a tool can reach, but Vault does not decide which agent actions are allowed. Current versions are under the Business Source License 1.1, with IBM as licensor.",
+        "Adds significant operating load. One option for secret rotation, dynamic credentials (including generated PostgreSQL logins), and audit; smaller footprints may not need it. Scoped, short-lived credentials limit what a tool can reach, but Vault does not decide which agent actions are allowed. Current versions are under the Business Source License 1.1, with IBM as licensor.",
     },
 
     // ── Context ────────────────────────────────────────────────────────
@@ -247,11 +247,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Durable, queryable database for persisting agent state, conversation history, and structured context.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["lambda", "temporal", "vault", "litellm"],
+      pairsWellWith: ["lambda", "temporal", "vault", "litellm", "langfuse"],
       conflictsWith: [],
       patterns: ["durable-agent", "stateless-learner"],
       notes:
-        "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility. Self-hosted Temporal and the LiteLLM proxy can each use PostgreSQL for their own persistence; keep those databases separate from agent context. What to keep and what to expire is a design decision the database does not make.",
+        "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility. Self-hosted Temporal, self-hosted Langfuse, and the LiteLLM proxy can each use PostgreSQL for their own persistence; keep those databases separate from agent context. What to keep and what to expire is a design decision the database does not make.",
     },
     {
       id: "redis",
@@ -263,7 +263,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Fast in-memory data store for agent sessions, caches, and short-lived context; durability depends on the persistence configuration.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["modal", "litellm"],
+      pairsWellWith: ["litellm"],
       conflictsWith: [],
       patterns: ["stateless-learner"],
       notes:
@@ -297,11 +297,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "LLM-specific tracing and monitoring. Captures prompts, completions, latency, costs, and evaluation metrics.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["lambda", "modal", "temporal", "opentelemetry", "mcp", "litellm", "promptfoo"],
+      pairsWellWith: ["lambda", "temporal", "opentelemetry", "mcp", "litellm", "promptfoo", "docker", "postgresql"],
       conflictsWith: [],
       patterns: ["silent-agent", "gated-action", "sandboxed-loop", "eval-gate"],
       notes:
-        "Purpose-built for LLM workloads. Tracks cost out of the box; quality scores need evaluations configured. Accepts traces on a native OpenTelemetry (OTLP over HTTP) endpoint, documents linking MCP client and server traces, logs calls routed through the LiteLLM proxy, and can serve managed prompts to Promptfoo evals. Core is MIT-licensed; enterprise directories are licensed separately.",
+        "Built for LLM workloads. Records token usage and cost; quality scores need evaluations configured. Accepts traces on a native OpenTelemetry (OTLP over HTTP) endpoint, documents linking MCP client and server traces, logs calls routed through the LiteLLM proxy, and can serve managed prompts to Promptfoo evals. Can be self-hosted: Docker Compose on one machine or VM, or, for production, Kubernetes (Helm) or one of the documented cloud deployments; Langfuse recommends Kubernetes for high availability and throughput. Its serverless guide says to flush events before a function such as AWS Lambda exits. The self-hosted stack includes PostgreSQL, ClickHouse, Redis, and S3-compatible storage, each needing backups. Core is MIT-licensed; enterprise directories are licensed separately.",
     },
     {
       id: "opentelemetry",
@@ -315,9 +315,9 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "high",
       pairsWellWith: ["kubernetes", "temporal", "langfuse", "lambda"],
       conflictsWith: [],
-      patterns: ["silent-agent", "durable-agent"],
+      patterns: ["silent-agent"],
       notes:
-        "Reduces vendor lock-in; requires careful setup and a chosen backend. The generative AI semantic conventions are still in Development status, so attribute names may change.",
+        "Keeps instrumentation independent of the backend; requires careful setup and a chosen backend. The generative AI semantic conventions are still in Development status, so attribute names may change.",
     },
     {
       id: "promptfoo",
@@ -333,7 +333,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["eval-gate", "ungated-release"],
       notes:
-        "A gate is only as good as its test cases and pass thresholds, which the team writes and maintains. Evals run locally by default. Documents CI/CD quality gates, a LiteLLM provider, Langfuse-managed prompts, and connecting providers to MCP servers. Promptfoo is now part of OpenAI and states it remains open source under the MIT license.",
+        "A gate is only as good as its test cases and pass thresholds, which the team writes and maintains. The CLI runs evals on your own machine or CI runner; prompts still go to the configured model providers. Documents CI/CD quality gates, a LiteLLM provider, Langfuse-managed prompts, and connecting providers to MCP servers. Promptfoo is now part of OpenAI and states it remains open source under the MIT license.",
     },
 
     // ── Recovery ───────────────────────────────────────────────────────
@@ -347,11 +347,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Durable execution platform: workflow code resumes after failures, with activity retries and timeouts built in. Workflows can block on Signals, which Temporal documents as its human-in-the-loop approval pattern.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "postgresql", "langfuse", "vault", "opentelemetry", "mcp"],
+      pairsWellWith: ["kubernetes", "postgresql", "langfuse", "opentelemetry", "mcp"],
       conflictsWith: [],
       patterns: ["durable-agent", "gated-action", "cascading-failure"],
       notes:
-        "Durable execution can simplify retries and recovery for long-running work. Not every production agent needs a separate workflow engine. Workers usually run as long-lived processes; Serverless Workers on AWS Lambda are in Public Preview. Self-hosting needs a persistence store such as PostgreSQL. SDKs include OpenTelemetry tracing support. Temporal's durability does not extend to MCP servers; its OpenAI Agents SDK integration runs each MCP operation as an Activity.",
+        "Durable execution can simplify retries and recovery for long-running work. Not every production agent needs a separate workflow engine. Workers usually run as long-lived processes; Serverless Workers on AWS Lambda are in Public Preview. Self-hosting needs a persistence store such as PostgreSQL; Temporal publishes a Helm chart for running the service on Kubernetes. SDKs include OpenTelemetry tracing support. Temporal's durability does not extend to MCP servers; its OpenAI Agents SDK integration runs each MCP operation as an Activity.",
     },
     {
       id: "litellm",
@@ -366,7 +366,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       trustContribution: "medium",
       pairsWellWith: ["langfuse", "postgresql", "redis", "promptfoo", "mcp"],
       conflictsWith: [],
-      patterns: ["eval-gate", "durable-agent", "cascading-failure"],
+      patterns: ["eval-gate", "cascading-failure"],
       notes:
         "Budgets can hard-fail requests (max budget) or only alert (soft budget), and can be attached to keys, teams, organizations, and end users. A fallback model is a behaviour change, so it needs the same evals as the primary. The proxy is one more service in the request path; its published production stack uses PostgreSQL and Redis. Also offers an MCP gateway. MIT-licensed outside the enterprise directory.",
     },
@@ -379,12 +379,12 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Serverless Compute",
       maturity: "production",
       description:
-        "Serverless function platform for triggering agents on-demand. Auto-scales with load; pay per invocation.",
+        "Serverless function platform for running agents on demand in response to events. Scales with incoming requests; billed per request and by compute duration.",
       complexityAdded: "low",
       trustContribution: "medium",
       pairsWellWith: ["postgresql", "langfuse", "opentelemetry"],
       conflictsWith: [],
-      patterns: ["silent-agent", "cascading-failure"],
+      patterns: ["cascading-failure"],
       notes:
         "Useful for event-triggered work. Each invocation has a 15-minute limit, so long jobs must be split or checkpointed; Lambda durable functions add checkpointed steps that resume after interruptions. AWS publishes OpenTelemetry Lambda layers for instrumentation. A function's execution role is a permission boundary for the whole function, not for individual tool calls.",
     },
@@ -398,11 +398,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Serverless container platform for ML and LLM workloads, with GPU requests, container autoscaling limits, per-input retries, and Sandboxes: separate containers for running untrusted code.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["redis", "langfuse"],
+      pairsWellWith: [],
       conflictsWith: [],
       patterns: ["sandboxed-loop", "unsandboxed-execution"],
       notes:
-        "Fast path to GPU and container workloads. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; pair it with one such as Langfuse for prompt-level visibility. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here.",
+        "Runs GPU and container workloads without managing servers. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; prompt-level visibility needs a separate one. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here.",
     },
     {
       id: "docker",
@@ -414,11 +414,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Builds and runs OCI container images that package an agent with its dependencies. The images run on Kubernetes through any CRI runtime, such as containerd or CRI-O.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["kubernetes", "gvisor"],
+      pairsWellWith: ["kubernetes", "gvisor", "local-machine", "langfuse"],
       conflictsWith: [],
       patterns: ["unsandboxed-execution"],
       notes:
-        "Foundational packaging tool; rarely stands alone. A standard container shares the host kernel, so it is not by itself a sandbox for model-written code; gVisor's runsc runtime can harden it. Kubernetes removed its built-in Docker Engine integration (dockershim) in v1.24, but Docker-built images still run there.",
+        "Foundational packaging tool; rarely stands alone. A standard container shares the host kernel, so it is not by itself a sandbox for model-written code; gVisor's runsc runtime adds an isolation layer. Kubernetes removed its built-in Docker Engine integration (dockershim) in v1.24, but Docker-built images still run there. Langfuse publishes a Docker Compose setup for self-hosting.",
     },
     {
       id: "kubernetes",
@@ -427,14 +427,14 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Orchestration",
       maturity: "production",
       description:
-        "Industry-standard container orchestration for managing agents at scale. Complex but powerful and flexible.",
+        "Container orchestration platform for running agent services and workers across a cluster.",
       complexityAdded: "high",
       trustContribution: "high",
       pairsWellWith: ["docker", "temporal", "vault", "opentelemetry", "ray", "gvisor", "opa"],
       conflictsWith: [],
-      patterns: ["durable-agent", "gated-action"],
+      patterns: ["durable-agent"],
       notes:
-        "Steep learning curve and meaningful operating overhead. Use when container orchestration is warranted; it is not required merely because a system is large. Operators exist for Ray (KubeRay) and Vault (Vault Secrets Operator); gVisor can be selected per workload as a container runtime, and OPA can act as an admission controller for cluster objects.",
+        "Steep learning curve and meaningful operating overhead. Use when container orchestration is warranted; it is not required merely because a system is large. Operators exist for Ray (KubeRay) and Vault (Vault Secrets Operator), and Temporal publishes a Helm chart; gVisor can be selected per workload as a container runtime, and OPA can act as an admission controller for cluster objects.",
     },
     {
       id: "ray",
@@ -450,7 +450,23 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["cascading-failure"],
       notes:
-        "Powerful for data-parallel workloads; requires cluster thinking. Retries tasks when a worker or machine fails (3 times by default), but not on application exceptions unless configured. Runs on Kubernetes through the KubeRay operator.",
+        "Suited to data-parallel workloads; requires cluster thinking. Retries tasks when a worker or machine fails (3 times by default), but not on application exceptions unless configured. Runs on Kubernetes through the KubeRay operator.",
+    },
+    {
+      id: "local-machine",
+      name: "Local machine",
+      primaryHue: "runtime",
+      category: "Self-Hosted Hardware",
+      maturity: "production",
+      description:
+        "A generic option, not a vendor product: a dedicated workstation or small machine, such as a Mac mini, that runs agents on-site, possibly alongside a local model.",
+      complexityAdded: "medium",
+      trustContribution: "low",
+      pairsWellWith: ["mcp", "docker"],
+      conflictsWith: [],
+      patterns: ["unsandboxed-execution", "open-door"],
+      notes:
+        "Keeps the harness, and with a local model the prompts, on hardware you control. The cost is that an agent with tools now runs inside your network: whatever the machine can reach, its tools can reach, unless the network is segmented. MCP stdio servers are launched by the client as local subprocesses, and the specification has them take credentials from the environment, so by default they run with the files, network, and secrets of the account that launched them. Give the agent its own least-privileged account and scoped credentials rather than a person's login. Unattended operation means nobody sees each action as it happens, and a crash, reboot, or power cut stops a run without telling anyone unless something restarts it and reports. Patching, disk encryption, backups, and physical access are the owner's job. Containers on the machine share one kernel (on macOS, the Linux VM that Docker Desktop runs), so a plain container is not a sandbox for model-written code by itself. Docker's documented macOS install is Docker Desktop, which needs a paid subscription for professional use in organizations with 250 or more employees or $10 million or more in annual revenue.",
     },
   ],
 
@@ -519,7 +535,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       type: "anti-pattern",
       hues: ["tools", "permissions"],
       description:
-        "Connecting a tool is one line of configuration; deciding who may use it is not. Every tool is callable by every run, with one broad credential, and nothing asks a person before an irreversible action. The agent's permissions are whatever its API keys allow.",
+        "Connecting a tool takes a few lines of configuration; deciding who may use it takes more. Every tool is callable by every run, with one broad credential, and nothing asks a person before an irreversible action. The agent's permissions are whatever its API keys allow.",
       strengths: [],
       weaknesses: [
         "A prompt injection or bad plan can reach every connected system",
@@ -600,9 +616,9 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       type: "foundational",
       hues: ["tools", "sandbox", "evidence"],
       description:
-        "The agent writes code, runs it somewhere disposable, reads the result, and tries again. The loop is only safe because execution happens outside the harness process, and only improvable because each attempt is traced.",
+        "The agent writes code, runs it somewhere disposable, reads the result, and tries again. The loop depends on execution happening outside the harness process, and on each attempt being traced so it can be improved.",
       strengths: [
-        "Model-written code cannot reach the harness's own secrets or filesystem",
+        "Model-written code runs apart from the harness's own secrets and filesystem",
         "A failed or hostile run is discarded with its sandbox",
         "Traces show every attempt, not just the final answer",
       ],
@@ -622,7 +638,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       type: "foundational",
       hues: ["evidence", "recovery"],
       description:
-        "Prompt, model, and fallback changes run against a maintained set of test cases before release, and the release is blocked if they fall short. The same suite checks the fallback model, because a fallback that has never been evaluated is an untested release waiting for an outage.",
+        "Prompt, model, and fallback changes run against a maintained set of test cases before release, and the release is blocked if they fall short. The same suite checks the fallback model, because a fallback model that has never been evaluated goes live untested during an outage.",
       strengths: [
         "Regressions caught before users see them",
         "Model and provider swaps compared on the same cases",
@@ -644,7 +660,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       type: "structural",
       hues: ["recovery", "context", "runtime"],
       description:
-        "A long run survives a crashed worker, a provider outage, or a deploy: completed steps are recorded, the run resumes from the last one, and side effects are not repeated. The price is a runtime that keeps workers alive and a clear line between workflow state and agent memory.",
+        "A long run survives a crashed worker, a provider outage, or a deploy: completed steps are recorded and the run resumes after the last one without re-running them. A step interrupted mid-call can run again, so its tool calls must be safe to repeat. The price is a runtime that keeps workers alive and a clear line between workflow state and agent memory.",
       strengths: [
         "Runs resume after failures instead of restarting",
         "Retries and timeouts are explicit rather than scattered",
@@ -698,7 +714,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       whyItWorks: [
         "MCP gives the agent a defined set of tools rather than ad hoc functions",
         "E2B runs model-written code in a separate microVM, away from the harness's own secrets",
-        "Langfuse traces each attempt, including MCP tool calls",
+        "Langfuse can trace each attempt, including MCP tool calls, when the agent is instrumented",
         "PostgreSQL keeps session history so a later session can pick up prior results",
       ],
       whereItBreaks: [
@@ -718,7 +734,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       useCase:
         "An agent that takes real actions in business or infrastructure systems. Each tool call is checked against policy; risky ones pause the workflow until a person approves. Think: operations assistant, account changes, refunds.",
       whyItWorks: [
-        "OPA answers allow, deny, or needs-approval for each tool call from written policy",
+        "OPA returns a decision for each tool call, such as allow, deny, or needs approval, from policy the team writes",
         "Temporal documents a human-in-the-loop Approval pattern: the workflow blocks on a Signal carrying the decision, with a timeout",
         "Vault issues scoped, short-lived credentials so tools do not share one broad key",
         "Langfuse traces the calls, and the recorded decisions can be attached to them",
@@ -741,7 +757,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       useCase:
         "A team that changes prompts and models often and wants each change, including fallback models, tested before it ships. Think: model upgrades, provider switches, prompt iteration.",
       whyItWorks: [
-        "LiteLLM puts every model behind one API, with fallbacks, budgets, and rate limits",
+        "LiteLLM puts the team's models behind one API, with fallbacks, budgets, and rate limits",
         "Promptfoo runs the same test cases against candidate prompts and models and can fail the CI job",
         "Langfuse traces production calls through the gateway and can serve managed prompts to Promptfoo",
         "PostgreSQL backs the LiteLLM proxy's keys and spend records",
@@ -802,6 +818,29 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       ],
       missingHues: ["sandbox", "permissions", "evidence", "recovery"],
       upgradePath: ["opa", "langfuse", "litellm"],
+    },
+    {
+      id: "local-agent",
+      name: "The Local Agent",
+      tools: ["local-machine", "mcp", "docker", "postgresql", "langfuse"],
+      patternIds: [],
+      useCase:
+        "An agent that runs on a dedicated machine in the office, with MCP tools, supporting services in containers, session history in PostgreSQL, and traces kept on-site in self-hosted Langfuse. Think: a Mac mini running an assistant for a small team, possibly against a local model.",
+      whyItWorks: [
+        "The harness, its history, and its traces stay on hardware the team controls",
+        "MCP stdio servers run as local processes next to the agent, so local files and services need no public endpoint",
+        "Docker runs PostgreSQL and the self-hosted Langfuse stack from published images",
+        "Langfuse can trace each run, including MCP tool calls, so there is a record of what the agent did while nobody was watching",
+      ],
+      whereItBreaks: [
+        "No sandbox: model-written code or shell commands run on the machine itself, and a plain container is not an isolation boundary for them",
+        "No permission layer: stdio servers take credentials from the environment, so every tool runs with the agent account's access, inside the network",
+        "Unattended runs have no recovery: a crash, update, or power cut stops work silently, with no retry, resume, or rate limit",
+        "Which model it calls is left open; a hosted model sends prompts off the machine, and a local one needs evaluating",
+        "One machine holds the agent, its data, and its traces; backups and patching are the owner's job",
+      ],
+      missingHues: ["sandbox", "permissions", "recovery"],
+      upgradePath: ["gvisor", "opa", "temporal"],
     },
   ],
 };
