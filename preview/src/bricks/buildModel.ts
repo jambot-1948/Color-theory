@@ -29,19 +29,19 @@ export const editionTiers: Record<EditionId, Tier[]> = {
     { name: 'Platform & knowledge', hues: ['velocity', 'memory'] },
     { name: 'Model core', hues: ['cognition'] },
     { name: 'Control', hues: ['logic', 'intent'] },
-    { name: 'Surface & trust', hues: ['interface', 'trust'] },
+    { name: 'Surface & oversight', hues: ['trust', 'interface'] },
   ],
   data: [
-    { name: 'Storage', hues: ['store'] },
+    { name: 'Storage & serving', hues: ['store', 'serve'] },
     { name: 'Movement', hues: ['ingest', 'transform'] },
-    { name: 'Coordination & serving', hues: ['orchestrate', 'serve'] },
+    { name: 'Coordination', hues: ['orchestrate'] },
     { name: 'Quality & governance', hues: ['observe', 'govern'] },
   ],
   harness: [
     { name: 'Runtime & state', hues: ['execution', 'state'] },
     { name: 'Entry & scale', hues: ['invocation', 'scaling'] },
-    { name: 'Recovery', hues: ['resilience'] },
-    { name: 'Visibility & security', hues: ['observability', 'security'] },
+    { name: 'Recovery & visibility', hues: ['resilience', 'observability'] },
+    { name: 'Security', hues: ['security'] },
   ],
 }
 

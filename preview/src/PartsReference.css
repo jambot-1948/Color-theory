@@ -29,3 +29,9 @@
 .pr-bench-hint{color:#6c7a72!important;font-size:12px!important}
 .pr-bench-copy button{display:inline-flex;align-items:center;gap:5px;border:1px solid #dbe3dd;background:#fff;border-radius:4px;padding:5px 9px;font-size:11px;font-weight:700;color:#3c4b43}
 @media(max-width:700px){.pr-roles{grid-template-columns:1fr}.pr-heading{align-items:flex-start}.pr-main .bw-title a{white-space:normal}.pr-bench{grid-template-columns:1fr}}
+.pr-cap{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#fff;border:1px solid #dfe6e1;border-radius:5px}
+.pr-cap-head{display:flex;gap:12px;align-items:center}.pr-cap-head .iso-icon{width:58px;flex:none}
+.pr-cap-head strong{font-size:13px;font-weight:760}.pr-cap-head p{margin:2px 0 0;font-size:12px;line-height:1.45;color:#56655d}
+.pr-products{display:flex;flex-wrap:wrap;gap:6px}
+.pr-products .pr-part{flex-direction:row;align-items:baseline;gap:6px;padding:6px 10px;text-align:left}
+.pr-products .pr-part-mark{position:static;margin-left:4px}

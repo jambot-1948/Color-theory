@@ -1,6 +1,23 @@
 # Brick Manual
 
-The brick views make the framework's premise literal: **tools are bricks, and how they combine matters more than what they are.** They replace the flat diagram as the default lens, drawn at an angle like a LEGO instruction manual.
+The brick views make the framework's premise literal: **capabilities are the bricks, products fill them, and how they combine matters more than what they are.** They replace the flat diagram as the default lens, drawn at an angle like a LEGO instruction manual.
+
+## Capability first, product second
+
+Three levels, from why to who:
+
+| Level | Example | Where it lives |
+| --- | --- | --- |
+| Role (hue) | Memory | `hues` in each domain's data file |
+| Capability (the brick) | Vector store | `src/bricks/capabilities.ts` |
+| Product (the printed label) | Pinecone | `tools` in each domain's data file |
+
+A build is a list of capability slots, each optionally filled with a product (`?build=vector-store:pinecone,model-api` in share links; older `?blend=` product links still load). Curated recipes act as **blueprints**: the same capabilities with different products are reported as "Curated blueprint", and the reading names the swapped products.
+
+Fit is judged at the level the build is decided at:
+- **Capability level** (either slot unfilled): the capabilities snap if a curated recipe combines them or any of their products have a recorded pairing.
+- **Product level** (both filled): only product evidence counts, from authored story links, recorded pairings, or an exact curated recipe. A sound blueprint can therefore loosen once specific products are chosen.
+- **Two products in one capability** (for example Airflow and Dagster) are always forced. That duplication is what the cautionary recipes and growth wrong turns are about.
 
 ## Where it appears
 
@@ -15,7 +32,8 @@ The brick views make the framework's premise literal: **tools are bricks, and ho
 
 | Mark | Meaning | Source |
 | --- | --- | --- |
-| Brick colour | Primary role (hue) | `tool.primaryHue` |
+| Brick | A capability; its printed label is the chosen product, or a dashed "choose a product" label | `capabilities.ts` |
+| Brick colour | The capability's role (hue) | `capability.hue` |
 | Brick height | Tier the role belongs to (foundation low, surface high) | `editionTiers` in `src/bricks/buildModel.ts` |
 | **Snap** (seated, ✓) | A pairing with an earlier part is recorded, authored for a recipe story or growth stage, or the whole set is a curated non-cautionary recipe | `pairsWellWith`, `assemblyStories`, `growthTracks`, `recipes` |
 | **Loose** (lifted, dashed seam, ~) | Nothing recorded either way. Unproven, not wrong. | absence of data |
@@ -38,6 +56,8 @@ Finished-model verdicts: *Snaps together*, *Holds, with loose parts* (loose part
 ## Code
 
 - `src/bricks/iso.ts`: projection, colour shading, painter's depth sort
+- `src/bricks/capabilities.ts`: capability catalogue per domain
+- `src/bricks/capabilityModel.ts`: slots, blueprint matching, capability- and product-level links, share-link encoding
 - `src/bricks/buildModel.ts`: tiers, stable centred layout, seats, verdicts
 - `src/bricks/scene.ts`: turns a part list into positioned scene bricks
 - `src/bricks/Brick.tsx`: `IsoBrick`, `BrickScene`, `BrickIcon`, `Baseplate`

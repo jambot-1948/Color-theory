@@ -29,7 +29,7 @@ export default function ManualBoard({ edition, data, tools, step, links, ghostHu
       <span className="mb-step-number" aria-label={`Step ${step}`}>{step}</span>
       {current && hue && !finished && <div className="mb-callout" aria-label={`Parts for this step: 1 ${current.name}`}>
         <BrickIcon hex={hue.hex} unit={9} />
-        <span><b>1x</b><strong>{current.name}</strong><small>{hue.name}</small></span>
+        <span><b>1x</b><strong>{current.name}</strong><small>{current.category}</small></span>
       </div>}
       {finished && tools.length > 0 && <div className={`mb-stamp is-${reading.verdict}`}><small>FINISHED MODEL</small><strong>{verdict.label}</strong></div>}
     </div>

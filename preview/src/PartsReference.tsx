@@ -4,6 +4,7 @@ import SiteHeader from './SiteHeader'
 import { BrickIcon, BrickScene, type SceneBrick } from './bricks/Brick'
 import { editionTiers, linkBetween, recordedLinks, seatFor, tierOf, type EditionId } from './bricks/buildModel'
 import { editionIds, editionInfo } from './bricks/editions'
+import { capabilityList } from './bricks/capabilityModel'
 import { BRICK_HEIGHT } from './bricks/iso'
 import type { WorkshopData, WorkshopTool } from './workshopData'
 import './bricks/bricks.css'
@@ -47,21 +48,23 @@ function Inventory({ edition }: { edition: EditionId }) {
   const tiers = editionTiers[edition]
 
   return <section className="pr-edition">
-    <div className="pr-heading"><div><h2>{title}</h2><span>{data.hues.length} roles · {data.tools.length} parts · {data.recipes.length} examples</span></div><a href={href}>Open assembly <ArrowRight size={16} /></a></div>
+    <div className="pr-heading"><div><h2>{title}</h2><span>{data.hues.length} roles · {capabilityList(edition).length} capabilities · {data.tools.length} products</span></div><a href={href}>Open assembly <ArrowRight size={16} /></a></div>
     {first && <FitBench data={data} first={first} second={second} onClear={() => setPicked([])} />}
     <div className="pr-roles">{tiers.flatMap(tier => tier.hues.map(id => data.hues.find(hue => hue.id === id)!)).filter(Boolean).map(hue => {
-      const parts = data.tools.filter(tool => tool.primaryHue === hue.id)
+      const caps = capabilityList(edition).filter(cap => cap.hue === hue.id)
       return <div className="pr-role" key={hue.id}>
         <div className="pr-role-copy"><h3><i style={{ background: hue.hex }} />{hue.name}<small>T{tierOf(edition, hue.id) + 1}</small></h3><p>{hue.description}</p></div>
-        <div className="pr-parts">{parts.length ? parts.map(tool => {
-          const selected = picked.includes(tool.id)
-          const relation = first && !selected ? linkBetween(links, first.id, tool.id)?.kind : undefined
-          return <button type="button" key={tool.id} className={`pr-part${selected ? ' is-selected' : ''}${relation ? ` is-${relation}` : ''}${first && !selected && !relation ? ' is-dim' : ''}`} onClick={() => pick(tool.id)} aria-pressed={selected} title={tool.description}>
-            <BrickIcon hex={hue.hex} unit={9} />
-            <strong>{tool.name}</strong><small>{tool.category}</small>
-            {relation && <span className="pr-part-mark">{relation === 'tension' ? 'Tension' : 'Pairs'}</span>}
-          </button>
-        }) : <span className="pr-empty">No part in this edition</span>}</div>
+        {caps.length ? caps.map(cap => <div className="pr-cap" key={cap.id}>
+          <div className="pr-cap-head"><BrickIcon hex={hue.hex} unit={8} /><div><strong>{cap.name}</strong><p>{cap.summary}</p></div></div>
+          <div className="pr-products">{cap.products.map(id => find(id)).filter((tool): tool is WorkshopTool => Boolean(tool)).map(tool => {
+            const selected = picked.includes(tool.id)
+            const relation = first && !selected ? linkBetween(links, first.id, tool.id)?.kind : undefined
+            return <button type="button" key={tool.id} className={`pr-part${selected ? ' is-selected' : ''}${relation ? ` is-${relation}` : ''}${first && !selected && !relation ? ' is-dim' : ''}`} onClick={() => pick(tool.id)} aria-pressed={selected} title={tool.description}>
+              <strong>{tool.name}</strong><small>{tool.category}</small>
+              {relation && <span className="pr-part-mark">{relation === 'tension' ? 'Tension' : 'Pairs'}</span>}
+            </button>
+          })}</div>
+        </div>) : <span className="pr-empty">No capability in this edition</span>}
       </div>
     })}</div>
   </section>
@@ -70,7 +73,7 @@ function Inventory({ edition }: { edition: EditionId }) {
 export default function PartsReference() {
   return <div className="bw-app">
     <SiteHeader active="reference" />
-    <main className="bw-main pr-main"><div className="bw-title"><div><h1>Parts inventory</h1><p>Every part, sorted by the job it does. Pick one to see what it snaps to; pick two to test the fit.</p></div><a href="#/original">Original view <ArrowRight size={15} /></a></div>
+    <main className="bw-main pr-main"><div className="bw-title"><div><h1>Parts inventory</h1><p>Each role breaks into capabilities, and each capability can be filled by more than one product. Pick a product to see what it pairs with; pick two to test the fit.</p></div><a href="#/original">Original view <ArrowRight size={15} /></a></div>
       {editionIds.map(id => <Inventory key={id} edition={id} />)}
     </main>
   </div>

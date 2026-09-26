@@ -2,6 +2,9 @@ import type { WorkshopData, WorkshopTool } from '../workshopData'
 import type { SceneBrick } from './Brick'
 import { layoutBuild, seatFor, type BuildLink, type EditionId } from './buildModel'
 import type { Box } from './iso'
+import type { SlotTool } from './capabilityModel'
+
+const stickerFor = (tool: WorkshopTool) => 'capability' in tool ? (tool as SlotTool).product?.name ?? null : undefined
 
 export interface SceneInput {
   edition: EditionId
@@ -37,7 +40,7 @@ export function sceneBricks({ edition, data, tools, layoutTools, links, ghostHue
       const isRemoved = removedIds.has(part.tool.id)
       const { seat } = isRemoved ? { seat: 'base' as const } : seatFor(part.tool, tools.slice(0, index), links)
       const state: SceneBrick['state'] = isRemoved ? 'removed' : !showSeats ? 'seated' : seat === 'clash' ? 'clash' : seat === 'loose' ? 'loose' : 'seated'
-      return { id: part.tool.id, box: part.box, hex: part.hex, label: part.tool.name, tag: part.hueName, state, isNew: newIds.includes(part.tool.id), badge: isRemoved || !showSeats ? undefined : seat }
+      return { id: part.tool.id, box: part.box, hex: part.hex, label: part.tool.name, sticker: stickerFor(part.tool), tag: part.hueName, state, isNew: newIds.includes(part.tool.id), badge: isRemoved || !showSeats ? undefined : seat }
     }),
     ...ghosts.map((ghost, index) => ({ id: `ghost-${ghost.hue}-${index}`, box: ghost.box, hex: ghost.hex, label: `${ghost.hueName}?`, tag: 'Missing', state: 'ghost' as const })),
   ]

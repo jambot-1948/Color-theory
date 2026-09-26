@@ -14,6 +14,8 @@ export interface SceneBrick {
   hex: string
   label: string
   tag?: string
+  // Product printed on the brick like a sticker. null means the capability has no product chosen yet.
+  sticker?: string | null
   state: BrickState
   isNew?: boolean
   badge?: Seat
@@ -57,6 +59,24 @@ function labelLines(label: string, width: number) {
   return second ? [first, second] : [first]
 }
 
+function fitText(text: string, width: number, size: number) {
+  const fits = Math.floor((width - 0.5) / (size * 0.6))
+  return text.length > fits ? `${text.slice(0, fits - 1)}…` : text
+}
+
+// A printed tile on the brick's face naming the product that fills this capability.
+function Sticker({ text, width, height, unit, edge }: { text: string | null, width: number, height: number, unit: number, edge: string }) {
+  const size = 0.34
+  const label = text ? fitText(text, width - 0.4, size) : 'choose a product'
+  const w = Math.min(width - 0.5, label.length * size * 0.6 + 0.5) * unit
+  const top = height * unit * 0.48
+  const tall = height * unit * 0.4
+  return <g>
+    <rect x={unit * 0.22} y={top} width={w} height={tall} rx={unit * 0.08} fill={text ? '#fbfcfb' : 'none'} stroke={text ? edge : '#ffffff'} strokeWidth=".7" strokeDasharray={text ? undefined : '2 1.6'} opacity={text ? 0.96 : 0.8} />
+    <text x={unit * 0.47} y={top + tall * 0.68} fontSize={unit * size} fontWeight={text ? 750 : 600} fill={text ? '#1d2420' : '#ffffff'} fontStyle={text ? undefined : 'italic'} style={{ letterSpacing: 0 }}>{label}</text>
+  </g>
+}
+
 export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   const box = displaced(brick.box, brick.state)
   const { x, y, z, w, d, h } = box
@@ -85,9 +105,12 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
     <path d={rightFace} fill={right} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <path d={topFace} fill={top} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <Studs box={box} fill={top} side={right} stroke={ghost ? stroke : darken(brick.hex, 0.35)} p={p} dashed={ghost} />
-    <text transform={leftFaceMatrix(P(x, y + d, z + h))} fontSize={fontSize} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>
+    {brick.sticker === undefined ? <text transform={leftFaceMatrix(P(x, y + d, z + h))} fontSize={fontSize} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>
       {lines.map((line, index) => <tspan key={index} x={p.unit * 0.28} y={h * p.unit * (lines.length > 1 ? 0.44 + index * 0.4 : 0.66)}>{line}</tspan>)}
-    </text>
+    </text> : <g transform={leftFaceMatrix(P(x, y + d, z + h))}>
+      <text x={p.unit * 0.28} y={h * p.unit * 0.36} fontSize={p.unit * 0.37} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>{fitText(brick.label, w, 0.37)}</text>
+      {!ghost && <Sticker text={brick.sticker} width={w} height={h} unit={p.unit} edge={darken(brick.hex, 0.45)} />}
+    </g>}
     {brick.tag && <text transform={rightFaceMatrix(P(x + w, y + d, z + h))} x={p.unit * 0.22} y={h * p.unit * 0.62} fontSize={p.unit * 0.3} fontWeight="700" fill={ghost ? ink : inkOn(right)} opacity=".85" style={{ letterSpacing: 0 }}>{brick.tag.toUpperCase().slice(0, 11)}</text>}
     {brick.state === 'removed' && <path d={`M ${P(x, y + d, z + h).join(' ')} L ${P(x + w, y + d, z).join(' ')} M ${P(x + w, y + d, z + h).join(' ')} L ${P(x, y + d, z).join(' ')}`} stroke={darken(brick.hex, 0.15)} strokeWidth="1" />}
   </g>

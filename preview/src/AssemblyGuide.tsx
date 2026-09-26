@@ -1,47 +1,33 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { WorkshopData, WorkshopTool } from './workshopData'
-import { assemblyStories, type AssemblyLinkKind, type AssemblyStory } from './assemblyStories'
+import type { WorkshopData } from './workshopData'
+import { assemblyStories } from './assemblyStories'
 import ArchitectureViews from './ArchitectureViews'
 import ManualBoard, { SeatNote } from './bricks/ManualBoard'
-import { recipeLinks, recordedLinks, type BuildLink, type EditionId } from './bricks/buildModel'
+import { linkBetween, type BuildLink, type EditionId, type LinkKind } from './bricks/buildModel'
+import { capabilityOf, isCaution, type SlotTool } from './bricks/capabilityModel'
 import './AssemblyGuide.css'
 
-type LinkKind = AssemblyLinkKind | 'unclassified'
 interface DiagramLink {
   first: number
   second: number
-  kind: AssemblyLinkKind
+  kind: LinkKind
   note: string
 }
 
-function linkKind(first: WorkshopTool, second: WorkshopTool): LinkKind {
-  if (first.conflictsWith.includes(second.id) || second.conflictsWith.includes(first.id)) return 'tension'
-  if (first.pairsWellWith.includes(second.id) || second.pairsWellWith.includes(first.id)) return 'fit'
-  return 'unclassified'
-}
-
-function stepDetail(tool: WorkshopTool, earlier: WorkshopTool[]) {
-  if (!earlier.length) return tool.description
-  const tension = earlier.find(other => linkKind(tool, other) === 'tension')
-  if (tension) return `${tool.description} The data also records a tension with ${tension.name}; review the boundary between them.`
-  const fit = earlier.find(other => linkKind(tool, other) === 'fit')
-  if (fit) return `${tool.description} The tool data also records a pairing with ${fit.name}.`
-  return `${tool.description} No direct pairing with the earlier parts is recorded yet.`
-}
-
-function diagramLinks(tools: WorkshopTool[], story?: AssemblyStory): DiagramLink[] {
-  if (story) return story.links.flatMap(link => {
-    const first = tools.findIndex(tool => tool.id === link.first)
-    const second = tools.findIndex(tool => tool.id === link.second)
-    return first >= 0 && second >= 0 ? [{ first, second, kind: link.kind, note: link.note }] : []
-  })
-
+function diagramLinks(tools: SlotTool[], links: BuildLink[]): DiagramLink[] {
   return tools.flatMap((first, index) => tools.slice(index + 1).flatMap((second, offset) => {
-    const kind = linkKind(first, second)
-    if (kind === 'unclassified') return []
-    return [{ first: index, second: index + offset + 1, kind, note: kind === 'fit' ? 'Curated pairing in the tool data.' : 'Recorded conflict in the tool data.' }]
+    const link = linkBetween(links, first.id, second.id)
+    return link ? [{ first: index, second: index + offset + 1, kind: link.kind, note: link.note }] : []
   }))
+}
+
+function stepDetail(tool: SlotTool, earlier: SlotTool[], links: BuildLink[]) {
+  const lead = tool.product ? `${tool.capability.summary} Filled here by ${tool.product.name}.` : `${tool.capability.summary} No product chosen yet: ${tool.capability.products.length} in the reference.`
+  if (!earlier.length) return lead
+  const tension = earlier.find(other => linkBetween(links, tool.id, other.id)?.kind === 'tension')
+  if (tension) return `${lead} A tension with ${tension.name} is recorded; review the boundary between them.`
+  return lead
 }
 
 function PartGlyph({ role, color, y }: { role: string, color: string, y: number }) {
@@ -62,7 +48,7 @@ function PartGlyph({ role, color, y }: { role: string, color: string, y: number 
   return <g><rect x="89" y={top + 7} width="34" height="27" rx="1" fill={color} opacity=".85" /><path d={`M 122 ${top + 7} L 136 ${top + 20} L 122 ${top + 34} Z`} fill={color} /><line x1="95" y1={top + 14} x2="116" y2={top + 14} stroke="#fff" opacity=".7" /></g>
 }
 
-function BuildDiagram({ tools, links, showAllLinks, data }: { tools: WorkshopTool[], links: DiagramLink[], showAllLinks: boolean, data: WorkshopData }) {
+function BuildDiagram({ tools, links, showAllLinks, data }: { tools: SlotTool[], links: DiagramLink[], showAllLinks: boolean, data: WorkshopData }) {
   const height = Math.max(160, 38 + tools.length * 76)
   const drawnLinks = showAllLinks ? links : links.filter(link => link.second === tools.length - 1)
 
@@ -93,49 +79,56 @@ function BuildDiagram({ tools, links, showAllLinks, data }: { tools: WorkshopToo
   </svg>
 }
 
-export default function AssemblyGuide({ tools, recipeId, data, edition }: { tools: WorkshopTool[], recipeId?: string, data: WorkshopData, edition: string }) {
-  const hasArchitecture = edition === 'ai' && recipeId === 'lean-agent-runtime'
+export interface AssemblyGuideProps {
+  tools: SlotTool[]
+  links: BuildLink[]
+  recipeId?: string
+  exact?: boolean
+  data: WorkshopData
+  edition: EditionId
+}
+
+export default function AssemblyGuide({ tools, links, recipeId, exact, data, edition }: AssemblyGuideProps) {
+  const hasArchitecture = edition === 'ai' && recipeId === 'lean-agent-runtime' && exact
   const [view, setView] = useState<'angled' | 'parts' | 'map' | 'journey'>('angled')
-  const story = edition === 'ai' && recipeId ? assemblyStories[recipeId] : undefined
-  const orderedTools = story
-    ? story.steps.map(item => tools.find(tool => tool.id === item.toolId)).filter((tool): tool is WorkshopTool => Boolean(tool))
-    : recipeId ? data.recipes.find(recipe => recipe.id === recipeId)?.tools.map(id => tools.find(tool => tool.id === id)).filter((tool): tool is WorkshopTool => Boolean(tool)) ?? tools : tools
+  const recipe = recipeId ? data.recipes.find(item => item.id === recipeId) : undefined
+  const story = edition === 'ai' && recipeId && exact ? assemblyStories[recipeId] : undefined
+  const order = story ? story.steps.map(item => item.toolId) : recipe?.tools ?? []
+  const ordered = order.map(id => tools.find(tool => tool.id === capabilityOf(edition, id)?.id)).filter((tool): tool is SlotTool => Boolean(tool))
+  const orderedTools = [...new Set([...ordered, ...tools])]
   const [step, setStep] = useState(orderedTools.length)
-  const [showAllLinks, setShowAllLinks] = useState(
-    orderedTools.length <= 3 || Boolean(story?.links.some(link => link.kind === 'tension')),
-  )
+  const [showAllLinks, setShowAllLinks] = useState(orderedTools.length <= 3 || links.some(link => link.kind === 'tension'))
   const visible = orderedTools.slice(0, step)
   const current = visible.at(-1)
   const earlier = visible.slice(0, -1)
-  const links = diagramLinks(visible, story)
-  const storyStep = story?.steps.find(item => item.toolId === current?.id)
-  const introducedLinks = story ? links.filter(link => link.second === visible.length - 1) : []
-  const recipe = recipeId ? data.recipes.find(item => item.id === recipeId) : undefined
-  const caution = Boolean(recipe?.patternIds.some(id => data.patterns.find(pattern => pattern.id === id)?.type === 'anti-pattern'))
-  const buildLinks: BuildLink[] = [...(story?.links ?? []), ...recordedLinks(orderedTools), ...(caution ? [] : recipeLinks(orderedTools, recipe))]
-  const manual = { edition: edition as EditionId, data, tools: orderedTools, step, links: buildLinks, ghostHues: recipe?.missingHues, caution }
+  const drawn = diagramLinks(visible, links)
+  const storyStep = story?.steps.find(item => current?.capability.products.includes(item.toolId))
+  const introducedLinks = drawn.filter(link => link.second === visible.length - 1)
+  const caution = Boolean(recipe && isCaution(data, recipe))
+  const manual = { edition, data, tools: orderedTools, step, links, ghostHues: recipe?.missingHues, caution }
   const flat = view === 'parts'
-  const unclassifiedPairs = story ? 0 : visible.flatMap((first, index) => visible.slice(index + 1).map(second => linkKind(first, second))).filter(kind => kind === 'unclassified').length
+  const unclassifiedPairs = visible.length * (visible.length - 1) / 2 - diagramLinks(visible, links).length
 
   return <div className="ag-guide">
-    <div className="ag-head"><div><h3>Assembly guide</h3><p>{story ? 'Curated sequence for this recipe.' : recipeId ? 'Parts shown in recipe order; lines mark recorded pairings, not data flow.' : 'One possible build order for understanding this stack.'}</p></div><span>{hasArchitecture && (view === 'map' || view === 'journey') ? 'WORKED EXAMPLE' : orderedTools.length ? `STEP ${String(step).padStart(2, '0')} / ${String(orderedTools.length).padStart(2, '0')}` : 'NO PARTS YET'}</span></div>
+    <div className="ag-head"><div><h3>Assembly guide</h3><p>{story ? 'Curated sequence for this recipe.' : recipe ? `Capabilities in the order of ${recipe.name}.` : 'One possible build order for understanding this stack.'}</p></div><span>{hasArchitecture && (view === 'map' || view === 'journey') ? 'WORKED EXAMPLE' : orderedTools.length ? `STEP ${String(step).padStart(2, '0')} / ${String(orderedTools.length).padStart(2, '0')}` : 'NO PARTS YET'}</span></div>
     {orderedTools.length > 0 && <div className="ag-view-tabs" role="tablist" aria-label="Recipe view">{([['angled', 'Brick manual'], ['parts', 'Flat diagram'], ...(hasArchitecture ? [['map', 'System map'], ['journey', 'Follow a request']] as const : [])] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}>{label}</button>)}</div>}
     {view === 'map' || view === 'journey' ? <ArchitectureViews view={view} /> : orderedTools.length ? <div className="ag-layout">
       {!flat ? <ManualBoard {...manual} /> : <div className="ag-board">
         <div className="ag-board-head"><span>ASSEMBLY STATE</span><span>{visible.length} OF {orderedTools.length} PARTS</span></div>
-        <BuildDiagram tools={visible} links={links} showAllLinks={showAllLinks} data={data} />
-        <div className="ag-board-legend"><span><i className="ag-fit" />Curated fit</span>{story?.links.some(link => link.kind === 'recipe') && <span><i className="ag-recipe" />Recipe link</span>}<span><i className="ag-tension" />Design tension</span><button onClick={() => setShowAllLinks(value => !value)}>{showAllLinks ? 'Show step links' : 'Show all links'}</button>{!story && <span>{unclassifiedPairs} unclassified pairs</span>}</div>
+        <BuildDiagram tools={visible} links={drawn} showAllLinks={showAllLinks} data={data} />
+        <div className="ag-board-legend"><span><i className="ag-fit" />Curated fit</span><span><i className="ag-recipe" />Recipe link</span><span><i className="ag-tension" />Design tension</span><button onClick={() => setShowAllLinks(value => !value)}>{showAllLinks ? 'Show step links' : 'Show all links'}</button><span>{unclassifiedPairs} unclassified pairs</span></div>
       </div>}
       <div className="ag-instructions">
         <div className="ag-step-list" aria-label="Assembly steps">{orderedTools.map((tool, index) => {
           const hue = data.hues.find(item => item.id === tool.primaryHue)!
+          const action = story?.steps.find(item => tool.capability.products.includes(item.toolId))?.action
           return <button key={tool.id} className={step === index + 1 ? 'ag-step active' : 'ag-step'} onClick={() => setStep(index + 1)} aria-current={step === index + 1 ? 'step' : undefined}>
-            <span className="ag-step-number">{String(index + 1).padStart(2, '0')}</span><span className="ag-part-color" style={{ background: hue.hex }} /><span className="ag-step-name"><strong>{tool.name}</strong><small>{story?.steps[index]?.action || `${hue.name} · ${tool.category}`}</small></span>
+            <span className="ag-step-number">{String(index + 1).padStart(2, '0')}</span><span className="ag-part-color" style={{ background: hue.hex }} /><span className="ag-step-name"><strong>{tool.name}</strong><small>{tool.product?.name ?? 'Any product'}{action ? ` · ${action}` : ''}</small></span>
           </button>
         })}</div>
-        <div className="ag-step-note"><span className="bw-label">ADD THIS PART</span><h4>{storyStep?.action || current?.name}</h4><p>{storyStep?.explanation || (current && stepDetail(current, earlier))}</p>{!flat && <SeatNote {...manual} />}{flat && introducedLinks.length > 0 && <div className="ag-link-notes">{introducedLinks.map(link => <div key={`${link.first}-${link.second}`}><i className={`ag-${link.kind}`} /><span>{link.note}</span></div>)}</div>}</div>
+        <div className="ag-step-note"><span className="bw-label">ADD THIS PART</span><h4>{storyStep?.action || current?.name}</h4><p>{storyStep?.explanation || (current && stepDetail(current, earlier, links))}</p>{!flat && <SeatNote {...manual} />}{flat && introducedLinks.length > 0 && <div className="ag-link-notes">{introducedLinks.map(link => <div key={`${link.first}-${link.second}`}><i className={`ag-${link.kind}`} /><span>{link.note}</span></div>)}</div>}</div>
         <div className="ag-navigation"><button onClick={() => setStep(value => Math.max(1, value - 1))} disabled={step === 1} aria-label="Previous assembly step"><ChevronLeft size={17} /></button><span>{step} / {orderedTools.length}</span><button onClick={() => setStep(value => Math.min(orderedTools.length, value + 1))} disabled={step === orderedTools.length} aria-label="Next assembly step"><ChevronRight size={17} /></button></div>
       </div>
-    </div> : <p className="bw-empty">Choose a tool from the parts library to start an assembly.</p>}
+    </div> : <p className="bw-empty">Choose a capability from the parts list to start an assembly.</p>}
   </div>
 }

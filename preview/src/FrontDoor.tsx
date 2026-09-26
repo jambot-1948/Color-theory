@@ -8,19 +8,20 @@ import './WorkshopNavigation.css'
 import './FrontDoor.css'
 import SiteHeader from './SiteHeader'
 import { BrickScene } from './bricks/Brick'
-import { recordedLinks } from './bricks/buildModel'
+import { slotLinks, slotTools, slotsFromTools } from './bricks/capabilityModel'
 import { sceneBricks, withSupport } from './bricks/scene'
 import { assemblyStories } from './assemblyStories'
 import './bricks/bricks.css'
 
 const build = [
-  { name: 'OpenAI', role: 'Cognition', action: 'Begin with a model', explanation: 'The model can reason and generate, but it does not know your private source material.', color: '#7557a4', Icon: BrainCircuit },
-  { name: 'OpenAI Agents SDK', role: 'Intent', action: 'Give it a runtime', explanation: 'The runtime owns tool calls and handoffs. It makes the agent loop explicit.', color: '#b95345', Icon: GitBranch },
-  { name: 'Pinecone', role: 'Memory', action: 'Add knowledge retrieval', explanation: 'An indexed knowledge base can answer a tool call. The connection and its quality still need to be built and tested.', color: '#c48a45', Icon: Database },
+  { name: 'OpenAI', role: 'Cognition', action: 'Begin with a model API', explanation: 'A model reasons and generates, but it does not know your private material. Here OpenAI fills the part; Claude would fit the same brick.', color: '#7557a4', Icon: BrainCircuit },
+  { name: 'OpenAI Agents SDK', role: 'Intent', action: 'Add an agent runtime', explanation: 'The runtime owns tool calls and handoffs, making the agent loop explicit. Here the OpenAI Agents SDK fills it.', color: '#b95345', Icon: GitBranch },
+  { name: 'Pinecone', role: 'Memory', action: 'Add vector retrieval', explanation: 'An indexed knowledge base answers a tool call. Here Pinecone fills it; the connection and its quality still need to be built and tested.', color: '#c48a45', Icon: Database },
 ] as const
 
-const heroTools = ['openai', 'openai-agents-sdk', 'pinecone'].map(id => architecturalChromaticsData.tools.find(tool => tool.id === id)!)
-const heroLinks = [...(assemblyStories['lean-agent-runtime'].links), ...recordedLinks(heroTools)]
+const heroSlots = slotsFromTools('ai', ['openai', 'openai-agents-sdk', 'pinecone'])
+const heroTools = slotTools('ai', architecturalChromaticsData, heroSlots)
+const heroLinks = slotLinks('ai', architecturalChromaticsData, heroSlots, assemblyStories['lean-agent-runtime'].links)
 
 function heroBricks(step: number) {
   const tools = heroTools.slice(0, step)
@@ -42,7 +43,7 @@ export default function FrontDoor() {
     <main>
       <section className="fd-hero" aria-labelledby="fd-title">
         <div className="fd-hero-inner">
-          <div className="fd-intro"><h1 id="fd-title">Stack Assembly</h1><p>Tools are bricks. Some combinations snap together; some only look built.</p><a className="fd-primary" href="?blend=openai,openai-agents-sdk,pinecone#/ai-systems">Explore the example <ArrowRight size={17} /></a></div>
+          <div className="fd-intro"><h1 id="fd-title">Stack Assembly</h1><p>Capabilities are the bricks. Products fill them. Some combinations snap together; some only look built.</p><a className="fd-primary" href="?blend=openai,openai-agents-sdk,pinecone#/ai-systems">Explore the example <ArrowRight size={17} /></a></div>
           <div className="fd-iso" aria-hidden="true">
             <BrickScene bricks={heroBricks(step)} plate={{ w: 12, d: 6 }} unit={20} maxTier={4} frame="tall" showBadges="new" label={`Step ${step} of 3: ${build.slice(0, step).map(part => part.name).join(', ')}`} />
           </div>
@@ -51,7 +52,7 @@ export default function FrontDoor() {
       </section>
 
       <section className="fd-principles" aria-labelledby="fd-principles-title"><div className="fd-section-inner"><div className="fd-section-heading"><h2 id="fd-principles-title">How to read a model</h2><p>A useful stack is more than a pile of tools. Each brick has a job, and each join has a reason.</p></div><div className="fd-definitions">
-        <div><span>01</span><h3>Brick</h3><p>A named tool. Its colour is the job it does; its height on the plate is the tier that job belongs to.</p></div>
+        <div><span>01</span><h3>Brick</h3><p>A capability, such as a model API or a vector store. Colour is its role; height is its tier. The printed label is the product that fills it.</p></div>
         <div><span>02</span><h3>Snap</h3><p>The brick locks onto an earlier part because a pairing or curated recipe is recorded.</p></div>
         <div><span>03</span><h3>Loose</h3><p>It sits on the model, but nothing recorded says it locks. Not wrong, just unproven.</p></div>
         <div><span>04</span><h3>Forced</h3><p>Pushed off its studs by a recorded tension, usually two parts claiming the same job.</p></div>
