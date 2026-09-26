@@ -165,7 +165,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["kappa-architecture", "lambda-architecture"],
       notes:
-        "Kafka 4.0 runs only in KRaft mode, without ZooKeeper, but cluster operation is still significant work. Many teams use a managed service. Often more than batch-only analytical workloads need. Snowflake publishes a Kafka connector, and Apache Iceberg includes a Kafka Connect sink.",
+        "Since 4.0, Kafka runs only in KRaft mode, without ZooKeeper, but cluster operation is still significant work. Many teams use a managed service. Often more than batch-only analytical workloads need. Snowflake publishes a Kafka connector, and Apache Iceberg includes a Kafka Connect sink.",
     },
     {
       id: "fivetran",
@@ -181,7 +181,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
-        "Managed ingestion reduces connector maintenance. The Managed Data Lake Service writes Iceberg and Delta Lake tables to object storage. Fivetran and dbt Labs completed their merger in June 2026; the products continue to run independently for now.",
+        "Managed ingestion reduces connector maintenance. The Managed Data Lake Service writes Iceberg and Delta Lake tables to object storage. Fivetran and dbt Labs completed their merger on June 1, 2026.",
     },
     {
       id: "openflow",
@@ -214,7 +214,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine", "observability-first"],
       notes:
-        "SQL-first transformation remains a strong fit for warehouse models. dbt v2, built on the Fusion engine, is generally available, and adapters exist for Snowflake, Trino, and Spark. dbt Labs and Fivetran merged in June 2026. Validate project compatibility before upgrading.",
+        "dbt v2, the Rust rewrite that replaces the separate Fusion engine, released 2.0.0 in September 2026; dbt v1 (Python) continues on its own branch. Adapters exist for Snowflake, Trino, and Spark; check v2 support for your adapter and validate project compatibility before upgrading. dbt Labs and Fivetran merged on June 1, 2026.",
     },
     {
       id: "spark",
@@ -223,14 +223,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Distributed Processing",
       maturity: "production",
       description:
-        "Distributed computation engine for large-scale batch and streaming data transformation at petabyte scale.",
+        "Distributed computation engine for large-scale batch and streaming data transformation.",
       complexityAdded: "high",
       trustContribution: "low",
       pairsWellWith: ["kafka", "iceberg", "dagster", "dbt", "airflow"],
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
-        "Right for scale-out compute. Overkill for warehouse-based analytical workloads where dbt is simpler and faster to iterate.",
+        "Suited to scale-out compute. For SQL models that run inside a warehouse, dbt is often the simpler choice.",
     },
     {
       id: "airflow",
@@ -239,7 +239,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Workflow Orchestration",
       maturity: "production",
       description:
-        "Widely adopted Python workflow orchestrator built around DAGs, with a large provider ecosystem (including Snowflake and Spark providers).",
+        "Python workflow orchestrator built around DAGs, with a large provider ecosystem (including Snowflake and Spark providers).",
       complexityAdded: "medium",
       trustContribution: "low",
       pairsWellWith: ["dbt", "spark", "great-expectations", "snowflake", "datahub"],
@@ -256,10 +256,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Asset Orchestration",
       maturity: "production",
       description:
-        "Asset-based orchestration platform with built-in lineage, observability, and partitioned backfills. Data-aware by design.",
+        "Asset-based orchestration platform with built-in lineage, asset checks, and partitioned backfills.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "great-expectations", "spark", "snowflake", "iceberg", "fivetran", "datahub"],
+      pairsWellWith: ["dbt", "spark", "snowflake", "iceberg", "fivetran", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "observability-first"],
       notes:
@@ -296,7 +296,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
-        "A table format, not a storage system: it needs object storage beneath it and engines such as Spark, Trino, or Snowflake to read and write it. Helps reduce engine lock-in.",
+        "A table format, not a storage system: it needs object storage beneath it and engines such as Spark, Trino, or Snowflake to read and write it. Several engines can read and write the same tables, which reduces dependence on any one of them.",
     },
     {
       id: "trino",
@@ -322,14 +322,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Semantic Layer",
       maturity: "production",
       description:
-        "Semantic and metrics API layer between the warehouse and consumers. Enforces consistent metric definitions, caches query results, and controls access.",
+        "Semantic and metrics API layer between the warehouse and consumers. Defines metrics once and serves them through APIs, with query caching and access control.",
       complexityAdded: "medium",
       trustContribution: "high",
       pairsWellWith: ["snowflake", "dbt", "trino", "datahub"],
       conflictsWith: [],
       patterns: ["semantic-spine"],
       notes:
-        "The answer to 'why does revenue look different in every dashboard?' Cube enforces one definition of a metric and serves it to all consumers. Trino queries raw data; Cube serves governed meaning.",
+        "Addresses metrics that differ between dashboards, as long as consumers query through Cube rather than raw tables. Trino queries data where it lives; Cube serves modeled metrics.",
     },
     {
       id: "great-expectations",
@@ -341,7 +341,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "GX Core data-validation framework for defining, running, and documenting expectations at pipeline checkpoints.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "dagster", "airflow", "snowflake", "datahub"],
+      pairsWellWith: ["dbt", "airflow", "snowflake", "datahub"],
       conflictsWith: [],
       patterns: ["observability-first", "tiered-refinery"],
       notes:
@@ -376,11 +376,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Raw data is noisy, inconsistent, and untrustworthy — but cleaning everything upfront slows ingestion. Serving raw data downstream means every consumer inherits every data quality problem. Promote data through progressive quality gates: raw enters, validated and modeled exits. Each tier has a contract. Reprocess from any tier when something goes wrong.",
       strengths: [
         "Clear promotion criteria and quality contracts",
-        "Easy to debug — reprocess from any tier",
+        "Failures can be reprocessed from the last good tier",
         "Replayable and auditable",
       ],
       weaknesses: [
-        "Batch by nature — high latency for operational use cases",
+        "Usually batch, so latency is high for operational use cases",
         "Gold layer bloat if promotion criteria aren't enforced",
       ],
       watchFor: [
@@ -394,14 +394,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       type: "structural",
       hues: ["ingest", "transform", "orchestrate", "store", "serve"],
       description:
-        "Streaming alone can't economically handle large historical queries. Batch alone can't meet latency requirements for operational decisions. Run parallel paths — streaming for low latency, batch for high throughput — and merge them at the serving layer. The cost is two codebases for the same logic; logic divergence between them is the most common failure mode.",
+        "Streaming alone can't economically handle large historical queries. Batch alone can't meet latency requirements for operational decisions. Run parallel paths — streaming for low latency, batch for high throughput — and merge them at the serving layer. The cost is two codebases for the same logic, which can diverge over time.",
       strengths: [
         "Addresses both real-time and batch analytical needs",
         "Mature, well-understood pattern",
       ],
       weaknesses: [
         "Two codebases for the same logic — the maintenance burden is real",
-        "Logic divergence between batch and stream paths is the most common failure mode",
+        "Logic can diverge between the batch and stream paths",
       ],
       watchFor: [
         "Batch and streaming outputs that disagree with each other",
@@ -417,10 +417,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Lambda's two-codebase problem compounds over time — the same business logic diverges between batch and stream paths. Kappa bets that stream processing is expressive enough to handle everything, including historical reprocessing. One codebase, one processing model. Reprocessing means replaying the stream.",
       strengths: [
         "Single codebase for all processing logic",
-        "Lower operational complexity than Lambda",
+        "One processing path to operate instead of two",
       ],
       weaknesses: [
-        "Reprocessing is harder — requires replaying the full stream",
+        "Reprocessing means replaying the stream, limited by what the log retains",
         "Stateful streaming complexity can erode the simplicity argument",
       ],
       watchFor: [
@@ -434,7 +434,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       type: "anti-pattern",
       hues: ["ingest", "store"],
       description:
-        "Ingest velocity is visible and celebrated. Quality and governance work is invisible and deferred. The lake fills up while downstream usability collapses in silence — data becomes untrustworthy, undiscoverable, and unusable before anyone declares a problem.",
+        "Ingest velocity is visible and celebrated. Quality and governance work is invisible and deferred. The lake fills up while downstream usability declines unnoticed, and data becomes untrustworthy, undiscoverable, and unusable before anyone declares a problem.",
       strengths: [],
       weaknesses: [
         "Data becomes untrustworthy, undiscoverable, and unusable at scale",
@@ -451,7 +451,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       type: "anti-pattern",
       hues: ["store", "serve"],
       description:
-        "The warehouse is provisioned, connectors are running, dashboards are live. But without a transformation layer, every team queries raw tables and defines the same metrics differently. Revenue has five definitions. Nobody trusts the numbers. The warehouse has data but no agreement on what it means.",
+        "The warehouse is provisioned, connectors are running, dashboards are live. But without a transformation layer, every team queries raw tables and defines the same metrics differently. Revenue ends up with several definitions, and trust in the numbers drops. The warehouse has data but no agreement on what it means.",
       strengths: ["Fast to stand up initially"],
       weaknesses: [
         "Consumers inherit all data quality issues from upstream",
@@ -509,11 +509,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       type: "anti-pattern",
       hues: ["orchestrate"],
       description:
-        "Airflow was already running when Dagster got adopted by the new team. The custom cron jobs predate both. Each orchestrator owns 'different things' but they trigger each other. Lineage breaks at every system boundary. On-call is a nightmare — failures can originate anywhere and trace nowhere.",
+        "Airflow was already running when Dagster got adopted by the new team. The custom cron jobs predate both. Each orchestrator owns 'different things' but they trigger each other. Lineage breaks at system boundaries, and a failure that starts in one system can surface in another.",
       strengths: [],
       weaknesses: [
         "Lineage breaks at system boundaries",
-        "On-call is a nightmare — failures can originate anywhere",
+        "Failures are hard to trace across systems during on-call",
       ],
       watchFor: [
         "Two orchestrators that 'own different things' but trigger each other",
@@ -567,7 +567,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       tools: ["fivetran", "dbt", "snowflake", "great-expectations"],
       patternIds: ["tiered-refinery"],
       useCase:
-        "Standard analytical stack for a mid-size company. Managed connectors feed a warehouse; SQL models create clean analytical tables.",
+        "Analytical stack in which managed connectors feed a warehouse and SQL models create clean analytical tables.",
       whyItWorks: [
         "Low operational overhead when connector and dbt execution are managed",
         "Fast to stand up and iterate",
@@ -575,7 +575,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       whereItBreaks: [
         "Streaming latency is not specified; choose connector sync behavior against freshness needs",
-        "Data quality is optional unless you enforce GX Core checks at promotion gates",
+        "GX Core checks protect consumers only if failures block promotion",
         "No catalog: ownership and lineage are undocumented, and access is managed only through warehouse roles",
       ],
       missingHues: ["orchestrate", "govern"],
@@ -597,9 +597,9 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Iceberg provides snapshots (time travel) and schema evolution",
       ],
       whereItBreaks: [
-        "High operational complexity — Kafka and Spark both require cluster management",
+        "High operational complexity — Kafka and Spark both need cluster management unless run as managed services",
         "No serve layer defined — consumers must know where and how to query",
-        "Quality checks and governance are not defined; Dagster observes assets but does not validate their contents",
+        "No data-quality checks or governance are defined in this recipe",
       ],
       missingHues: ["serve", "govern"],
     },
@@ -639,7 +639,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       symptoms: [
         "Column-level lineage is unknown",
-        "Access control is ad hoc — everyone has more access than they need",
+        "Access control is ad hoc, and roles grant broader access than needed",
         "PII exposure risk that no one has mapped",
       ],
       fix: [
@@ -654,7 +654,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       tools: ["kafka", "fivetran", "dbt", "dagster", "snowflake", "trino", "great-expectations", "datahub"],
       patternIds: ["tiered-refinery", "observability-first"],
       useCase:
-        "Production-grade data platform with at least one tool on each of the 7 hues. Ownership of each responsibility still has to be assigned to people.",
+        "Data platform with at least one tool on each of the 7 hues. Ownership of each responsibility still has to be assigned to people.",
       whyItWorks: [
         "Ingest covered by both batch (Fivetran) and streaming (Kafka) paths",
         "Quality gates (GX Core) and lineage (DataHub, fed by dbt, Dagster, and Snowflake metadata) are planned in, not deferred",
@@ -662,7 +662,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       whereItBreaks: [
         "High team complexity — requires clear ownership and operating capacity",
-        "Kafka is the primary operational weight anchor — requires managed infrastructure or dedicated cluster ops",
+        "Kafka adds the most operational weight — plan for a managed service or dedicated cluster operations",
         "If Airflow is retained alongside Dagster, define which platform owns each schedule and recovery path",
       ],
     },

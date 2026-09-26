@@ -27,7 +27,7 @@ export const dataStories: Record<string, AssemblyStory> = {
     ],
     links: [
       { first: 'fivetran', second: 'snowflake', kind: 'fit', note: 'Snowflake is a supported Fivetran destination.' },
-      { first: 'fivetran', second: 'dbt', kind: 'fit', note: 'Fivetran and dbt Labs merged in June 2026; the products still run independently, so the hand-off is a table in the warehouse.' },
+      { first: 'fivetran', second: 'dbt', kind: 'fit', note: 'Fivetran loads tables into the warehouse, and dbt models them from there.' },
       { first: 'dbt', second: 'snowflake', kind: 'fit', note: 'dbt models and tests run against Snowflake through its adapter.' },
       { first: 'dbt', second: 'great-expectations', kind: 'fit', note: 'Curated pairing: split checks between dbt tests and GX Core deliberately so they do not duplicate or leave gaps.' },
     ],
@@ -44,7 +44,7 @@ export const dataStories: Record<string, AssemblyStory> = {
       { first: 'kafka', second: 'spark', kind: 'fit', note: 'Spark can read Kafka topics as a streaming source.' },
       { first: 'spark', second: 'iceberg', kind: 'fit', note: 'Spark reads and writes Iceberg tables.' },
       { first: 'kafka', second: 'iceberg', kind: 'fit', note: 'Apache Iceberg also ships a Kafka Connect sink; choose one write path per table.' },
-      { first: 'iceberg', second: 'dagster', kind: 'fit', note: 'dagster-iceberg is a community-supported integration.' },
+      { first: 'iceberg', second: 'dagster', kind: 'fit', note: 'dagster-iceberg is a community-maintained integration, currently in preview.' },
     ],
   },
   'shadow-pipeline': {
