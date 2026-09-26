@@ -24,7 +24,7 @@ Fit is judged at the level the build is decided at:
 | Route | View |
 | --- | --- |
 | `#/` | Hero builds the Lean Knowledge Agent brick by brick. |
-| `#/ai-systems`, `#/data-engineering`, `#/agent-harness` | Assembly guide defaults to **Brick manual**: numbered step, `1x` parts callout, drop arrow, seat badge, finished-model stamp. **Flat diagram** is still one tab away. |
+| `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness` | Assembly guide defaults to **Brick manual**: numbered step, `1x` parts callout, drop arrow, seat badge, finished-model stamp. **Flat diagram** is still one tab away. |
 | `#/growth`, `#/growth/data`, `#/growth/harness` | **Build over time**: one model at four maturity stages, plus one authored wrong turn. |
 | `#/reference` | **Parts inventory**: every part as a brick, grouped by role and tier, with a two-part fit bench. |
 

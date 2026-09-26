@@ -14,7 +14,7 @@ import { blueprintMatch, capabilityList, decodeSlots, encodeSlots, isCaution, sl
 
 type Lens = 'Architect' | 'Operator' | 'Consultant'
 const editions = {
-  ai: { data: architecturalChromaticsData, title: 'AI systems', defaultTools: ['openai', 'pinecone', 'langsmith'] },
+  ai: { data: architecturalChromaticsData, title: 'AI applications', defaultTools: ['openai', 'pinecone', 'langsmith'] },
   data: { data: dataEngineeringChromaticsData, title: 'Data engineering', defaultTools: dataEngineeringChromaticsData.recipes[0].tools },
   harness: { data: agentHarnessChromaticsData, title: 'Agent harness', defaultTools: agentHarnessChromaticsData.recipes[0].tools },
 } as const

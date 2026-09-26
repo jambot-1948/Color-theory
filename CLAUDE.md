@@ -28,7 +28,7 @@ Collect feedback using the template at the end of `BATTLETEST.md`.
 - Dev server: `npm run dev` in the `preview/` directory → http://localhost:5174/Color-theory/
 - Build: `npm run build` → outputs to `preview/dist/`
 - Deployed to GitHub Pages: https://jambotsmachine.github.io/Color-theory/
-- Routing: Hash-based (`#/`, `#/ai-systems`, `#/data-engineering`, `#/agent-harness`, `#/growth[/data|/harness]`, `#/reference`, `#/original`)
+- Routing: Hash-based (`#/`, `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness`, `#/growth[/data|/harness]`, `#/reference`, `#/original`)
 
 ## Key Implementation Details
 - 7-segment color wheel with HUE_ANGLES at 51.4° intervals for each domain

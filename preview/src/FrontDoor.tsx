@@ -29,7 +29,7 @@ function heroBricks(step: number) {
 }
 
 const editions = [
-  { name: 'AI systems', href: '#/ai-systems', detail: 'Models, agent runtimes, retrieval, interfaces, and trust.', data: architecturalChromaticsData },
+  { name: 'AI applications', href: '#/ai-applications', detail: 'What people use: models, agent runtimes, retrieval, interfaces, and oversight.', data: architecturalChromaticsData },
   { name: 'Data engineering', href: '#/data-engineering', detail: 'Ingestion, transformation, storage, serving, and governance.', data: dataEngineeringChromaticsData },
   { name: 'Agent harness', href: '#/agent-harness', detail: 'Execution, state, observability, resilience, and security.', data: agentHarnessChromaticsData },
 ]
@@ -43,7 +43,7 @@ export default function FrontDoor() {
     <main>
       <section className="fd-hero" aria-labelledby="fd-title">
         <div className="fd-hero-inner">
-          <div className="fd-intro"><h1 id="fd-title">Stack Assembly</h1><p>Capabilities are the bricks. Products fill them. Some combinations snap together; some only look built.</p><a className="fd-primary" href="?blend=openai,openai-agents-sdk,pinecone#/ai-systems">Explore the example <ArrowRight size={17} /></a></div>
+          <div className="fd-intro"><h1 id="fd-title">Stack Assembly</h1><p>Capabilities are the bricks. Products fill them. Some combinations snap together; some only look built.</p><a className="fd-primary" href="?blend=openai,openai-agents-sdk,pinecone#/ai-applications">Explore the example <ArrowRight size={17} /></a></div>
           <div className="fd-iso" aria-hidden="true">
             <BrickScene bricks={heroBricks(step)} plate={{ w: 12, d: 6 }} unit={20} maxTier={4} frame="tall" showBadges="new" label={`Step ${step} of 3: ${build.slice(0, step).map(part => part.name).join(', ')}`} />
           </div>
