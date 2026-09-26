@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { WorkshopData } from './workshopData'
-import { assemblyStories } from './assemblyStories'
+import { allStories } from './stories'
 import ArchitectureViews from './ArchitectureViews'
 import ManualBoard, { SeatNote } from './bricks/ManualBoard'
 import { linkBetween, type BuildLink, type EditionId, type LinkKind } from './bricks/buildModel'
@@ -92,7 +92,7 @@ export default function AssemblyGuide({ tools, links, recipeId, exact, data, edi
   const hasArchitecture = edition === 'ai' && recipeId === 'lean-agent-runtime' && exact
   const [view, setView] = useState<'angled' | 'parts' | 'map' | 'journey'>('angled')
   const recipe = recipeId ? data.recipes.find(item => item.id === recipeId) : undefined
-  const story = edition === 'ai' && recipeId && exact ? assemblyStories[recipeId] : undefined
+  const story = recipeId && exact ? allStories[recipeId] : undefined
   const order = story ? story.steps.map(item => item.toolId) : recipe?.tools ?? []
   const ordered = order.map(id => tools.find(tool => tool.id === capabilityOf(edition, id)?.id)).filter((tool): tool is SlotTool => Boolean(tool))
   const orderedTools = [...new Set([...ordered, ...tools])]

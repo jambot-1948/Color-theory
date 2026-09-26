@@ -134,7 +134,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       name: "Govern",
       colorName: "Indigo",
       hex: "#4A5A9A",
-      description: "Who controls access, catalog, and compliance across the stack.",
+      description: "Who records ownership, catalog, lineage, and access policy across the stack. Engines such as the warehouse enforce access.",
     },
   ],
 
@@ -154,18 +154,18 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       id: "kafka",
       name: "Apache Kafka",
       primaryHue: "ingest",
-      secondaryHue: "orchestrate",
+      secondaryHue: "store",
       category: "Streaming Platform",
       maturity: "production",
       description:
-        "Distributed event streaming platform for high-throughput, fault-tolerant data pipelines. The backbone of event-driven architectures.",
+        "Distributed event streaming platform that keeps a durable, replayable log of events for high-throughput, fault-tolerant pipelines.",
       complexityAdded: "high",
       trustContribution: "medium",
-      pairsWellWith: ["spark", "dagster", "iceberg"],
+      pairsWellWith: ["spark", "iceberg", "snowflake", "openflow", "datahub"],
       conflictsWith: [],
       patterns: ["kappa-architecture", "lambda-architecture"],
       notes:
-        "High operational overhead. Consider managed Kafka (Confluent, MSK) for most teams. Overkill for batch-only analytical workloads.",
+        "Kafka 4.0 runs only in KRaft mode, without ZooKeeper, but cluster operation is still significant work. Many teams use a managed service. Often more than batch-only analytical workloads need. Snowflake publishes a Kafka connector, and Apache Iceberg includes a Kafka Connect sink.",
     },
     {
       id: "fivetran",
@@ -174,14 +174,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Managed ELT",
       maturity: "production",
       description:
-        "Managed connector platform for replicating data from SaaS sources into a data warehouse. Eliminates connector maintenance.",
+        "Managed connector platform for replicating data from SaaS applications and databases into warehouses or data lakes. Reduces the connector code a team maintains.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["dbt", "snowflake", "great-expectations"],
+      pairsWellWith: ["dbt", "snowflake", "iceberg", "dagster", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
-        "Managed ingestion reduces connector maintenance. Event connectors can ingest Kafka data, but latency and delivery behavior depend on the connector and destination.",
+        "Managed ingestion reduces connector maintenance. The Managed Data Lake Service writes Iceberg and Delta Lake tables to object storage. Fivetran and dbt Labs completed their merger in June 2026; the products continue to run independently for now.",
     },
     {
       id: "openflow",
@@ -190,14 +190,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Managed Ingestion",
       maturity: "production",
       description:
-        "Snowflake-managed data-integration service for ingesting data through configured connectors and runtimes.",
+        "Snowflake-managed data-integration service, built on Apache NiFi, for ingesting data through configured connectors and runtimes.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["snowflake"],
+      pairsWellWith: ["snowflake", "kafka"],
       conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
-        "Openflow second-generation deployments and runtimes are generally available. Compare its connector coverage and operating model with Fivetran for each source.",
+        "Second-generation deployments and runtimes became generally available in September 2026, while gen 2 connector configuration remains in preview and new gen 1 deployments can no longer be created. Check each connector's status and compare coverage with Fivetran per source.",
     },
     {
       id: "dbt",
@@ -210,11 +210,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "SQL-first transformation framework that treats data models as software — with versioning, testing, documentation, and lineage built in.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran"],
+      pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran", "airflow", "trino", "spark", "cube", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine", "observability-first"],
       notes:
-        "SQL-first transformation remains a strong fit for warehouse models. dbt v2 and dbt platform add faster development and managed deployment options; validate project compatibility before upgrading.",
+        "SQL-first transformation remains a strong fit for warehouse models. dbt v2, built on the Fusion engine, is generally available, and adapters exist for Snowflake, Trino, and Spark. dbt Labs and Fivetran merged in June 2026. Validate project compatibility before upgrading.",
     },
     {
       id: "spark",
@@ -226,7 +226,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Distributed computation engine for large-scale batch and streaming data transformation at petabyte scale.",
       complexityAdded: "high",
       trustContribution: "low",
-      pairsWellWith: ["kafka", "iceberg", "dagster"],
+      pairsWellWith: ["kafka", "iceberg", "dagster", "dbt", "airflow"],
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
@@ -239,14 +239,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Workflow Orchestration",
       maturity: "production",
       description:
-        "Python-based workflow scheduler built around DAGs. The original data pipeline orchestrator with a large ecosystem.",
+        "Widely adopted Python workflow orchestrator built around DAGs, with a large provider ecosystem (including Snowflake and Spark providers).",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["dbt", "spark", "great-expectations"],
+      pairsWellWith: ["dbt", "spark", "great-expectations", "snowflake", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "lambda-architecture"],
       notes:
-        "Airflow 3 supports asset-aware and event-driven scheduling. Dagster remains an alternative asset-centered orchestrator; using both is a boundary and operations decision, not a tool incompatibility.",
+        "Airflow 3 (3.3.x as of September 2026) supports asset-aware and event-driven scheduling. Dagster remains an alternative asset-centered orchestrator; using both is a boundary and operations decision, not a tool incompatibility.",
     },
     {
       id: "dagster",
@@ -259,7 +259,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Asset-based orchestration platform with built-in lineage, observability, and partitioned backfills. Data-aware by design.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "great-expectations", "spark", "snowflake"],
+      pairsWellWith: ["dbt", "great-expectations", "spark", "snowflake", "iceberg", "fivetran", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "observability-first"],
       notes:
@@ -273,14 +273,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Cloud Data Warehouse",
       maturity: "production",
       description:
-        "Cloud-native data warehouse with compute/storage separation, near-zero maintenance, and strong SQL compatibility.",
+        "Cloud data platform with separated storage and compute, supporting both native tables and Apache Iceberg tables.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["dbt", "fivetran", "trino", "great-expectations", "dagster"],
+      pairsWellWith: ["dbt", "fivetran", "openflow", "kafka", "iceberg", "trino", "cube", "great-expectations", "dagster", "airflow", "datahub"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine"],
       notes:
-        "Cloud warehouse with native dbt project execution and Openflow ingestion options. Compare the managed native path with external orchestration and connector platforms for the workload.",
+        "Cloud warehouse with native dbt project execution, Openflow ingestion, and a Kafka connector built on Snowpipe Streaming. Access control is enforced here, not in the catalog. Compare the managed native path with external orchestration and connector platforms for the workload.",
     },
     {
       id: "iceberg",
@@ -292,27 +292,27 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Open table format for large analytic datasets with ACID transactions, time travel, and schema evolution on top of object storage.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["spark", "trino", "dagster"],
+      pairsWellWith: ["spark", "trino", "dagster", "kafka", "snowflake", "fivetran"],
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
-        "Not a storage system — needs S3/GCS/HDFS beneath it. Pairs with compute engines. The open-format bet against warehouse lock-in.",
+        "A table format, not a storage system: it needs object storage beneath it and engines such as Spark, Trino, or Snowflake to read and write it. Helps reduce engine lock-in.",
     },
     {
       id: "trino",
       name: "Trino",
       primaryHue: "serve",
-      category: "Query Engine",
+      category: "Federated Query Engine",
       maturity: "production",
       description:
         "Distributed SQL query engine for federated analytics across data lakes, warehouses, and operational databases without moving data.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["snowflake", "iceberg", "datahub"],
+      pairsWellWith: ["snowflake", "iceberg", "dbt", "cube", "datahub"],
       conflictsWith: [],
       patterns: ["semantic-spine"],
       notes:
-        "Enables querying data where it lives. Complexity scales with federation scope — simple federation is easy, complex federation is hard.",
+        "Enables querying data where it lives, including a Snowflake connector. Earns its place when there is lake or operational data to join. Complexity grows with federation scope.",
     },
     {
       id: "cube",
@@ -341,7 +341,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "GX Core data-validation framework for defining, running, and documenting expectations at pipeline checkpoints.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "dagster", "airflow", "snowflake"],
+      pairsWellWith: ["dbt", "dagster", "airflow", "snowflake", "datahub"],
       conflictsWith: [],
       patterns: ["observability-first", "tiered-refinery"],
       notes:
@@ -355,14 +355,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Data Catalog",
       maturity: "production",
       description:
-        "Metadata platform for data discovery, lineage tracking, and governance across the full stack.",
+        "Metadata platform for discovery, ownership, and lineage across the stack. Access policies are documented here, but the warehouse and query engines enforce them.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["snowflake", "dbt", "kafka", "dagster"],
+      pairsWellWith: ["snowflake", "dbt", "kafka", "dagster", "airflow", "great-expectations", "cube", "fivetran", "trino"],
       conflictsWith: [],
       patterns: ["observability-first"],
       notes:
-        "Works best wired into existing orchestration and transformation outputs — not as a standalone catalog. Governance as engineering.",
+        "Works best when fed by existing systems: DataHub has ingestion sources or plugins for Snowflake, dbt, Kafka, Fivetran, Trino, Cube, Airflow, Dagster, and GX. Catalog coverage decays without named owners.",
     },
   ],
 
@@ -463,6 +463,27 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
     },
     {
+      id: "ungoverned-refinery",
+      name: "The Ungoverned Refinery",
+      type: "anti-pattern",
+      hues: ["observe", "govern"],
+      description:
+        "The refinery itself is well built: sources load reliably, models are tested, and schedules run. What is absent is the accountability layer. Nobody has recorded who owns each dataset, how columns flow from source to dashboard, or which data is sensitive. Access grew informally in the engines. Observe and Govern are the hues this pattern lacks, and the gap stays invisible until an audit, an incident, or a PII question arrives.",
+      strengths: [
+        "Transformation and loading are solid, so the fix is additive rather than a rebuild",
+      ],
+      weaknesses: [
+        "Lineage and ownership are unknown, so impact analysis is guesswork",
+        "Access roles drift broader than anyone intended",
+        "Sensitive data exposure is unmapped",
+      ],
+      watchFor: [
+        "'Who owns this table?' having no written answer",
+        "New query paths (federation, new BI tools) widening access without review",
+        "Quality relying only on model tests, with no checks at promotion boundaries",
+      ],
+    },
+    {
       id: "semantic-spine",
       name: "Semantic Spine",
       type: "foundational",
@@ -536,7 +557,9 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       whereItBreaks: [
         "Check Openflow connector support and deployment requirements for each source",
         "Use an external orchestrator when work crosses systems or native tasks do not cover recovery needs",
+        "No catalog records ownership or lineage outside Snowflake",
       ],
+      missingHues: ["orchestrate", "govern"],
     },
     {
       id: "modern-data-stack",
@@ -552,13 +575,13 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       whereItBreaks: [
         "Streaming latency is not specified; choose connector sync behavior against freshness needs",
-        "Data quality is optional unless you enforce Great Expectations at promotion gates",
-        "No governance layer — access control and lineage are manual",
+        "Data quality is optional unless you enforce GX Core checks at promotion gates",
+        "No catalog: ownership and lineage are undocumented, and access is managed only through warehouse roles",
       ],
       missingHues: ["orchestrate", "govern"],
       upgradePath: [
         "Add Dagster for asset-level orchestration and lineage",
-        "Add DataHub for catalog and access governance",
+        "Add DataHub to record ownership and lineage; keep access enforced in Snowflake",
       ],
     },
     {
@@ -569,16 +592,16 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       useCase:
         "Event-driven pipeline for near-real-time data processing and analytics on large-scale event streams.",
       whyItWorks: [
-        "End-to-end streaming with an open table format",
-        "Dagster provides asset-level observability across the pipeline",
-        "Iceberg enables time travel and schema evolution without rewriting",
+        "Kafka and Spark carry the streaming path into an open table format",
+        "Dagster schedules batch work such as maintenance and backfills, and can observe streaming outputs as assets",
+        "Iceberg provides snapshots (time travel) and schema evolution",
       ],
       whereItBreaks: [
         "High operational complexity — Kafka and Spark both require cluster management",
         "No serve layer defined — consumers must know where and how to query",
-        "No quality validation or governance",
+        "Quality checks and governance are not defined; Dagster observes assets but does not validate their contents",
       ],
-      missingHues: ["serve", "observe", "govern"],
+      missingHues: ["serve", "govern"],
     },
     {
       id: "shadow-pipeline",
@@ -597,8 +620,8 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Data incidents are discovered by the business, not the data team",
       ],
       fix: [
-        "Add Great Expectations at pipeline promotion points",
-        "Add DataHub to trace lineage from source to dashboard",
+        "Add GX Core checks at pipeline promotion points",
+        "Add DataHub to record ownership and trace lineage from source to dashboard",
         "Add dbt to create a shared transformation layer with documented models",
       ],
       missingHues: ["transform", "observe", "govern"],
@@ -607,9 +630,9 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       id: "governance-gap",
       name: "The Governance Gap",
       tools: ["fivetran", "dbt", "snowflake", "trino", "airflow"],
-      patternIds: ["hollow-warehouse"],
+      patternIds: ["ungoverned-refinery"],
       useCase:
-        "A sophisticated, well-modeled stack with no accountability layer. Strong transformation, silent on quality and access.",
+        "A sophisticated, well-modeled stack with no accountability layer. Transformation is strong; quality relies on model tests alone, and ownership, lineage, and access policy are unrecorded.",
       whyItHappens: [
         "Governance was treated as a compliance problem, not an engineering one",
         "The team was small enough that informal access control worked — until it didn't",
@@ -620,10 +643,10 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "PII exposure risk that no one has mapped",
       ],
       fix: [
-        "Add DataHub for catalog, lineage, and access policy documentation",
-        "Add Great Expectations for quality gates at Silver-tier promotion",
+        "Add DataHub for catalog, ownership, lineage, and access policy documentation; tighten roles in Snowflake and Trino",
+        "Add GX Core checks as quality gates at Silver-tier promotion",
       ],
-      missingHues: ["observe", "govern"],
+      missingHues: ["govern"],
     },
     {
       id: "full-modern-stack",
@@ -631,11 +654,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       tools: ["kafka", "fivetran", "dbt", "dagster", "snowflake", "trino", "great-expectations", "datahub"],
       patternIds: ["tiered-refinery", "observability-first"],
       useCase:
-        "Production-grade data platform covering all 7 hues. Every architectural responsibility has an owner.",
+        "Production-grade data platform with at least one tool on each of the 7 hues. Ownership of each responsibility still has to be assigned to people.",
       whyItWorks: [
         "Ingest covered by both batch (Fivetran) and streaming (Kafka) paths",
-        "Quality gates (Great Expectations) and lineage (DataHub via Dagster) are first-class",
-        "Open serving layer (Trino) decoupled from the warehouse",
+        "Quality gates (GX Core) and lineage (DataHub, fed by dbt, Dagster, and Snowflake metadata) are planned in, not deferred",
+        "Federated query layer (Trino) can reach data outside the warehouse",
       ],
       whereItBreaks: [
         "High team complexity — requires clear ownership and operating capacity",

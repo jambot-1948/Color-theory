@@ -72,7 +72,11 @@ export function isCaution(data: WorkshopData, recipe: WorkshopRecipe) {
 export function blueprintMatch(edition: EditionId, data: WorkshopData, slots: Slot[]) {
   const key = (ids: (string | undefined)[]) => ids.map(id => id ?? '?').sort().join('|')
   const caps = key(slots.map(slot => slot.capability))
-  const recipe = data.recipes.find(item => key(item.tools.map(id => capabilityOf(edition, id)?.id)) === caps)
+  // Several recipes can share a blueprint; prefer the one whose products overlap most.
+  const overlap = (tools: string[]) => tools.filter(id => slots.some(slot => slot.product === id)).length
+  const recipe = data.recipes
+    .filter(item => key(item.tools.map(id => capabilityOf(edition, id)?.id)) === caps)
+    .sort((a, b) => overlap(b.tools) - overlap(a.tools))[0]
   if (!recipe) return undefined
   const exact = recipe.tools.every(id => slots.some(slot => slot.product === id)) && slots.every(slot => slot.product && recipe.tools.includes(slot.product))
   return { recipe, exact }

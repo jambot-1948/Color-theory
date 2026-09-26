@@ -92,7 +92,7 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   const leftFace = pathFrom([P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)])
   const rightFace = pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)])
   const lines = labelLines(brick.label, w)
-  const fontSize = p.unit * (lines.length > 1 ? 0.46 : 0.54)
+  const fontSize = p.unit * (ghost ? 0.4 : lines.length > 1 ? 0.46 : 0.54)
   const ink = ghost ? darken(brick.hex, 0.15) : inkOn(brick.hex)
   const floating = brick.restsAt !== undefined && brick.state !== 'ghost' && brick.restsAt < brick.box.z - 0.05
   const footprint = floating ? [P(x, y, brick.restsAt!), P(x + w, y, brick.restsAt!), P(x + w, y + d, brick.restsAt!), P(x, y + d, brick.restsAt!)] : []

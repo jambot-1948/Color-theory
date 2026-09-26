@@ -9,7 +9,7 @@ import { analyzeStack } from './stackAnalysis'
 import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
 import SiteHeader from './SiteHeader'
-import { assemblyStories } from './assemblyStories'
+import { allStories } from './stories'
 import { blueprintMatch, capabilityList, decodeSlots, encodeSlots, isCaution, slotLinks, slotTools, slotsFromTools, type Slot } from './bricks/capabilityModel'
 
 type Lens = 'Architect' | 'Operator' | 'Consultant'
@@ -37,7 +37,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   const active = [...new Set(tools.map(tool => tool.primaryHue))]
   const match = blueprintMatch(edition, data, slots)
   const recipe = match?.recipe
-  const story = recipe && edition === 'ai' ? assemblyStories[recipe.id] : undefined
+  const story = recipe ? allStories[recipe.id] : undefined
   const links = slotLinks(edition, data, slots, story?.links)
   const pattern = recipe ? data.patterns.find(item => item.id === recipe.patternIds[0]) : analyzeStack(tools, data).pattern
   const tensions = links.filter(link => link.kind === 'tension').map(link => link.note)
