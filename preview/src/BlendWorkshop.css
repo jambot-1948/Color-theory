@@ -22,3 +22,7 @@
 .bw-foundation-note a{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#1d5f59;white-space:nowrap}
 .bw-foundation-note.is-generic{border-left-color:#9aa7a0}
 .bw-tray-note{margin:4px 0 0;font-size:11px;color:#6c7a72}
+.bw-footer{border-top:1px solid #dce4de;background:#f6f8f6}
+.bw-footer p{max-width:1540px;margin:0 auto;padding:18px 48px 22px;font-size:12px;line-height:1.55;color:#56665a}
+.bw-footer strong{color:#1d2c26}
+@media(max-width:700px){.bw-footer p{padding:16px 18px 20px;font-size:11px}}

@@ -12,3 +12,15 @@
 @media(max-width:700px){.fd-iso{left:18px;right:18px;width:auto;top:auto;bottom:150px;height:250px;justify-content:center;opacity:.95}.fd-iso .iso-scene{width:auto;height:100%}}
 @media(max-width:560px){.fd-definitions{grid-template-columns:1fr!important}}
 @media(max-width:560px){.fd-definitions>div{border-left:0!important;border-right:0!important;padding-left:0!important;padding-right:0!important}}
+.fd-sequence-copy>span{display:flex;align-items:center;gap:10px;min-height:20px}
+.fd-verdict{font-size:10px;font-weight:800;padding:3px 8px;border:1.5px solid currentColor;border-radius:3px;background:#fff;color:#2f7f7b;animation:fd-fade .35s ease both}
+.fd-verdict.is-forced{color:#c84c3a}.fd-verdict.is-loose{color:#8a6224}.fd-verdict.is-gaps{color:#56655d}.fd-verdict.is-caution{color:#b0562f}
+.fd-progress{display:block;height:2px;margin-top:12px;max-width:240px;background:#1e3931;transform-origin:left;transform:scaleX(0);opacity:.55}
+.fd-progress[data-playing]{animation:fd-progress linear both}
+.fd-play{margin-left:6px}
+.fd-missing{position:absolute;right:48px;top:22px;z-index:3;max-width:340px;animation:fd-fade .5s ease both}
+.fd-iso .iso-brick.is-ghost{animation:fd-fade .6s ease both}
+@keyframes fd-fade{from{opacity:0}to{opacity:1}}
+@keyframes fd-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(max-width:700px){.fd-missing{display:none}.fd-progress{margin-top:8px}}
+@media(prefers-reduced-motion:reduce){.fd-verdict,.fd-missing,.fd-iso .iso-brick.is-ghost{animation:none}}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, Minus, Plus } from 'lucide-react'
 import SiteHeader from './SiteHeader'
+import SiteFooter from './SiteFooter'
 import { BrickScene } from './bricks/Brick'
 import { MissingCallout } from './bricks/ManualBoard'
 import { editionTiers, readBuild, verdictCopy, type EditionId } from './bricks/buildModel'
@@ -96,5 +97,6 @@ export default function GrowthPage({ edition }: { edition: EditionId }) {
       <StageDetail key={`${edition}-${selected.id}`} edition={edition} stage={selected} />
       <p className="gr-caveat">Height shows tier, not call order or data flow. These paths are authored illustrations built from the curated tool data. They are not the only healthy order, and the time horizons are typical rather than prescriptive.</p>
     </main>
+    <SiteFooter />
   </div>
 }

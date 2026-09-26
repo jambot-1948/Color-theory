@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, X } from 'lucide-react'
 import SiteHeader from './SiteHeader'
+import SiteFooter from './SiteFooter'
 import { BrickIcon, BrickScene, type SceneBrick } from './bricks/Brick'
 import { editionTiers, linkBetween, recordedLinks, seatFor, tierOf, type EditionId } from './bricks/buildModel'
 import { editionIds, editionInfo } from './bricks/editions'
@@ -79,5 +80,6 @@ export default function PartsReference() {
     <main className="bw-main pr-main"><div className="bw-title"><div><h1>Parts inventory</h1><p>Each role breaks into capabilities, and each capability can be filled by more than one product. Pick a product to see what it pairs with; pick two to test the fit.</p></div><a href="#/original">Original view <ArrowRight size={15} /></a></div>
       {editionIds.map(id => <Inventory key={id} edition={id} />)}
     </main>
+    <SiteFooter />
   </div>
 }

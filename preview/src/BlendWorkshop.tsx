@@ -10,6 +10,7 @@ import { analyzeStack } from './stackAnalysis'
 import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
 import SiteHeader from './SiteHeader'
+import SiteFooter from './SiteFooter'
 import { allStories } from './stories'
 import { blueprintMatch, capabilityList, decodeSlots, encodeSlots, isCaution, slotLinks, slotTools, slotsFromTools, type Slot } from './bricks/capabilityModel'
 
@@ -103,5 +104,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
             {lens === 'Consultant' && <><p>{consultantText}</p><div className="bw-insight"><strong>{pattern?.type === 'anti-pattern' ? 'Recommended fix' : recipe ? 'Summary' : 'Pattern potential'}</strong><span>{consultantDetail}</span></div></>}
           </div> : <p className="bw-empty">Your reading appears as you add parts.</p>}
         </div>{tools.length > 0 && <div className="bw-next"><div><span className="bw-label">NEXT CHECK</span><p>{nextCheck}</p></div><ArrowRight size={20} /></div>}</section></div>
-    </main></div>
+    </main>
+    <SiteFooter />
+  </div>
 }
