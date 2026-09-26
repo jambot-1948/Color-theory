@@ -38,10 +38,10 @@ export const editionTiers: Record<EditionId, Tier[]> = {
     { name: 'Quality & governance', hues: ['observe', 'govern'] },
   ],
   harness: [
-    { name: 'Runtime & state', hues: ['execution', 'state'] },
-    { name: 'Entry & scale', hues: ['invocation', 'scaling'] },
-    { name: 'Recovery & visibility', hues: ['resilience', 'observability'] },
-    { name: 'Security', hues: ['security'] },
+    { name: 'Runtime & context', hues: ['runtime', 'context'] },
+    { name: 'Tools & sandbox', hues: ['sandbox', 'tools'] },
+    { name: 'Recovery & evidence', hues: ['evidence', 'recovery'] },
+    { name: 'Permissions', hues: ['permissions'] },
   ],
 }
 

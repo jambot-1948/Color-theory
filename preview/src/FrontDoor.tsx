@@ -31,7 +31,7 @@ function heroBricks(step: number) {
 const editions = [
   { name: 'AI applications', href: '#/ai-applications', detail: 'What people use: models, agent runtimes, retrieval, interfaces, and oversight.', data: architecturalChromaticsData },
   { name: 'Data engineering', href: '#/data-engineering', detail: 'Ingestion, transformation, storage, serving, and governance.', data: dataEngineeringChromaticsData },
-  { name: 'Agent harness', href: '#/agent-harness', detail: 'Execution, state, observability, resilience, and security.', data: agentHarnessChromaticsData },
+  { name: 'Agent harness', href: '#/agent-harness', detail: 'Between the model and the world: tools, sandboxes, permissions, memory, evals, and recovery.', data: agentHarnessChromaticsData },
 ]
 
 export default function FrontDoor() {

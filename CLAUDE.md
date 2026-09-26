@@ -2,9 +2,9 @@
 
 ## Project Context
 The Chromatic Architecture framework applies color theory metaphors to technology architecture. Three domains are implemented:
-- **Architectural Chromatics**: AI/LLM application stacks (7 hues: Intent, Logic, Cognition, Memory, Interface, Velocity, Trust)
+- **Architectural Chromatics** (shown as "AI applications"): AI/LLM application stacks (7 hues: Intent, Logic, Cognition, Memory, Interface, Velocity, Trust)
 - **Data Engineering Chromatics**: Data platform composition (7 hues: Ingest, Transform, Orchestrate, Store, Serve, Observe, Govern)
-- **Agent Harness Chromatics**: Agent infrastructure and reliability (7 hues: Invocation, Execution, State, Observability, Resilience, Scaling, Security)
+- **Agent Harness Chromatics**: The layer between the model and the world (7 hues: Tools, Sandbox, Permissions, Context, Evidence, Recovery, Runtime). The original infrastructure-focused hues are frozen in `preview/src/agent-harness-legacy-data.ts` for the legacy view.
 
 Core premise: **How things combine matters more than what they are individually.**
 
