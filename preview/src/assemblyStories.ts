@@ -48,12 +48,12 @@ export const assemblyStories: Record<string, AssemblyStory> = {
     recipeId: 'data-prototype-recipe',
     steps: [
       { toolId: 'streamlit', action: 'Start with a practitioner UI', explanation: 'Streamlit puts a Python-facing interface in front of technical users for fast feedback.' },
-      { toolId: 'supabase', action: 'Add app services', explanation: 'Supabase adds storage and application services without a dedicated backend build.' },
-      { toolId: 'openai', action: 'Add model capability', explanation: 'The model adds reasoning or generation to the prototype. Memory, governance, and workflow control remain outside this recipe.' },
+      { toolId: 'supabase', action: 'Add app services', explanation: 'Supabase adds Postgres, auth, and storage without a dedicated backend build. Its pgvector extension could hold embeddings later.' },
+      { toolId: 'openai', action: 'Add model capability', explanation: 'The model adds reasoning or generation to the prototype. Retrieval design, governance, and workflow control remain outside this recipe.' },
     ],
     links: [
       { first: 'streamlit', second: 'supabase', kind: 'fit', note: 'The practitioner interface and backend platform are a curated pairing.' },
-      { first: 'streamlit', second: 'openai', kind: 'recipe', note: 'The recipe combines a Python-facing UI with model capability.' },
+      { first: 'streamlit', second: 'openai', kind: 'fit', note: 'The practitioner interface and model are a curated pairing.' },
     ],
   },
   'internal-knowledge-agent': {
@@ -84,21 +84,21 @@ export const assemblyStories: Record<string, AssemblyStory> = {
     ],
     links: [
       { first: 'temporal', second: 'claude', kind: 'fit', note: 'Durable workflow control and model capability are a curated pairing.' },
-      { first: 'temporal', second: 'pinecone', kind: 'fit', note: 'The workflow and retrieval store are a curated pairing.' },
+      { first: 'temporal', second: 'pinecone', kind: 'recipe', note: 'No product integration: retrieval calls run as ordinary workflow steps that the application implements.' },
       { first: 'claude', second: 'guardrails', kind: 'fit', note: 'The model and validation layer are a curated pairing.' },
       { first: 'claude', second: 'langsmith', kind: 'fit', note: 'The model and tracing layer are a curated pairing.' },
-      { first: 'temporal', second: 'guardrails', kind: 'fit', note: 'The workflow and governance layer are a curated pairing.' },
+      { first: 'temporal', second: 'guardrails', kind: 'recipe', note: 'No product integration: validation runs inside workflow steps, and the application decides what a failed check does.' },
     ],
   },
   'reflective-ai-system': {
     recipeId: 'reflective-ai-system',
     steps: [
       { toolId: 'claude', action: 'Establish the model core', explanation: 'Start with the model responsible for structured language work.' },
-      { toolId: 'langchain', action: 'Structure the interaction', explanation: 'Add prompt and workflow scaffolding around the model. The recipe names this combination, although the tool pair is not separately listed as a curated fit.' },
-      { toolId: 'langsmith', action: 'Expose the feedback loop', explanation: 'Tracing makes behavior legible. Evaluation criteria and the owner of feedback still need to be defined.' },
+      { toolId: 'langchain', action: 'Structure the interaction', explanation: 'Add prompt and workflow scaffolding around the model through the LangChain Anthropic integration.' },
+      { toolId: 'langsmith', action: 'Expose the feedback loop', explanation: 'Tracing makes behavior legible. Evaluation datasets, criteria, and the owner of feedback still need to be defined.' },
     ],
     links: [
-      { first: 'claude', second: 'langchain', kind: 'recipe', note: 'The recipe explicitly combines model output with LangChain scaffolding.' },
+      { first: 'claude', second: 'langchain', kind: 'fit', note: 'The model and scaffolding are a curated pairing.' },
       { first: 'langchain', second: 'langsmith', kind: 'fit', note: 'The scaffolding and tracing layer are a curated pairing.' },
       { first: 'claude', second: 'langsmith', kind: 'fit', note: 'The model and tracing layer are a curated pairing.' },
     ],
@@ -106,15 +106,15 @@ export const assemblyStories: Record<string, AssemblyStory> = {
   'muddy-agent-recipe': {
     recipeId: 'muddy-agent-recipe',
     steps: [
-      { toolId: 'langchain', action: 'Begin with scaffolding', explanation: 'A framework helps the team move quickly, but it already carries some orchestration responsibility.' },
-      { toolId: 'langgraph', action: 'Add stateful control', explanation: 'A graph adds explicit workflow state. Name the boundary between this control layer and the framework scaffolding.' },
-      { toolId: 'temporal', action: 'Introduce competing control', explanation: 'This cautionary recipe gives Temporal the same control responsibility as the agent framework. The products can coexist when their responsibilities are separated.' },
-      { toolId: 'openai', action: 'Add cognition to the overlap', explanation: 'Model capability does not resolve the control conflict. The recipe recommends removing duplicate orchestration or assigning clear boundaries.' },
+      { toolId: 'langchain', action: 'Begin with an agent loop', explanation: 'A LangChain agent gets the team moving quickly. It already runs its own tool-calling loop.' },
+      { toolId: 'langgraph', action: 'Add a graph beside it', explanation: 'A LangGraph graph adds explicit state, but the earlier agent loop stays outside it. LangChain agents are built on LangGraph, so the loop could have been a node in this graph instead.' },
+      { toolId: 'temporal', action: 'Introduce competing control', explanation: 'This cautionary recipe adds Temporal retries without deciding which layer owns them. Temporal ships an experimental LangGraph plugin; the products can coexist when their responsibilities are separated.' },
+      { toolId: 'openai', action: 'Add cognition to the overlap', explanation: 'Model capability does not resolve the control conflict, and nothing traces the overlapping loops. The recipe recommends one agent loop, clear boundaries, and tracing.' },
     ],
     links: [
-      { first: 'langchain', second: 'langgraph', kind: 'fit', note: 'The framework and graph are a curated pairing when their responsibilities are distinct.' },
-      { first: 'langchain', second: 'temporal', kind: 'tension', note: 'In this cautionary recipe, both layers try to own the same control loop.' },
-      { first: 'langgraph', second: 'temporal', kind: 'tension', note: 'Separate agent-state control from outer workflow recovery to avoid this recipe-level overlap.' },
+      { first: 'langchain', second: 'langgraph', kind: 'tension', note: 'In this design the LangChain agent loop runs beside the graph instead of inside it, so two loops hold state.' },
+      { first: 'langchain', second: 'temporal', kind: 'tension', note: 'In this cautionary recipe, the outside agent loop and Temporal both retry the same work.' },
+      { first: 'langgraph', second: 'temporal', kind: 'tension', note: 'The products integrate, but here nobody separated agent-state control from outer workflow recovery.' },
       { first: 'langchain', second: 'openai', kind: 'fit', note: 'The framework and model are a curated pairing; this does not settle the control conflict.' },
     ],
   },

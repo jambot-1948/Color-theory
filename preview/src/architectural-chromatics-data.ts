@@ -164,10 +164,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Agent Runtime",
       maturity: "production",
       description:
-        "Agent runtime for tools, handoffs, sessions, guardrails, and built-in tracing. Uses the Responses API by default for OpenAI models.",
+        "Agent runtime for tools, handoffs, sessions, guardrails, and built-in tracing. Uses the Responses API by default for OpenAI models; other providers go through beta adapters such as LiteLLM.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["openai"],
+      pairsWellWith: ["openai", "temporal", "langsmith"],
       conflictsWith: [],
       patterns: ["conductor", "long-memory-system"],
       notes:
@@ -184,9 +184,9 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Agent framework with model and tool integrations. Its agent runtime uses LangGraph primitives; use LangGraph directly when you need finer workflow control.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["openai", "pinecone", "langgraph", "langsmith"],
+      pairsWellWith: ["openai", "claude", "pinecone", "langgraph", "langsmith", "guardrails"],
       conflictsWith: [],
-      patterns: ["conductor", "muddy-mix", "thin-wrapper"],
+      patterns: ["conductor", "muddy-mix"],
       notes:
         "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs.",
     },
@@ -200,10 +200,10 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Orchestrator",
       maturity: "production",
       description:
-        "Graph-based orchestration for stateful agent and multi-step workflow control. Lets you define agent behavior as explicit state machines.",
+        "Graph-based orchestration for stateful agent and multi-step workflow control. Lets you define agent behavior as explicit state machines, and its checkpointing overlaps with durable workflow engines.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "openai", "pinecone", "langsmith"],
+      pairsWellWith: ["langchain", "openai", "pinecone", "langsmith", "temporal"],
       conflictsWith: [],
       patterns: ["conductor", "orchestration-pileup", "modular-palette"],
       notes:
@@ -220,11 +220,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Durable workflow orchestration for production-critical systems. Handles retries, state, and long-running processes that must not fail silently.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["openai", "claude", "pinecone", "guardrails"],
+      pairsWellWith: ["claude", "openai-agents-sdk", "langgraph"],
       conflictsWith: [],
       patterns: ["durable-spine", "governance-shell", "conductor"],
       notes:
-        "Durable execution for workflows with long waits, retries, and recovery needs. Can coordinate an agent runtime without replacing its internal reasoning loop.",
+        "Durable execution for workflows with long waits, retries, and recovery needs. Temporal's Python SDK includes an OpenAI Agents SDK integration and an experimental LangGraph plugin; with either, decide which layer owns retries and state.",
     },
 
     // COGNITION
@@ -239,7 +239,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Model and API platform for reasoning, generation, summarization, and multimodal work. Choose a model and API mode for the specific task.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith"],
+      pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith", "openai-agents-sdk", "streamlit", "supabase", "guardrails"],
       conflictsWith: [],
       patterns: ["bright-demo", "thin-wrapper", "conductor", "cognitive-core"],
       notes:
@@ -249,14 +249,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "claude",
       name: "Anthropic Claude",
       primaryHue: "cognition",
-      secondaryHue: "trust",
+      secondaryHue: "intent",
       category: "Model Provider",
       maturity: "production",
       description:
         "Model platform for language, reasoning, and tool-use workloads. Safety and reliability still depend on evaluation and application controls.",
       complexityAdded: "low",
-      trustContribution: "medium",
-      pairsWellWith: ["langsmith", "guardrails", "temporal"],
+      trustContribution: "low",
+      pairsWellWith: ["langsmith", "guardrails", "temporal", "langchain"],
       conflictsWith: [],
       patterns: ["reflective-loop", "cognitive-core", "governance-shell"],
       notes:
@@ -268,14 +268,13 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "pinecone",
       name: "Pinecone",
       primaryHue: "memory",
-      secondaryHue: "trust",
       category: "Vector Database",
       maturity: "production",
       description:
         "Managed vector database for semantic retrieval over indexed content. It can support an agent's knowledge access, but is not conversation memory by itself.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["openai", "claude", "langchain", "langgraph"],
+      pairsWellWith: ["openai", "langchain", "langgraph"],
       conflictsWith: [],
       patterns: ["long-memory-system", "conductor", "retrieval-illusion"],
       notes:
@@ -298,7 +297,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       conflictsWith: [],
       patterns: ["bright-demo", "thin-wrapper", "velocity-stack"],
       notes:
-        "A major enabler of beautiful AI demos and fast productization. Low complexity, but what's behind it matters more than what it shows.",
+        "A short path from prototype to a web product. Low complexity, but what's behind it matters more than what it shows.",
     },
     {
       id: "streamlit",
@@ -327,7 +326,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Backend Platform",
       maturity: "production",
       description:
-        "Backend-as-a-service that accelerates full-stack AI application development. Handles auth, storage, and real-time without a dedicated backend.",
+        "Backend-as-a-service built on managed Postgres, with auth, storage, realtime, edge functions, and pgvector for embeddings.",
       complexityAdded: "low",
       trustContribution: "low",
       pairsWellWith: ["vercel", "streamlit", "openai"],
@@ -342,14 +341,13 @@ export const architecturalChromaticsData: ChromaticsData = {
       id: "langsmith",
       name: "LangSmith",
       primaryHue: "trust",
-      secondaryHue: "logic",
       category: "Observability",
       maturity: "production",
       description:
-        "Tracing, debugging, and observability for LLM applications and workflows. Makes the invisible visible — what the model actually saw and did.",
+        "Debugging, evaluation, and monitoring for LLM applications and agents. Traces record what the model received and returned.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["langchain", "langgraph", "openai", "claude"],
+      pairsWellWith: ["langchain", "langgraph", "openai", "claude", "openai-agents-sdk"],
       conflictsWith: [],
       patterns: ["reflective-loop", "durable-spine", "conductor", "trust-gap"],
       notes:
@@ -363,14 +361,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Governance",
       maturity: "production",
       description:
-        "Validation and safety constraints for model inputs and outputs. Enforces structure, policy, and reliable behavior at the model boundary.",
+        "Open-source validators that check model inputs and outputs against schemas and policies. Coverage depends on the validators you choose.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["claude", "openai", "temporal"],
+      pairsWellWith: ["claude", "openai", "langchain"],
       conflictsWith: [],
       patterns: ["governance-shell", "durable-spine"],
       notes:
-        "A useful stabilizer when systems need reliable structure, safety, or policy enforcement. Most teams add this too late — build it in from the start.",
+        "Validators are installed as Python packages and run in your application; Guardrails announced the end of its hosted remote inference, with a planned cutoff of August 25, 2026. Decide early which checks block a response and which only log.",
     },
   ],
 
@@ -472,7 +470,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "The team started with one orchestration tool. As requirements grew, they added another. Each made sense in isolation. Together they create a control plane nobody fully understands — unclear who owns flow, high complexity, and maintenance that compounds with every change.",
       strengths: [],
       weaknesses: ["unclear flow", "high complexity", "maintenance drag"],
-      watchFor: ["LangGraph alongside Temporal", "any two orchestrators in one stack"],
+      watchFor: ["two orchestrators without a written boundary", "more than one layer claiming retries"],
     },
     {
       id: "hollow-core",
@@ -568,7 +566,9 @@ export const architecturalChromaticsData: ChromaticsData = {
       whereItBreaks: [
         "Retrieval quality and access control still require testing",
         "A Pinecone index is not conversation memory or an evaluation system",
+        "Built-in tracing records runs but does not evaluate them",
       ],
+      missingHues: ["interface", "velocity", "trust"],
     },
     {
       id: "bright-demo-recipe",
@@ -601,11 +601,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Fast iteration with real data",
       ],
       whereItBreaks: [
-        "Not product-grade — Streamlit doesn't scale to public users",
-        "No memory or retrieval layer",
+        "Streamlit reruns the script on each interaction, so many concurrent public users need capacity planning",
+        "No retrieval pipeline designed yet; Supabase pgvector is available but unused",
         "No governance",
       ],
-      missingHues: ["logic", "memory", "trust"],
+      missingHues: ["logic", "trust"],
       upgradePath: ["pinecone", "langsmith"],
     },
     {
@@ -618,7 +618,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       whyItWorks: [
         "Combines reasoning with retrieval",
         "Orchestration structure keeps behavior predictable",
-        "LangSmith makes the whole thing debuggable",
+        "LangSmith traces make failures easier to locate",
       ],
       whereItBreaks: [
         "Only as good as the source data",
@@ -637,11 +637,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Regulated, production-critical, or enterprise-sensitive AI workflows where failure has real consequences.",
       whyItWorks: [
         "Temporal provides a durable, auditable control plane",
-        "Claude's safer output behavior pairs well with Guardrails",
+        "Guardrails validation sits at the model boundary regardless of model provider",
         "LangSmith surfaces what the model actually did",
       ],
       whereItBreaks: [
-        "High setup cost — this is a 6-week build, not a weekend",
+        "High setup cost — plan in weeks, not days",
         "Can feel heavy for small teams or early-stage products",
         "Requires operational sophistication to run well",
       ],
@@ -656,9 +656,9 @@ export const architecturalChromaticsData: ChromaticsData = {
       useCase:
         "Higher-quality generation for documents, decisions, or structured outputs where consistency and accuracy matter.",
       whyItWorks: [
-        "Claude's structured outputs + LangChain's scaffolding create a tight loop",
+        "Claude's structured outputs and LangChain's scaffolding keep generation in a consistent shape",
         "LangSmith makes prompt behavior legible and improvable",
-        "The feedback loop catches regressions before they reach users",
+        "Evaluations run against a dataset before release can catch regressions",
       ],
       whereItBreaks: [
         "No memory layer — context resets each session",
@@ -677,19 +677,21 @@ export const architecturalChromaticsData: ChromaticsData = {
         "A cautionary example. What teams often build when they layer tools without clear boundaries.",
       whyItHappens: [
         "Tool enthusiasm — each one seemed useful individually",
-        "Unclear ownership of orchestration",
-        "Layering new tools on top of old ones instead of replacing",
+        "A second agent loop defined in LangChain outside the LangGraph graph",
+        "Temporal added for retries without deciding which layer owns them",
       ],
       symptoms: [
         "Nobody can explain who owns the control flow",
         "Debugging requires understanding 3 different systems",
         "The team argues about which tool should handle X",
+        "No tracing or evaluation tool: nothing shows what the overlapping loops did",
       ],
       fix: [
+        "Run the agent loop inside the LangGraph graph (LangChain agents are built on LangGraph) instead of beside it",
         "Assign LangGraph agent-state control and Temporal outer recovery separately, or remove the redundant layer",
-        "Assign clear responsibility to each tool",
-        "Remove tools that duplicate what another already does",
+        "Add tracing before adding more control",
       ],
+      missingHues: ["memory", "interface", "velocity"],
     },
   ],
 };
@@ -798,7 +800,7 @@ export const chromaticsHelpers = {
 
     if (orchestrationTools.length > 1) {
       warnings.push(
-        "Orchestration overlap: LangGraph and Temporal in the same stack creates ambiguity over who owns control flow."
+        "Two orchestrators: name which layer owns agent state and which owns retries and resumption."
       );
     }
 
