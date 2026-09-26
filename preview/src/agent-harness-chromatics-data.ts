@@ -392,7 +392,6 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       id: "modal",
       name: "Modal",
       primaryHue: "runtime",
-      secondaryHue: "sandbox",
       category: "Serverless ML",
       maturity: "production",
       description:
@@ -403,7 +402,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       conflictsWith: [],
       patterns: ["sandboxed-loop", "unsandboxed-execution"],
       notes:
-        "Fast path to GPU and container workloads. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; pair it with one such as Langfuse for prompt-level visibility.",
+        "Fast path to GPU and container workloads. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; pair it with one such as Langfuse for prompt-level visibility. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here.",
     },
     {
       id: "docker",
@@ -801,7 +800,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Put a policy check (for example OPA) in front of tool calls, and require approval for irreversible ones",
         "Trace runs with Langfuse and put spend and rate limits in front of the model (for example LiteLLM)",
       ],
-      missingHues: ["permissions", "evidence", "recovery"],
+      missingHues: ["sandbox", "permissions", "evidence", "recovery"],
       upgradePath: ["opa", "langfuse", "litellm"],
     },
   ],
