@@ -1,4 +1,4 @@
-# Stack Assembly Review
+# Chromatic Architecture: Assembly Review
 
 ## Purpose
 
