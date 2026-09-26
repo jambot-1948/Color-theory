@@ -2,6 +2,7 @@ import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
 
 const links = [
+  { id: 'foundations', label: 'Foundations', href: '#/foundations' },
   { id: 'ai', label: 'AI applications', href: '#/ai-applications' },
   { id: 'data', label: 'Data engineering', href: '#/data-engineering' },
   { id: 'harness', label: 'Agent harness', href: '#/agent-harness' },

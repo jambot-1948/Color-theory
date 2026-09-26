@@ -118,11 +118,21 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   </g>
 }
 
-export function Baseplate({ w, d, p, color = '#c9d3cc' }: { w: number, d: number, p: Projector, color?: string }) {
+const PLINTH_HEIGHT = 1.1
+
+// When the baseplate stands for something (Foundations' operating model), it sits on a labelled plinth.
+export function Baseplate({ w, d, p, color = '#c9d3cc', label }: { w: number, d: number, p: Projector, color?: string, label?: string }) {
   const box: Box = { x: 0, y: 0, z: -PLATE_HEIGHT, w, d, h: PLATE_HEIGHT }
   const { x, y, z, h } = box
   const P = p.point
+  const pz = z - PLINTH_HEIGHT
+  const plinth = '#e7dcc3'
   return <g className="iso-plate">
+    {label && <g className="iso-plinth">
+      <path d={pathFrom([P(x, y + d, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x, y + d, z)])} fill={plinth} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
+      <path d={pathFrom([P(x + w, y, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x + w, y, z)])} fill={darken(plinth, 0.12)} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
+      <text transform={leftFaceMatrix(P(x, y + d, z))} x={p.unit * 0.4} y={p.unit * PLINTH_HEIGHT * 0.64} fontSize={p.unit * 0.4} fontWeight="750" fill={darken(plinth, 0.62)} style={{ letterSpacing: 0 }}>{label.toUpperCase()}</text>
+    </g>}
     <path d={pathFrom([P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)])} fill={darken(color, 0.08)} stroke={darken(color, 0.3)} strokeWidth=".7" />
     <path d={pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)])} fill={darken(color, 0.18)} stroke={darken(color, 0.3)} strokeWidth=".7" />
     <path d={pathFrom([P(x, y, 0), P(x + w, y, 0), P(x + w, y + d, 0), P(x, y + d, 0)])} fill={color} stroke={darken(color, 0.3)} strokeWidth=".7" />
@@ -168,14 +178,16 @@ export interface SceneProps {
   className?: string
   maxTier?: number
   frame?: 'tall' | 'tight'
+  plateLabel?: string
 }
 
-export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, showBadges = 'new', className, maxTier = 4, frame }: SceneProps) {
+export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, showBadges = 'new', className, maxTier = 4, frame, plateLabel }: SceneProps) {
   const p = projector(unit)
   const titleId = useId()
   // Frame the whole plate plus the tallest possible model so the camera never jumps between steps.
   const reach = maxTier * BRICK_HEIGHT + ((frame ?? (showArrow ? 'tall' : 'tight')) === 'tall' ? 2.6 : 0.9)
-  const corners = [p.point(0, plate.d, -PLATE_HEIGHT), p.point(plate.w, 0, reach), p.point(plate.w, plate.d, -PLATE_HEIGHT), p.point(0, 0, reach), p.point(plate.w + 1.5, 0, reach)]
+  const floor = -PLATE_HEIGHT - (plateLabel ? PLINTH_HEIGHT : 0)
+  const corners = [p.point(0, plate.d, floor), p.point(plate.w, 0, reach), p.point(plate.w, plate.d, floor), p.point(0, 0, reach), p.point(plate.w + 1.5, 0, reach)]
   const minX = Math.min(...corners.map(c => c[0])) - 8
   const maxX = Math.max(...corners.map(c => c[0])) + 14
   const minY = Math.min(...corners.map(c => c[1])) - 4
@@ -185,7 +197,7 @@ export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, 
 
   return <svg className={`iso-scene${className ? ` ${className}` : ''}`} viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${(maxX - minX).toFixed(1)} ${(maxY - minY).toFixed(1)}`} role="img" aria-labelledby={titleId}>
     <title id={titleId}>{label}</title>
-    <Baseplate w={plate.w} d={plate.d} p={p} />
+    <Baseplate w={plate.w} d={plate.d} p={p} label={plateLabel} />
     {sorted.map(({ brick }) => <g key={brick.id} className={brick.isNew ? 'iso-drop' : undefined}><IsoBrick brick={brick} p={p} /></g>)}
     {bricks.filter(brick => showBadges === 'all' ? brick.state !== 'ghost' && brick.state !== 'removed' : showBadges === 'new' && brick.isNew).map(brick => <Badge key={`badge-${brick.id}`} brick={brick} p={p} />)}
     {showArrow && newest && <DropArrow brick={newest} p={p} />}

@@ -3,6 +3,7 @@ import { ArrowRight, Check, Copy, Plus, Search, X } from 'lucide-react'
 import { architecturalChromaticsData } from './architectural-chromatics-data'
 import { dataEngineeringChromaticsData } from './data-engineering-chromatics-data'
 import { agentHarnessChromaticsData } from './agent-harness-chromatics-data'
+import { foundationsData } from './foundations-data'
 import type { WorkshopData } from './workshopData'
 import AssemblyGuide from './AssemblyGuide'
 import { analyzeStack } from './stackAnalysis'
@@ -13,7 +14,11 @@ import { allStories } from './stories'
 import { blueprintMatch, capabilityList, decodeSlots, encodeSlots, isCaution, slotLinks, slotTools, slotsFromTools, type Slot } from './bricks/capabilityModel'
 
 type Lens = 'Architect' | 'Operator' | 'Consultant'
+// Foundations recipes run to ten parts; keep the tray large enough for them.
+const MAX_PARTS = 10
+
 const editions = {
+  foundations: { data: foundationsData, title: 'Foundations', defaultTools: ['nextjs', 'nodejs', 'postgresql', 'heroku'] },
   ai: { data: architecturalChromaticsData, title: 'AI applications', defaultTools: ['openai', 'pinecone', 'langsmith'] },
   data: { data: dataEngineeringChromaticsData, title: 'Data engineering', defaultTools: dataEngineeringChromaticsData.recipes[0].tools },
   harness: { data: agentHarnessChromaticsData, title: 'Agent harness', defaultTools: agentHarnessChromaticsData.recipes[0].tools },
@@ -27,7 +32,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   const hues = Object.fromEntries(data.hues.map(hue => [hue.id, hue])) as Record<string, (typeof data.hues)[number]>
   const [slots, setSlots] = useState<Slot[]>(() => {
     const params = new URLSearchParams(location.search)
-    const shared = decodeSlots(edition, params.get('build') ?? params.get('blend')).slice(0, 8)
+    const shared = decodeSlots(edition, params.get('build') ?? params.get('blend')).slice(0, MAX_PARTS)
     return shared.length ? shared : slotsFromTools(edition, [...config.defaultTools])
   })
   const [search, setSearch] = useState('')
@@ -59,7 +64,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   const available = caps.filter(cap => !slots.some(slot => slot.capability === cap.id) && `${cap.name} ${cap.summary} ${hues[cap.hue].name} ${cap.products.map(id => data.tools.find(tool => tool.id === id)?.name).join(' ')}`.toLowerCase().includes(query))
   const productName = (id: string) => data.tools.find(tool => tool.id === id)?.name ?? id
 
-  function add(id: string) { setSlots(current => current.length < 8 ? [...current, { capability: id }] : current) }
+  function add(id: string) { setSlots(current => current.length < MAX_PARTS ? [...current, { capability: id }] : current) }
   function remove(index: number) { setSlots(current => current.filter((_, position) => position !== index)) }
   function fill(index: number, product: string) { setSlots(current => current.map((slot, position) => position === index ? { ...slot, product: product || undefined } : slot)) }
   async function share() {
@@ -74,7 +79,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
     <SiteHeader active={edition} />
     <main className="bw-main"><div className="bw-title"><div><h1>{config.title} assembly</h1><p>Choose the capabilities you need. Then choose which products fill them.</p></div><span>{caps.length} capabilities / {data.tools.length} products</span></div>
       <div className="bw-layout"><aside className="bw-library" id="bw-tool-library"><div className="bw-presets"><div className="bw-section-head"><h2>Assembly examples</h2><span>{presets.length} curated</span></div>{presets.map(preset => <button key={preset.name} onClick={() => setSlots(preset.slots)}>{preset.name}{preset.caution && <small>Caution</small>}<ArrowRight size={15} /></button>)}</div><div className="bw-section-head"><h2>Parts</h2><span>{caps.length} capabilities</span></div><label className="bw-search"><Search size={16} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search capabilities or products" /></label>
-        <div className="bw-tool-list">{available.map(cap => <button key={cap.id} className="bw-tool" onClick={() => add(cap.id)} disabled={slots.length >= 8} title={slots.length >= 8 ? 'Remove a part to add another' : cap.summary}><i style={{ background: hues[cap.hue].hex }} /><span><strong>{cap.name}</strong><small>{hues[cap.hue].name} · {cap.products.map(productName).join(', ')}</small></span><Plus size={16} /></button>)}{!available.length && <p className="bw-empty">No matching capabilities. Try a product or role name.</p>}</div>
+        <div className="bw-tool-list">{available.map(cap => <button key={cap.id} className="bw-tool" onClick={() => add(cap.id)} disabled={slots.length >= MAX_PARTS} title={slots.length >= MAX_PARTS ? 'Remove a part to add another' : cap.summary}><i style={{ background: hues[cap.hue].hex }} /><span><strong>{cap.name}</strong><small>{hues[cap.hue].name} · {cap.products.map(productName).join(', ')}</small></span><Plus size={16} /></button>)}{!available.length && <p className="bw-empty">No matching capabilities. Try a product or role name.</p>}</div>
 
       </aside>
       <section className="bw-workspace"><div className="bw-workspace-head"><div><span className="bw-label">CURRENT BUILD</span><h2>{tools.length ? tools.map(tool => tool.name).join(' + ') : 'Start a build'}</h2>{tools.length > 0 && <p className="bw-products">{tools.map(tool => tool.product?.name ?? `any ${tool.name.toLowerCase()}`).join(' · ')}</p>}</div><button className="bw-share" onClick={share} disabled={!tools.length} title="Copy share link" aria-label="Copy share link">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div><button className="bw-add-mobile" onClick={() => document.getElementById('bw-tool-library')?.scrollIntoView({ behavior: 'smooth' })}><Plus size={15} />Add parts</button>

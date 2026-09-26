@@ -3,6 +3,7 @@ import { ArrowRight, BrainCircuit, ChevronLeft, ChevronRight, Database, GitBranc
 import { architecturalChromaticsData } from './architectural-chromatics-data'
 import { dataEngineeringChromaticsData } from './data-engineering-chromatics-data'
 import { agentHarnessChromaticsData } from './agent-harness-chromatics-data'
+import { foundationsData } from './foundations-data'
 import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
 import './FrontDoor.css'
@@ -29,6 +30,7 @@ function heroBricks(step: number) {
 }
 
 const editions = [
+  { name: 'Foundations', href: '#/foundations', detail: 'What every system sits on: front end, back end, data, login, delivery, platform, and operations.', data: foundationsData },
   { name: 'AI applications', href: '#/ai-applications', detail: 'What people use: models, agent runtimes, retrieval, interfaces, and oversight.', data: architecturalChromaticsData },
   { name: 'Data engineering', href: '#/data-engineering', detail: 'Ingestion, transformation, storage, serving, and governance.', data: dataEngineeringChromaticsData },
   { name: 'Agent harness', href: '#/agent-harness', detail: 'Between the model and the world: tools, sandboxes, permissions, memory, evals, and recovery.', data: agentHarnessChromaticsData },

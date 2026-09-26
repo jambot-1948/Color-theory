@@ -26,6 +26,48 @@ export interface GrowthTrack {
 }
 
 export const growthTracks: Record<EditionId, GrowthTrack> = {
+  foundations: {
+    edition: 'foundations',
+    title: 'An application, from first deploy to owned platform',
+    intro: 'Most applications start on a managed platform and earn each foundation as users arrive: login and tests, then the ability to see failures, and only then a platform of their own.',
+    stages: [
+      {
+        id: 'prototype', horizon: 'Week 1', name: 'Ship it',
+        add: ['nextjs', 'nodejs', 'postgresql', 'heroku'], missing: ['trust', 'operations'],
+        summary: 'A front end, an API, and a database on a managed platform. People can use it.',
+        why: 'The quickest way to learn whether anyone wants it is to put it in front of them.',
+        watch: 'Anyone can reach every endpoint, and nothing tells you when it breaks.',
+      },
+      {
+        id: 'pilot', horizon: 'Month 1', name: 'Signed in & tested',
+        add: ['auth0', 'github-actions'], missing: ['operations'],
+        summary: 'Users sign in, and every change runs through tests before it ships.',
+        why: 'Real users bring real data, and changes now need a safety net.',
+        watch: 'Deploys are safer, but you still hear about failures from users first.',
+      },
+      {
+        id: 'production', horizon: 'Quarter 1', name: 'Watched',
+        add: ['opentelemetry', 'pagerduty'],
+        summary: 'Requests are traced, and someone is paged when the service is at risk.',
+        why: 'Users now notice downtime before the team does.',
+        watch: 'Alerts need owners and runbooks, or they turn into noise.',
+      },
+      {
+        id: 'scale', horizon: 'Year 1', name: 'Own the platform',
+        add: ['kubernetes', 'argocd', 'terraform'], remove: ['heroku'],
+        summary: 'Several services on infrastructure declared in code and deployed through GitOps.',
+        why: 'Enough services and teams that one shared, paved road beats each team’s own setup.',
+        watch: 'A platform is a product with its own team. Budget for the people, not just the cluster.',
+      },
+      {
+        id: 'platform-first', horizon: 'Month 1', name: 'Wrong turn: platform before product', from: 'prototype', branch: true, caution: true,
+        add: ['kubernetes', 'argocd', 'terraform'], remove: ['heroku'], missing: ['trust', 'operations'],
+        summary: 'Kubernetes, GitOps, and Terraform arrive before login, tests, or monitoring.',
+        why: 'It looks like the grown-up setup, and the team wants to build it right the first time.',
+        watch: 'Weeks go into the platform while the product still has no tests and no way to see failures.',
+      },
+    ],
+  },
   ai: {
     edition: 'ai',
     title: 'An AI assistant, from demo to durable',

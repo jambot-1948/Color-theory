@@ -11,6 +11,30 @@ export interface Capability {
 }
 
 export const capabilities: Record<EditionId, Capability[]> = {
+  foundations: [
+    { id: 'web-frontend', name: 'Web front end', hue: 'experience', summary: 'The pages and interactions people use in a browser.', products: ['nextjs'] },
+    { id: 'mobile-app', name: 'Mobile app', hue: 'experience', summary: 'Native apps for phones and tablets.', products: ['react-native'] },
+    { id: 'api-service', name: 'API service', hue: 'service', summary: 'The back end: endpoints and business logic behind the front end.', products: ['nodejs', 'django', 'spring-boot'] },
+    { id: 'relational-db', name: 'Relational database', hue: 'data', summary: 'Durable, queryable records with transactions.', products: ['postgresql'] },
+    { id: 'cache', name: 'Cache', hue: 'data', summary: 'Fast, short-lived copies of data and sessions.', products: ['redis'] },
+    { id: 'message-queue', name: 'Message queue', hue: 'data', summary: 'Hands work between services so they do not have to wait on each other.', products: ['rabbitmq'] },
+    { id: 'identity', name: 'Identity & login', hue: 'trust', summary: 'Who a user is, how they sign in, and what they may access.', products: ['keycloak', 'auth0'] },
+    { id: 'secrets', name: 'Secrets manager', hue: 'trust', summary: 'Stores and issues credentials instead of keeping them in code or images.', products: ['vault'] },
+    { id: 'supply-chain-scan', name: 'Image scanning & SBOM', hue: 'trust', summary: 'Checks what you ship for known vulnerabilities and records what is inside it.', products: ['trivy'] },
+    { id: 'source-control', name: 'Source control', hue: 'delivery', summary: 'Versioned code, branches, and review before changes merge.', products: ['github'] },
+    { id: 'ci-pipeline', name: 'CI pipeline', hue: 'delivery', summary: 'Builds, tests, and scans every change automatically.', products: ['github-actions'] },
+    { id: 'artifact-registry', name: 'Artifact registry', hue: 'delivery', summary: 'Stores versioned images and packages that deployments pull from.', products: ['harbor'] },
+    { id: 'gitops', name: 'GitOps sync', hue: 'delivery', summary: 'Keeps what is running in line with what is declared in Git.', products: ['argocd'] },
+    { id: 'managed-platform', name: 'Managed platform', hue: 'platform', summary: 'Runs the app without you managing servers or clusters.', products: ['heroku'] },
+    { id: 'container-images', name: 'Container images', hue: 'platform', summary: 'Packages the app and its dependencies into a portable image.', products: ['docker'] },
+    { id: 'orchestration', name: 'Container orchestration', hue: 'platform', summary: 'Schedules containers across machines and restarts them when they fail.', products: ['kubernetes'] },
+    { id: 'iac', name: 'Infrastructure as code', hue: 'platform', summary: 'Declares cloud resources in reviewable files instead of console clicks.', products: ['terraform'] },
+    { id: 'cloud', name: 'Cloud provider', hue: 'platform', summary: 'The compute, network, and storage everything else runs on.', products: ['aws'] },
+    { id: 'telemetry', name: 'Telemetry standard', hue: 'operations', summary: 'Vendor-neutral traces, metrics, and logs from every service.', products: ['opentelemetry'] },
+    { id: 'metrics', name: 'Metrics', hue: 'operations', summary: 'Time series of how the system is behaving.', products: ['prometheus'] },
+    { id: 'dashboards', name: 'Dashboards', hue: 'operations', summary: 'Shared views of health, usage, and golden signals.', products: ['grafana'] },
+    { id: 'alerting', name: 'Alerting & on-call', hue: 'operations', summary: 'Wakes the right person when an SLO is at risk.', products: ['pagerduty'] },
+  ],
   ai: [
     { id: 'model-api', name: 'Model API', hue: 'cognition', summary: 'A hosted language model that reasons over and generates from what it is given.', products: ['openai', 'claude'] },
     { id: 'agent-runtime', name: 'Agent runtime', hue: 'intent', summary: 'Runs the agent loop: prompts, tool calls, and handoffs.', products: ['openai-agents-sdk', 'langchain'] },

@@ -2,6 +2,7 @@ import type { WorkshopData, WorkshopTool } from '../workshopData'
 import { BrickIcon, BrickScene } from './Brick'
 import { editionTiers, readBuild, verdictCopy, type BuildLink, type EditionId } from './buildModel'
 import { sceneBricks, withSupport } from './scene'
+import { editionInfo } from './editions'
 import './bricks.css'
 
 export interface ManualBoardProps {
@@ -42,6 +43,7 @@ export default function ManualBoard({ edition, data, tools, step, links, ghostHu
       frame="tall"
       showBadges={finished ? 'all' : 'new'}
       maxTier={editionTiers[edition].length}
+      plateLabel={editionInfo[edition].plateLabel}
     />
     <div className="mb-tiers" aria-label="Tiers, bottom to top">{editionTiers[edition].map((tier, index) => <span key={tier.name}><b>T{index + 1}</b>{tier.name}</span>)}</div>
     <div className="mb-page-foot"><span>Height shows tier, not call order. Studs lock only where a pairing is recorded.</span><span>{step}/{tools.length}</span></div>

@@ -21,6 +21,8 @@ export default function App() {
 
   if (route === '/' || route === '') return <FrontDoor />
   if (route === '/ai-applications' || route === '/ai-systems') return <BlendWorkshop key="ai" edition="ai" />
+  if (route === '/foundations') return <BlendWorkshop key="foundations" edition="foundations" />
+  if (route === '/growth/foundations') return <GrowthPage key="growth-foundations" edition="foundations" />
   if (route === '/data-engineering') return <BlendWorkshop key="data" edition="data" />
   if (route === '/agent-harness') return <BlendWorkshop key="harness" edition="harness" />
   if (route === '/growth') return <GrowthPage key="growth-ai" edition="ai" />

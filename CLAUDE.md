@@ -1,7 +1,8 @@
 # Claude Instructions
 
 ## Project Context
-The Chromatic Architecture framework applies color theory metaphors to technology architecture. Three domains are implemented:
+The Chromatic Architecture framework applies color theory metaphors to technology architecture. Four domains are implemented:
+- **Foundations**: The application and delivery foundation every other domain sits on (7 hues: Experience, Service, Data, Trust, Delivery, Platform, Operations). Its baseplate is labelled as the product operating model.
 - **Architectural Chromatics** (shown as "AI applications"): AI/LLM application stacks (7 hues: Intent, Logic, Cognition, Memory, Interface, Velocity, Trust)
 - **Data Engineering Chromatics**: Data platform composition (7 hues: Ingest, Transform, Orchestrate, Store, Serve, Observe, Govern)
 - **Agent Harness Chromatics**: The layer between the model and the world (7 hues: Tools, Sandbox, Permissions, Context, Evidence, Recovery, Runtime). The original infrastructure-focused hues are frozen in `preview/src/agent-harness-legacy-data.ts` for the legacy view.
@@ -28,7 +29,7 @@ Collect feedback using the template at the end of `BATTLETEST.md`.
 - Dev server: `npm run dev` in the `preview/` directory → http://localhost:5174/Color-theory/
 - Build: `npm run build` → outputs to `preview/dist/`
 - Deployed to GitHub Pages: https://jambotsmachine.github.io/Color-theory/
-- Routing: Hash-based (`#/`, `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness`, `#/growth[/data|/harness]`, `#/reference`, `#/original`)
+- Routing: Hash-based (`#/`, `#/foundations`, `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness`, `#/growth[/foundations|/data|/harness]`, `#/reference`, `#/original`)
 
 ## Key Implementation Details
 - 7-segment color wheel with HUE_ANGLES at 51.4° intervals for each domain

@@ -1,7 +1,7 @@
 import type { WorkshopData, WorkshopTool } from '../workshopData'
 import { BRICK_HEIGHT, type Box } from './iso'
 
-export type EditionId = 'ai' | 'data' | 'harness'
+export type EditionId = 'foundations' | 'ai' | 'data' | 'harness'
 
 // How a brick seats against the parts already on the model.
 //  snap  — a curated pairing or recipe link exists with an earlier part.
@@ -25,6 +25,12 @@ export interface Tier {
 // Tiers are a reading aid: foundations sit low, surfaces sit high.
 // They are not a runtime call graph.
 export const editionTiers: Record<EditionId, Tier[]> = {
+  foundations: [
+    { name: 'Platform & data', hues: ['platform', 'data'] },
+    { name: 'Service & trust', hues: ['service', 'trust'] },
+    { name: 'Delivery & operations', hues: ['delivery', 'operations'] },
+    { name: 'Experience', hues: ['experience'] },
+  ],
   ai: [
     { name: 'Platform & knowledge', hues: ['velocity', 'memory'] },
     { name: 'Model core', hues: ['cognition'] },

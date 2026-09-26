@@ -24,8 +24,8 @@ Fit is judged at the level the build is decided at:
 | Route | View |
 | --- | --- |
 | `#/` | Hero builds the Lean Knowledge Agent brick by brick. |
-| `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness` | Assembly guide defaults to **Brick manual**: numbered step, `1x` parts callout, drop arrow, seat badge, finished-model stamp. **Flat diagram** is still one tab away. |
-| `#/growth`, `#/growth/data`, `#/growth/harness` | **Build over time**: one model at four maturity stages, plus one authored wrong turn. |
+| `#/foundations`, `#/ai-applications` (old `#/ai-systems` links still work), `#/data-engineering`, `#/agent-harness` | Assembly guide defaults to **Brick manual**: numbered step, `1x` parts callout, drop arrow, seat badge, finished-model stamp. **Flat diagram** is still one tab away. |
+| `#/growth`, `#/growth/foundations`, `#/growth/data`, `#/growth/harness` | **Build over time**: one model at four maturity stages, plus one authored wrong turn. |
 | `#/reference` | **Parts inventory**: every part as a brick, grouped by role and tier, with a two-part fit bench. |
 
 ## Grammar
@@ -38,6 +38,7 @@ Fit is judged at the level the build is decided at:
 | **Snap** (seated, ✓) | A pairing with an earlier part is recorded, authored for a recipe story or growth stage, or the whole set is a curated non-cautionary recipe | `pairsWellWith`, `assemblyStories`, `growthTracks`, `recipes` |
 | **Loose** (lifted, dashed seam, ~) | Nothing recorded either way. Unproven, not wrong. | absence of data |
 | **Forced** (pushed off its studs, red, ✕) | A recorded or authored tension | `conflictsWith`, tension links |
+| Labelled plinth under the baseplate (Foundations only) | The product operating model: teams and ownership that every part rests on | `editionInfo.plateLabel` |
 | Pale placeholder brick with dashed edge, plus a "Missing parts" callout above the scene | A missing part | `recipe.missingHues`, stage `missing`, or an empty tier beneath an occupied one |
 | Hanging brick | Nothing sits beneath it yet | geometry |
 | Crossed outline | Part removed at this growth stage | stage `remove` |
