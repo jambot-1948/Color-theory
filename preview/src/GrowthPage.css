@@ -1,0 +1,40 @@
+.gr-main .bw-title{margin-bottom:22px}.gr-main .bw-title p{max-width:72ch;line-height:1.55}
+.gr-tabs{display:flex;gap:3px;border-bottom:1px solid #dbe5dd;margin-bottom:24px;overflow-x:auto}
+.gr-tabs a{flex:none;padding:10px 14px;border-bottom:2px solid transparent;color:#5d6c64;font-size:13px;font-weight:650;text-decoration:none}
+.gr-tabs a.active{color:#1b2825;border-bottom-color:#1b2825}
+.gr-track-head{margin-bottom:18px}.gr-track-head h2{margin:0;font-size:19px;font-weight:760}.gr-track-head p{margin:6px 0 0;color:#5f6d66;font-size:13px;line-height:1.55;max-width:80ch}
+.gr-line{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px 30px;align-items:start}
+.gr-slot{position:relative;min-width:0}
+.gr-arrow{position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:#6f7d75}
+.gr-card{width:100%;display:flex;flex-direction:column;gap:6px;padding:12px 12px 10px;background:#fff;border:1px solid #dbe3dd;border-radius:6px;text-align:left;color:#1b2825}
+.gr-card:hover{border-color:#9fb0a6}
+.gr-card.is-selected{border-color:#1d2420;box-shadow:0 0 0 1px #1d2420}
+.gr-card.is-branch{border-style:dashed;border-color:#d9a79d;background:#fffaf8}
+.gr-card.is-branch.is-selected{border-style:solid;border-color:#c84c3a;box-shadow:0 0 0 1px #c84c3a}
+.gr-card>strong{font-size:14px;font-weight:760}
+.gr-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gr-horizon{font-size:10px;font-weight:750;color:#6a786f;white-space:nowrap}
+.gr-pill{font-size:9px;font-weight:800;padding:3px 6px;border-radius:3px;background:#e6f1ee;color:#246b67;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr-pill.is-loose{background:#f6eedf;color:#80591f}.gr-pill.is-forced{background:#f8e3df;color:#a83b2b}.gr-pill.is-caution{background:#f8e7df;color:#9a4b27}
+.gr-delta{display:flex;gap:10px;font-size:10px;color:#5f6d66;font-weight:650}.gr-delta span{display:flex;align-items:center;gap:3px}
+.gr-branch-note{display:block;font-size:10px;font-weight:750;color:#a4483a;margin:0 0 6px}
+.gr-branch-slot::before{content:"";position:absolute;left:-16px;top:-26px;bottom:50%;width:12px;border-left:1.5px dashed #d08a7d;border-bottom:1.5px dashed #d08a7d}
+.gr-detail{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:28px;padding:22px;background:#fff;border:1px solid #dbe3dd;border-radius:6px}
+.gr-detail-scene{min-width:0}
+.gr-detail-copy h2{margin:6px 0 6px;font-size:22px;font-weight:760}
+.gr-summary{margin:0 0 16px;color:#43534a;font-size:14px;line-height:1.55}
+.gr-changes{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.gr-change{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid #dfe6e1;border-radius:4px;font-size:12px}
+.gr-change i{width:8px;height:28px;flex:none}
+.gr-change span{display:flex;flex-direction:column;gap:2px}.gr-change small{font-size:10px;color:#6a786f}
+.gr-change.is-add>svg{color:#246b67}.gr-change.is-remove{background:#f6f7f6}.gr-change.is-remove strong{text-decoration:line-through;color:#5f6d66}.gr-change.is-remove>svg{color:#a83b2b}
+.gr-notes{margin:0 0 14px;display:grid;gap:10px}.gr-notes div{display:grid;grid-template-columns:86px 1fr;gap:10px}
+.gr-notes dt{font-size:10px;font-weight:800;color:#56655d;text-transform:uppercase;padding-top:2px}.gr-notes dd{margin:0;font-size:13px;line-height:1.55;color:#2d3c34}
+.gr-reading{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:6px}
+.gr-reading li{font-size:12px;line-height:1.5;padding:7px 10px;border-left:3px solid #9aa7a0;background:#f4f6f5;color:#33443b}
+.gr-reading li.is-clash{border-left-color:#c84c3a;background:#fbf1ef}.gr-reading li.is-loose{border-left-color:#a2742f;background:#faf6ef}
+.gr-open{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1d5f59}
+.gr-caveat{margin:18px 0 0;font-size:11px;color:#6f7c75;max-width:90ch;line-height:1.5}
+@media(max-width:1100px){.gr-line{grid-template-columns:repeat(2,minmax(0,1fr))}.gr-slot,.gr-branch-slot{grid-column:auto!important}.gr-arrow,.gr-branch-slot::before{display:none}.gr-detail{grid-template-columns:1fr}}
+@media(max-width:560px){.gr-line{grid-template-columns:1fr}.gr-main{padding:24px 16px 48px}.gr-detail{padding:14px}.gr-notes div{grid-template-columns:1fr;gap:2px}}
+@media(max-width:760px){.bw-header nav{width:100%;overflow-x:auto}}

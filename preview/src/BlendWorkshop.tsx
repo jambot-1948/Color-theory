@@ -8,6 +8,7 @@ import AssemblyGuide from './AssemblyGuide'
 import { analyzeStack } from './stackAnalysis'
 import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
+import SiteHeader from './SiteHeader'
 
 type Lens = 'Architect' | 'Operator' | 'Consultant'
 const editions = {
@@ -59,7 +60,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   }
 
   return <div className="bw-app">
-    <header className="bw-header"><a className="bw-brand" href="#/"><span className="bw-mark"><i /><i /><i /></span>Stack Assembly</a><nav aria-label="Main navigation"><a className={edition === 'ai' ? 'active' : ''} href="#/ai-systems">AI systems</a><a className={edition === 'data' ? 'active' : ''} href="#/data-engineering">Data engineering</a><a className={edition === 'harness' ? 'active' : ''} href="#/agent-harness">Agent harness</a><a href="#/reference">Reference</a></nav></header>
+    <SiteHeader active={edition} />
     <main className="bw-main"><div className="bw-title"><div><h1>{config.title} assembly</h1><p>Choose the parts. See how they fit.</p></div><span>{data.tools.length} tools / {data.hues.length} roles</span></div>
       <div className="bw-layout"><aside className="bw-library" id="bw-tool-library"><div className="bw-section-head"><h2>Parts library</h2><span>{data.tools.length} tools</span></div><label className="bw-search"><Search size={16} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search tools or roles" /></label>
         <div className="bw-tool-list">{available.map(tool => <button key={tool.id} className="bw-tool" onClick={() => toggle(tool.id)} disabled={selected.length >= 8} title={selected.length >= 8 ? 'Remove a tool to add another' : `Add ${tool.name}`}><i style={{ background: hues[tool.primaryHue].hex }} /><span><strong>{tool.name}</strong><small>{hues[tool.primaryHue].name} · {tool.category}</small></span><Plus size={16} /></button>)}{!available.length && <p className="bw-empty">No matching tools. Try another role or category.</p>}</div>

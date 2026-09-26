@@ -28,11 +28,12 @@ Collect feedback using the template at the end of `BATTLETEST.md`.
 - Dev server: `npm run dev` in the `preview/` directory → http://localhost:5174/Color-theory/
 - Build: `npm run build` → outputs to `preview/dist/`
 - Deployed to GitHub Pages: https://jambotsmachine.github.io/Color-theory/
-- Routing: Hash-based (`#/`, `#/data-engineering`, `#/agent-harness`)
+- Routing: Hash-based (`#/`, `#/ai-systems`, `#/data-engineering`, `#/agent-harness`, `#/growth[/data|/harness]`, `#/reference`, `#/original`)
 
 ## Key Implementation Details
 - 7-segment color wheel with HUE_ANGLES at 51.4° intervals for each domain
 - SVG-based pattern diagrams + interactive color wheel + recipe composer
+- Isometric brick manual (tools as LEGO-style bricks, snap / loose / forced fits, maturity growth tracks). See `BRICKS.md`
 - TypeScript with domain-specific HueId union types
 - Tailwind CSS with opacity-aware color rendering
 - GitHub Actions deploy workflow (`/.github/workflows/deploy.yml`)

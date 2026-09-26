@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { WorkshopData, WorkshopTool } from './workshopData'
 import { assemblyStories, type AssemblyLinkKind, type AssemblyStory } from './assemblyStories'
 import ArchitectureViews from './ArchitectureViews'
+import ManualBoard, { SeatNote } from './bricks/ManualBoard'
+import { recipeLinks, recordedLinks, type BuildLink, type EditionId } from './bricks/buildModel'
 import './AssemblyGuide.css'
 
 type LinkKind = AssemblyLinkKind | 'unclassified'
@@ -93,7 +95,7 @@ function BuildDiagram({ tools, links, showAllLinks, data }: { tools: WorkshopToo
 
 export default function AssemblyGuide({ tools, recipeId, data, edition }: { tools: WorkshopTool[], recipeId?: string, data: WorkshopData, edition: string }) {
   const hasArchitecture = edition === 'ai' && recipeId === 'lean-agent-runtime'
-  const [view, setView] = useState<'parts' | 'map' | 'journey'>('parts')
+  const [view, setView] = useState<'angled' | 'parts' | 'map' | 'journey'>('angled')
   const story = edition === 'ai' && recipeId ? assemblyStories[recipeId] : undefined
   const orderedTools = story
     ? story.steps.map(item => tools.find(tool => tool.id === item.toolId)).filter((tool): tool is WorkshopTool => Boolean(tool))
@@ -108,17 +110,22 @@ export default function AssemblyGuide({ tools, recipeId, data, edition }: { tool
   const links = diagramLinks(visible, story)
   const storyStep = story?.steps.find(item => item.toolId === current?.id)
   const introducedLinks = story ? links.filter(link => link.second === visible.length - 1) : []
+  const recipe = recipeId ? data.recipes.find(item => item.id === recipeId) : undefined
+  const caution = Boolean(recipe?.patternIds.some(id => data.patterns.find(pattern => pattern.id === id)?.type === 'anti-pattern'))
+  const buildLinks: BuildLink[] = [...(story?.links ?? []), ...recordedLinks(orderedTools), ...(caution ? [] : recipeLinks(orderedTools, recipe))]
+  const manual = { edition: edition as EditionId, data, tools: orderedTools, step, links: buildLinks, ghostHues: recipe?.missingHues, caution }
+  const flat = view === 'parts'
   const unclassifiedPairs = story ? 0 : visible.flatMap((first, index) => visible.slice(index + 1).map(second => linkKind(first, second))).filter(kind => kind === 'unclassified').length
 
   return <div className="ag-guide">
-    <div className="ag-head"><div><h3>Assembly guide</h3><p>{story ? 'Curated sequence for this recipe.' : recipeId ? 'Parts shown in recipe order; lines mark recorded pairings, not data flow.' : 'One possible build order for understanding this stack.'}</p></div><span>{hasArchitecture && view !== 'parts' ? 'WORKED EXAMPLE' : orderedTools.length ? `STEP ${String(step).padStart(2, '0')} / ${String(orderedTools.length).padStart(2, '0')}` : 'NO PARTS YET'}</span></div>
-    {hasArchitecture && <div className="ag-view-tabs" role="tablist" aria-label="Recipe view">{([['parts', 'Parts'], ['map', 'System map'], ['journey', 'Follow a request']] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}>{label}</button>)}</div>}
-    {hasArchitecture && view !== 'parts' ? <ArchitectureViews view={view} /> : orderedTools.length ? <div className="ag-layout">
-      <div className="ag-board">
+    <div className="ag-head"><div><h3>Assembly guide</h3><p>{story ? 'Curated sequence for this recipe.' : recipeId ? 'Parts shown in recipe order; lines mark recorded pairings, not data flow.' : 'One possible build order for understanding this stack.'}</p></div><span>{hasArchitecture && (view === 'map' || view === 'journey') ? 'WORKED EXAMPLE' : orderedTools.length ? `STEP ${String(step).padStart(2, '0')} / ${String(orderedTools.length).padStart(2, '0')}` : 'NO PARTS YET'}</span></div>
+    {orderedTools.length > 0 && <div className="ag-view-tabs" role="tablist" aria-label="Recipe view">{([['angled', 'Brick manual'], ['parts', 'Flat diagram'], ...(hasArchitecture ? [['map', 'System map'], ['journey', 'Follow a request']] as const : [])] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}>{label}</button>)}</div>}
+    {view === 'map' || view === 'journey' ? <ArchitectureViews view={view} /> : orderedTools.length ? <div className="ag-layout">
+      {!flat ? <ManualBoard {...manual} /> : <div className="ag-board">
         <div className="ag-board-head"><span>ASSEMBLY STATE</span><span>{visible.length} OF {orderedTools.length} PARTS</span></div>
         <BuildDiagram tools={visible} links={links} showAllLinks={showAllLinks} data={data} />
         <div className="ag-board-legend"><span><i className="ag-fit" />Curated fit</span>{story?.links.some(link => link.kind === 'recipe') && <span><i className="ag-recipe" />Recipe link</span>}<span><i className="ag-tension" />Design tension</span><button onClick={() => setShowAllLinks(value => !value)}>{showAllLinks ? 'Show step links' : 'Show all links'}</button>{!story && <span>{unclassifiedPairs} unclassified pairs</span>}</div>
-      </div>
+      </div>}
       <div className="ag-instructions">
         <div className="ag-step-list" aria-label="Assembly steps">{orderedTools.map((tool, index) => {
           const hue = data.hues.find(item => item.id === tool.primaryHue)!
@@ -126,7 +133,7 @@ export default function AssemblyGuide({ tools, recipeId, data, edition }: { tool
             <span className="ag-step-number">{String(index + 1).padStart(2, '0')}</span><span className="ag-part-color" style={{ background: hue.hex }} /><span className="ag-step-name"><strong>{tool.name}</strong><small>{story?.steps[index]?.action || `${hue.name} · ${tool.category}`}</small></span>
           </button>
         })}</div>
-        <div className="ag-step-note"><span className="bw-label">ADD THIS PART</span><h4>{storyStep?.action || current?.name}</h4><p>{storyStep?.explanation || (current && stepDetail(current, earlier))}</p>{introducedLinks.length > 0 && <div className="ag-link-notes">{introducedLinks.map(link => <div key={`${link.first}-${link.second}`}><i className={`ag-${link.kind}`} /><span>{link.note}</span></div>)}</div>}</div>
+        <div className="ag-step-note"><span className="bw-label">ADD THIS PART</span><h4>{storyStep?.action || current?.name}</h4><p>{storyStep?.explanation || (current && stepDetail(current, earlier))}</p>{!flat && <SeatNote {...manual} />}{flat && introducedLinks.length > 0 && <div className="ag-link-notes">{introducedLinks.map(link => <div key={`${link.first}-${link.second}`}><i className={`ag-${link.kind}`} /><span>{link.note}</span></div>)}</div>}</div>
         <div className="ag-navigation"><button onClick={() => setStep(value => Math.max(1, value - 1))} disabled={step === 1} aria-label="Previous assembly step"><ChevronLeft size={17} /></button><span>{step} / {orderedTools.length}</span><button onClick={() => setStep(value => Math.min(orderedTools.length, value + 1))} disabled={step === orderedTools.length} aria-label="Next assembly step"><ChevronRight size={17} /></button></div>
       </div>
     </div> : <p className="bw-empty">Choose a tool from the parts library to start an assembly.</p>}

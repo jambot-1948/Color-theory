@@ -30,10 +30,12 @@ export interface WorkshopRecipe {
   whyItHappens?: string[]
   symptoms?: string[]
   fix?: string[]
+  missingHues?: string[]
+  upgradePath?: string[]
 }
 
 export interface WorkshopData {
-  hues: { id: string, name: string, hex: string }[]
+  hues: { id: string, name: string, hex: string, description?: string }[]
   tools: WorkshopTool[]
   patterns: WorkshopPattern[]
   recipes: WorkshopRecipe[]
