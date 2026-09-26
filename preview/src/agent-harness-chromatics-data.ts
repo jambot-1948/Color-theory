@@ -154,34 +154,34 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       id: "lambda",
       name: "AWS Lambda",
       primaryHue: "invocation",
-      secondaryHue: "scaling",
+      secondaryHue: "execution",
       category: "Serverless Compute",
       maturity: "production",
       description:
         "Serverless function platform for triggering agents on-demand. Auto-scales with load; pay per invocation.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["postgresql", "langfuse"],
+      pairsWellWith: ["postgresql", "langfuse", "opentelemetry"],
       conflictsWith: [],
       patterns: ["observable-agent", "silent-agent"],
-      notes: "Useful for event-triggered work. Check execution time, cold starts, and instrumentation for the workload; it can coexist with container-based services.",
+      notes: "Useful for event-triggered work. Each invocation has a 15-minute limit, so long jobs must be split or checkpointed; Lambda durable functions add checkpointed steps that resume after interruptions. AWS publishes OpenTelemetry Lambda layers for instrumentation.",
     },
     {
       id: "modal",
       name: "Modal",
       primaryHue: "invocation",
-      secondaryHue: "execution",
+      secondaryHue: "scaling",
       category: "Serverless ML",
       maturity: "production",
       description:
-        "Developer-friendly serverless platform optimized for ML and LLM workloads. Built-in scaling and GPU support.",
+        "Serverless container platform for ML and LLM workloads, with GPU requests, container autoscaling limits, per-input retries, and Sandboxes for running untrusted code.",
       complexityAdded: "low",
-      trustContribution: "high",
-      pairsWellWith: ["redis", "langfuse", "temporal"],
+      trustContribution: "medium",
+      pairsWellWith: ["redis", "langfuse"],
       conflictsWith: [],
       patterns: ["resilient-loop", "observable-agent"],
       notes:
-        "Best-in-class developer experience. Good for ML-heavy workloads. Excellent observability out of the box.",
+        "Fast path to GPU and container workloads. Warm-container settings trade cost for cold-start latency. Modal is not an LLM tracing tool; pair it with one such as Langfuse for prompt-level visibility.",
     },
     {
       id: "docker",
@@ -190,13 +190,13 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Containerization",
       maturity: "production",
       description:
-        "Container runtime for packaging agents with all dependencies. Standard prerequisite for Kubernetes and other orchestration.",
+        "Builds and runs OCI container images that package an agent with its dependencies. The images run on Kubernetes through any CRI runtime, such as containerd or CRI-O.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["kubernetes", "vault"],
+      pairsWellWith: ["kubernetes"],
       conflictsWith: [],
       patterns: ["distributed-agent"],
-      notes: "Foundational technology; rarely stands alone. Enables reproducibility and portability.",
+      notes: "Foundational packaging tool; rarely stands alone. Kubernetes removed its built-in Docker Engine integration (dockershim) in v1.24, but Docker-built images still run there.",
     },
     {
       id: "kubernetes",
@@ -209,11 +209,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Industry-standard container orchestration for managing agents at scale. Complex but powerful and flexible.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["docker", "temporal", "vault", "opentelemetry"],
+      pairsWellWith: ["docker", "temporal", "vault", "opentelemetry", "ray"],
       conflictsWith: [],
       patterns: ["distributed-agent", "secured-harness"],
       notes:
-        "Steep learning curve and meaningful operating overhead. Use when container orchestration is warranted; it is not required merely because a system is large.",
+        "Steep learning curve and meaningful operating overhead. Use when container orchestration is warranted; it is not required merely because a system is large. Operators exist for Ray (KubeRay) and Vault (Vault Secrets Operator).",
     },
     {
       id: "redis",
@@ -225,7 +225,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Fast in-memory data store for agent sessions, caches, and short-lived context; durability depends on the persistence configuration.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["modal", "kubernetes", "temporal"],
+      pairsWellWith: ["modal"],
       conflictsWith: [],
       patterns: ["persistent-memory", "resilient-loop"],
       notes: "RDB snapshots and append-only persistence are available. Decide whether Redis is a cache, a session store, or a durable system of record before pairing it with PostgreSQL.",
@@ -243,7 +243,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       pairsWellWith: ["lambda", "temporal", "vault"],
       conflictsWith: [],
       patterns: ["persistent-memory", "secured-harness"],
-      notes: "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility.",
+      notes: "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility. Self-hosted Temporal can also use PostgreSQL for its own persistence; keep that database separate from agent state.",
     },
     {
       id: "langfuse",
@@ -255,11 +255,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "LLM-specific tracing and monitoring. Captures prompts, completions, latency, costs, and evaluation metrics.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["modal", "temporal", "kubernetes"],
+      pairsWellWith: ["lambda", "modal", "temporal", "opentelemetry"],
       conflictsWith: [],
       patterns: ["observable-agent", "resilient-loop"],
       notes:
-        "Purpose-built for LLM workloads. Easy integration; provides cost and quality tracking out of the box.",
+        "Purpose-built for LLM workloads. Tracks cost out of the box; quality scores need evaluations configured. Accepts traces on a native OpenTelemetry (OTLP over HTTP) endpoint. Core is MIT-licensed; enterprise directories are licensed separately.",
     },
     {
       id: "temporal",
@@ -269,14 +269,14 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Workflow Orchestration",
       maturity: "production",
       description:
-        "Distributed workflow engine with built-in retries, timeouts, versioning, and state management.",
+        "Durable execution platform: workflow code resumes after failures, with activity retries and timeouts built in.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "postgresql", "langfuse", "vault"],
+      pairsWellWith: ["kubernetes", "postgresql", "langfuse", "vault", "opentelemetry"],
       conflictsWith: [],
       patterns: ["resilient-loop", "distributed-agent"],
       notes:
-        "Durable execution can simplify retries and recovery for long-running work. Not every production agent needs a separate workflow engine.",
+        "Durable execution can simplify retries and recovery for long-running work. Not every production agent needs a separate workflow engine. Workers usually run as long-lived processes; Serverless Workers on AWS Lambda are in Public Preview. Self-hosting needs a persistence store such as PostgreSQL. SDKs include OpenTelemetry tracing support.",
     },
     {
       id: "opentelemetry",
@@ -285,13 +285,13 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Standards-Based Instrumentation",
       maturity: "production",
       description:
-        "Vendor-agnostic instrumentation framework for metrics, logs, and traces. Integrates with any backend.",
+        "Vendor-neutral instrumentation framework for metrics, logs, and traces. Exports over OTLP to many backends; it is not a storage or UI backend itself.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "temporal", "langfuse"],
+      pairsWellWith: ["kubernetes", "temporal", "langfuse", "lambda"],
       conflictsWith: [],
       patterns: ["observable-agent", "secured-harness"],
-      notes: "Avoids vendor lock-in; requires careful setup. Industry standard for observability.",
+      notes: "Reduces vendor lock-in; requires careful setup and a chosen backend. The generative AI semantic conventions are still in Development status, so attribute names may change.",
     },
     {
       id: "vault",
@@ -303,10 +303,10 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Centralized secrets management with encryption, access control, audit logging, and dynamic credentials.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["kubernetes", "temporal", "opentelemetry"],
+      pairsWellWith: ["kubernetes", "temporal", "postgresql"],
       conflictsWith: [],
       patterns: ["secured-harness"],
-      notes: "Enterprise-grade; complex setup. Essential for compliance and secret rotation.",
+      notes: "Complex to operate. One option for secret rotation, dynamic credentials (including generated PostgreSQL logins), and audit; smaller footprints may not need it. Current versions are under the Business Source License 1.1, with IBM as licensor.",
     },
     {
       id: "ray",
@@ -316,14 +316,14 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       category: "Distributed Computing",
       maturity: "production",
       description:
-        "Distributed computing framework for parallel agent execution. Handles data parallelization and state coordination.",
+        "Distributed computing framework that runs Python tasks and stateful actors across a cluster for parallel agent execution.",
       complexityAdded: "high",
       trustContribution: "medium",
-      pairsWellWith: ["kubernetes", "postgresql", "vault"],
+      pairsWellWith: ["kubernetes"],
       conflictsWith: [],
       patterns: ["distributed-agent"],
       notes:
-        "Powerful for data-parallel workloads; requires cluster thinking. Good for scaling beyond single machine.",
+        "Powerful for data-parallel workloads; requires cluster thinking. Retries tasks when a worker or machine fails (3 times by default), but not on application exceptions unless configured. Runs on Kubernetes through the KubeRay operator.",
     },
   ],
 
@@ -499,18 +499,15 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       whyItWorks: [
         "Lambda cost-effective for occasional runs",
         "PostgreSQL persists results durably",
-        "Langfuse tracks cost and quality of each batch",
+        "Langfuse tracks cost and latency of each batch",
       ],
       whereItBreaks: [
         "No resilience if an agent fails mid-batch — whole batch may need restart",
-        "Lambda cold starts add latency if frequency is unpredictable",
+        "Each Lambda invocation is capped at 15 minutes; long batches must be split or checkpointed",
         "Individual runs need trace correlation and alerting; adding Langfuse alone does not wire every failure path",
       ],
-      missingHues: ["resilience", "scaling"],
-      upgradePath: [
-        "Add Temporal for reliable batch coordination and retries",
-        "Add Redis for inter-step communication within batch",
-      ],
+      missingHues: ["resilience", "scaling", "security"],
+      upgradePath: ["temporal", "vault"],
     },
     {
       id: "real-time-responder",
@@ -520,16 +517,17 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       useCase:
         "Low-latency agent responding to user requests in real-time. Think: chatbot, on-demand analytics, immediate recommendations.",
       whyItWorks: [
-        "Modal provides fast invocation and good defaults",
+        "Modal starts containers on demand and autoscales within configured limits; cold starts still need measuring",
         "Redis caches session state for fast retrieval",
-        "Temporal handles retries and timeouts transparently",
-        "Langfuse tracks quality of individual responses",
+        "Temporal can own retries and timeouts for multi-step turns",
+        "Langfuse tracks cost and latency of individual responses",
       ],
       whereItBreaks: [
         "Session context can be lost if Redis persistence and recovery are not configured for the requirement",
-        "Temporal adds operational complexity",
+        "Temporal adds operational complexity and a workflow round trip; keep the latency-sensitive reply path short",
       ],
-      missingHues: ["security", "scaling"],
+      missingHues: ["security"],
+      upgradePath: ["vault"],
     },
     {
       id: "silent-worker",
@@ -537,7 +535,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       tools: ["lambda", "postgresql"],
       patternIds: ["silent-agent", "stateless-learner"],
       useCase:
-        "(Anti-pattern) Agent runs invisibly with no observability or context across runs. Nobody knows if it's working.",
+        "(Anti-pattern) Agent runs invisibly. The database stores outputs, but nothing records what each run did and no prior context is read back. Nobody knows if it's working.",
       whyItHappens: [
         "Quick to stand up — just Lambda + DB, ship it",
         "Observability deferred as 'phase two'",
@@ -550,10 +548,10 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       ],
       fix: [
         "Add Langfuse for observability",
-        "Add Redis or PostgreSQL for conversation context",
+        "Read prior run history from the existing PostgreSQL store before each run",
         "Add Temporal for error recovery and retry logic",
       ],
-      missingHues: ["observability", "resilience", "state"],
+      missingHues: ["observability", "resilience", "scaling", "security"],
     },
     {
       id: "bulletproof-pipeline",
@@ -563,16 +561,17 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       useCase:
         "A heavily instrumented, recoverable agent harness for workloads with strict operational requirements. No tool combination guarantees safety or zero failures.",
       whyItWorks: [
-        "Kubernetes provides high availability and auto-recovery",
+        "Kubernetes restarts failed containers and reschedules work; availability still depends on cluster and application design",
         "PostgreSQL durably stores state",
-        "Temporal handles retries, timeouts, and state versioning",
+        "Temporal handles retries, timeouts, and workflow versioning",
         "Langfuse and OpenTelemetry can expose model and infrastructure traces when instrumented end to end",
-        "Vault manages secrets securely",
+        "Vault issues and rotates credentials, including generated PostgreSQL logins, with audit logging",
       ],
       whereItBreaks: [
         "Operational complexity is substantial",
         "Cost high for low-traffic workloads",
       ],
+      missingHues: ["invocation"],
     },
     {
       id: "distributed-swarm",
@@ -582,16 +581,18 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       useCase:
         "Hundreds of agents working in parallel on large datasets. Think: distributed inference, parallel analysis, map-reduce-style processing.",
       whyItWorks: [
-        "Ray handles parallelization transparently",
-        "PostgreSQL coordinates state across workers",
-        "OpenTelemetry provides observability across the cluster",
-        "Vault secures credentials on all nodes",
+        "Ray distributes work written as tasks and actors across the cluster",
+        "PostgreSQL stores shared results; many concurrent writers need connection pooling",
+        "OpenTelemetry carries traces and metrics to a backend that must still be chosen",
+        "Vault can supply credentials to workers instead of static keys on each node",
       ],
       whereItBreaks: [
         "Ray requires cluster thinking and understanding of distributed systems",
+        "Ray retries tasks after worker crashes, not after bad model output or partial writes, unless configured",
         "State synchronization can become a bottleneck",
         "Network partition handling is non-trivial",
       ],
+      missingHues: ["invocation", "resilience"],
     },
   ],
 };

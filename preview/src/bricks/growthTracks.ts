@@ -141,7 +141,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
         add: ['temporal'],
         summary: 'Retries and resumable workflows replace manual restarts.',
         why: 'Jobs now have several steps, and partial failure is normal.',
-        watch: 'Temporal workers need a home: long-running containers, or serverless workers where supported. Each function invocation is still time-limited.',
+        watch: 'Temporal workers need a home: long-running containers, or Serverless Workers on AWS Lambda (public preview). Each Lambda invocation is still capped at 15 minutes.',
       },
       {
         id: 'scale', horizon: 'Year 1', name: 'Hardened',
