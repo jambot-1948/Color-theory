@@ -16,7 +16,7 @@ import {
   Database,
   Eye,
 } from 'lucide-react';
-import { agentHarnessChromaticsData as DATA } from './agent-harness-chromatics-data';
+import { agentHarnessChromaticsData as DATA } from './agent-harness-legacy-data';
 
 // --- SMALL INDICATORS ---
 
