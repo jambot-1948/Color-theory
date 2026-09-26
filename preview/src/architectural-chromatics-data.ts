@@ -150,7 +150,7 @@ export const architecturalChromaticsData: ChromaticsData = {
     "trustSurface",
   ],
 
-  // --- 11 TOOLS ---
+  // --- 13 TOOLS ---
   // One per distinct architectural role. Like a box of crayons — you don't need
   // five shades of brown when one common brown is sufficient.
 
@@ -164,14 +164,14 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Agent Runtime",
       maturity: "production",
       description:
-        "Agent runtime for tools, handoffs, sessions, guardrails, and built-in tracing. Uses the Responses API by default for OpenAI models; other providers go through beta adapters such as LiteLLM.",
+        "Agent runtime for tools, handoffs, sessions, guardrails, and built-in tracing. Uses the Responses API by default for OpenAI models. Other providers connect through an OpenAI-compatible client or a custom model provider, or through the beta Any-LLM and LiteLLM adapters.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["openai", "temporal", "langsmith"],
+      pairsWellWith: ["openai", "temporal", "langsmith", "ollama"],
       conflictsWith: [],
       patterns: ["conductor", "long-memory-system"],
       notes:
-        "Use when the SDK should own the agent loop. Compare its built-in tracing and guardrails with separate products before adding duplicate layers.",
+        "Use when the SDK should own the agent loop. Compare its built-in tracing and guardrails with separate products before adding duplicate layers. The SDK's gpt-oss example calls a model served by Ollama through OpenAIChatCompletionsModel and the local OpenAI-compatible endpoint, with tracing disabled. That example notes that custom output types may not work well with gpt-oss models, and the SDK's hosted tools and tool search need an OpenAI Responses model.",
     },
     {
       id: "langchain",
@@ -184,11 +184,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Agent framework with model and tool integrations. Its agent runtime uses LangGraph primitives; use LangGraph directly when you need finer workflow control.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["openai", "claude", "pinecone", "langgraph", "langsmith", "guardrails"],
+      pairsWellWith: ["openai", "claude", "pinecone", "langgraph", "langsmith", "guardrails", "ollama", "streamlit"],
       conflictsWith: [],
       patterns: ["conductor", "muddy-mix"],
       notes:
-        "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs.",
+        "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs. The langchain-ollama package (ChatOllama) connects to a local Ollama server, and Streamlit's documentation includes a LangChain app tutorial.",
     },
 
     // LOGIC
@@ -203,11 +203,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Graph-based orchestration for stateful agent and multi-step workflow control. Lets you define agent behavior as explicit state machines, and its checkpointing overlaps with durable workflow engines.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "openai", "pinecone", "langsmith", "temporal"],
+      pairsWellWith: ["langchain", "openai", "pinecone", "langsmith", "temporal", "ollama"],
       conflictsWith: [],
       patterns: ["conductor", "orchestration-pileup", "modular-palette"],
       notes:
-        "Useful for explicit agent state and transitions. It can sit inside a broader durable workflow, but the boundary between the two must be designed.",
+        "Useful for explicit agent state and transitions. It can sit inside a broader durable workflow, but the boundary between the two must be designed. Graph nodes call models and vector stores through LangChain integrations, such as ChatOllama for a local model or the Pinecone vector store.",
     },
     {
       id: "temporal",
@@ -217,7 +217,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       category: "Workflow Engine",
       maturity: "production",
       description:
-        "Durable workflow orchestration for production-critical systems. Handles retries, state, and long-running processes that must not fail silently.",
+        "Durable workflow execution. Records each workflow's progress so long-running processes can retry failed steps and resume after a crash.",
       complexityAdded: "high",
       trustContribution: "high",
       pairsWellWith: ["claude", "openai-agents-sdk", "langgraph"],
@@ -262,6 +262,22 @@ export const architecturalChromaticsData: ChromaticsData = {
       notes:
         "Compare candidate models on your own tasks, cost, latency, and policy requirements rather than assuming one provider is inherently safer.",
     },
+    {
+      id: "ollama",
+      name: "Ollama",
+      primaryHue: "cognition",
+      category: "Local Model Runtime",
+      maturity: "production",
+      description:
+        "Runs open-weight models on your own machine and serves them over a local REST API, including an OpenAI-compatible endpoint at /v1 (chat completions, completions, embeddings, models, and Responses).",
+      complexityAdded: "medium",
+      trustContribution: "low",
+      pairsWellWith: ["langchain", "langgraph", "openai-agents-sdk"],
+      conflictsWith: [],
+      patterns: ["thin-wrapper", "velocity-stack"],
+      notes:
+        "Models small enough to run locally differ in capability from hosted frontier models, so evaluate them on your own tasks, including tool calling, rather than assuming parity. Memory decides what is usable: model size and context length must fit in GPU or unified memory, or the model spills to slower CPU memory. By default Ollama sets a 4k context below 24 GiB of VRAM, while its docs suggest at least 64k for agents and coding tools. Supports NVIDIA, AMD, Apple Metal, and Vulkan GPUs. The server binds to 127.0.0.1:11434 by default and the OpenAI-compatible endpoint ignores the API key, so exposing it on a network needs access control in front of it. Ollama also offers cloud models, which a signed-in local server can route to, sending prompts off the machine; its cloud features can be turned off. LangChain publishes langchain-ollama (ChatOllama), which LangGraph uses through LangChain models, and an OpenAI Agents SDK example calls it through OpenAIChatCompletionsModel. MIT-licensed.",
+    },
 
     // MEMORY
     {
@@ -278,7 +294,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       conflictsWith: [],
       patterns: ["long-memory-system", "conductor", "retrieval-illusion"],
       notes:
-        "A common memory layer, but only as good as the data fed into it. Poor chunking, bad sources, or weak retrieval design creates false confidence.",
+        "Only as good as the data fed into it. Poor chunking, bad sources, or weak retrieval design creates false confidence.",
     },
 
     // INTERFACE
@@ -310,11 +326,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Python framework for quickly building interactive data and AI applications, especially practitioner-facing tools and prototypes.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["openai", "supabase"],
+      pairsWellWith: ["openai", "supabase", "langchain"],
       conflictsWith: [],
       patterns: ["bright-demo", "velocity-stack"],
       notes:
-        "Where Vercel is product-facing, Streamlit is practitioner-facing. Great for getting real feedback fast from technical audiences.",
+        "Where Vercel is product-facing, Streamlit is practitioner-facing: useful for putting a working tool in front of technical users. Its documentation includes a LangChain app tutorial; its LangChain callback handler integration was removed in version 1.58.0.",
     },
 
     // VELOCITY
@@ -368,7 +384,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       conflictsWith: [],
       patterns: ["governance-shell", "durable-spine"],
       notes:
-        "Validators are installed as Python packages and run in your application; Guardrails announced the end of its hosted remote inference, with a planned cutoff of August 25, 2026. Decide early which checks block a response and which only log.",
+        "Validators are installed as Python packages and run in your application. In July 2026 Guardrails announced that validators move to standard PyPI packages and that it is discontinuing hosted remote inference, with a planned cutoff of August 25, 2026. Decide early which checks block a response and which only log.",
     },
   ],
 
@@ -379,7 +395,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["logic", "cognition", "memory"],
       description:
-        "You have a model that can reason and a store that can retrieve, but without structure every call is uncoordinated — inconsistent behavior, repeated work, no audit trail. A single orchestration layer owns control flow: it decides when to think, when to retrieve, and in what order.",
+        "You have a model that can reason and a store that can retrieve, but without structure the calls go uncoordinated — inconsistent behavior, repeated work, no audit trail. A single orchestration layer owns control flow: it decides when to think, when to retrieve, and in what order.",
       strengths: ["clarity", "control", "repeatability"],
       weaknesses: ["rigidity", "orchestration complexity"],
       watchFor: ["missing trust layer", "workflow sprawl"],
@@ -390,7 +406,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["cognition", "trust", "intent"],
       description:
-        "A model produces outputs, but you have no way to know if they're good until they reach a user. Shipping without evaluation is guessing. Build measurement into the generation cycle — generate, evaluate against criteria, refine. Quality becomes a property of the system, not a hope.",
+        "A model produces outputs, but you have no way to know if they're good until they reach a user. Shipping without evaluation is guessing. Build measurement into the generation cycle — generate, evaluate against criteria, refine — so quality is measured before release instead of assumed.",
       strengths: ["quality", "measurability", "continuous improvement"],
       weaknesses: ["latency", "cost"],
       watchFor: ["slow feedback loops", "overfitting to evals"],
@@ -412,7 +428,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "foundational",
       hues: ["intent", "logic", "cognition", "memory", "interface", "velocity", "trust"],
       description:
-        "Every team has a dominant skill, and stacks reflect the org chart more than the problem. Engineers favor Logic and Cognition; product teams favor Interface; platform teams favor Trust. A balanced stack is a deliberate audit against that gravity — fill the role gaps before they become failure modes.",
+        "Teams tend to build toward their strongest skill, so a stack can reflect the org chart more than the problem: an engineering-led team may overbuild Logic and Cognition, a product-led team Interface. A balanced stack is a deliberate audit against that gravity — fill the role gaps before they become failure modes.",
       strengths: ["resilience", "coverage", "adaptability"],
       weaknesses: ["slower setup", "more design effort"],
       watchFor: ["accidental complexity"],
@@ -511,7 +527,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["logic", "trust"],
       description:
-        "Systems that work in development fail in production because development never tests partial failures, retries, or what breaks at 3am. Building for the happy path is building for demos. Invest in workflow durability and observability before you need them — the cost of adding them after a production incident is always higher.",
+        "Systems that work in development can fail in production because development rarely exercises partial failures, retries, or long waits. Building only for the happy path is building for demos. Invest in workflow durability and observability before a production incident forces the change.",
       strengths: ["reliability", "auditability", "operational confidence"],
       weaknesses: ["slower build speed", "higher complexity"],
       watchFor: ["overengineering too early"],
@@ -533,7 +549,7 @@ export const architecturalChromaticsData: ChromaticsData = {
       type: "structural",
       hues: ["trust", "intent", "logic"],
       description:
-        "Systems that work technically can still violate policy, produce unsafe outputs, or fail audits. Governance bolted on after the fact is always fragile — it fights the architecture instead of being part of it. Design the governance layer as a first-class architectural concern, not an afterthought.",
+        "Systems that work technically can still violate policy, produce unsafe outputs, or fail audits. Governance bolted on after the fact tends to fight the architecture instead of being part of it. Design the governance layer as a first-class architectural concern, not an afterthought.",
       strengths: ["policy control", "safer deployment", "higher confidence"],
       weaknesses: ["more friction", "slower iteration"],
       watchFor: ["governance bolted on too late"],
@@ -582,7 +598,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Minimizes setup friction",
       ],
       whereItBreaks: [
-        "No observability — you're flying blind",
+        "No tracing or evaluation of model calls",
         "No workflow control — model calls are unstructured",
         "Hard to debug when behavior drifts",
       ],
@@ -617,7 +633,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Internal knowledge search, support assistant, or organizational memory tool.",
       whyItWorks: [
         "Combines reasoning with retrieval",
-        "Orchestration structure keeps behavior predictable",
+        "LangGraph makes control flow and agent state explicit",
         "LangSmith traces make failures easier to locate",
       ],
       whereItBreaks: [
@@ -636,12 +652,12 @@ export const architecturalChromaticsData: ChromaticsData = {
       useCase:
         "Regulated, production-critical, or enterprise-sensitive AI workflows where failure has real consequences.",
       whyItWorks: [
-        "Temporal provides a durable, auditable control plane",
-        "Guardrails validation sits at the model boundary regardless of model provider",
+        "Temporal records each workflow's event history and resumes work after failures",
+        "Guardrails validators check model inputs and outputs in the application, independent of the model provider",
         "LangSmith surfaces what the model actually did",
       ],
       whereItBreaks: [
-        "High setup cost — plan in weeks, not days",
+        "High setup cost: several systems to deploy, configure, and operate",
         "Can feel heavy for small teams or early-stage products",
         "Requires operational sophistication to run well",
       ],
@@ -684,7 +700,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Nobody can explain who owns the control flow",
         "Debugging requires understanding 3 different systems",
         "The team argues about which tool should handle X",
-        "No tracing or evaluation tool: nothing shows what the overlapping loops did",
+        "No tracing or evaluation tool, so the overlapping loops are hard to inspect",
       ],
       fix: [
         "Run the agent loop inside the LangGraph graph (LangChain agents are built on LangGraph) instead of beside it",
@@ -692,6 +708,28 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Add tracing before adding more control",
       ],
       missingHues: ["memory", "interface", "velocity"],
+    },
+    {
+      id: "private-local-assistant",
+      name: "The Private Local Assistant",
+      tools: ["ollama", "langchain", "streamlit"],
+      patternIds: ["velocity-stack", "thin-wrapper"],
+      useCase:
+        "An assistant for material that should not leave the team's own machine: an open-weight model served by Ollama, LangChain for prompts and tools, and a Streamlit page for the people using it. Think: drafting from pasted internal notes or sensitive text, or working offline.",
+      whyItWorks: [
+        "Ollama serves the model on the same machine, so prompts need not leave it while cloud features stay off",
+        "LangChain's ChatOllama supports tool calling and structured output, and a hosted model can be compared by swapping the chat model class",
+        "Streamlit gives practitioners a Python interface, and its documentation includes a LangChain app tutorial",
+      ],
+      whereItBreaks: [
+        "The machine's memory bounds model size, context length, and speed; the default context below 24 GiB of VRAM is 4k tokens",
+        "A local model is not a hosted frontier model; answers and tool calls need evaluating on real tasks",
+        "No retrieval or history: nothing indexes documents or keeps context across sessions",
+        "No tracing or evaluation; LangSmith is hosted unless self-hosted on an Enterprise plan, so decide where traces may go before adding it",
+        "Private only while it stays local: a signed-in Ollama can route to cloud models, and a Streamlit app reachable on the network needs authentication",
+      ],
+      missingHues: ["memory", "trust"],
+      upgradePath: ["guardrails", "langsmith"],
     },
   ],
 };
@@ -795,7 +833,7 @@ export const chromaticsHelpers = {
     const warnings: string[] = [];
 
     if (!hasTrust) {
-      warnings.push("Trust gap: this composition lacks a strong trust layer.");
+      warnings.push("Trust gap: no tool in this composition has Trust as its primary or secondary role.");
     }
 
     if (orchestrationTools.length > 1) {

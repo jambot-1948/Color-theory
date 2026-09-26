@@ -83,7 +83,7 @@ export const assemblyStories: Record<string, AssemblyStory> = {
       { toolId: 'langsmith', action: 'Make behavior inspectable', explanation: 'Tracing helps the team inspect what the model saw and did. This remains a higher-cost system to operate.' },
     ],
     links: [
-      { first: 'temporal', second: 'claude', kind: 'fit', note: 'Durable workflow control and model capability are a curated pairing.' },
+      { first: 'temporal', second: 'claude', kind: 'fit', note: 'Temporal\'s AI Cookbook includes a Claude tool-calling loop that runs each model call as an Activity.' },
       { first: 'temporal', second: 'pinecone', kind: 'recipe', note: 'No product integration: retrieval calls run as ordinary workflow steps that the application implements.' },
       { first: 'claude', second: 'guardrails', kind: 'fit', note: 'The model and validation layer are a curated pairing.' },
       { first: 'claude', second: 'langsmith', kind: 'fit', note: 'The model and tracing layer are a curated pairing.' },
@@ -103,13 +103,26 @@ export const assemblyStories: Record<string, AssemblyStory> = {
       { first: 'claude', second: 'langsmith', kind: 'fit', note: 'The model and tracing layer are a curated pairing.' },
     ],
   },
+  'private-local-assistant': {
+    recipeId: 'private-local-assistant',
+    steps: [
+      { toolId: 'ollama', action: 'Run the model locally', explanation: 'Serve an open-weight model on the team\'s own machine. Its memory decides which models fit and how much context they get.' },
+      { toolId: 'langchain', action: 'Scaffold the interaction', explanation: 'Wrap the local model in prompts and tools through ChatOllama. Check tool calling on the chosen model before relying on it.' },
+      { toolId: 'streamlit', action: 'Give people a page', explanation: 'A Streamlit app puts the assistant in front of the team. Anyone who can reach the page can use the model, so decide who that is.' },
+    ],
+    links: [
+      { first: 'ollama', second: 'langchain', kind: 'fit', note: 'LangChain publishes the langchain-ollama package with ChatOllama.' },
+      { first: 'langchain', second: 'streamlit', kind: 'fit', note: 'Streamlit\'s documentation includes a LangChain app tutorial.' },
+      { first: 'ollama', second: 'streamlit', kind: 'recipe', note: 'No direct integration: the Streamlit app calls LangChain, which calls the local Ollama server. Running both on one machine, with Ollama\'s cloud features off, keeps prompts on that machine.' },
+    ],
+  },
   'muddy-agent-recipe': {
     recipeId: 'muddy-agent-recipe',
     steps: [
       { toolId: 'langchain', action: 'Begin with an agent loop', explanation: 'A LangChain agent gets the team moving quickly. It already runs its own tool-calling loop.' },
       { toolId: 'langgraph', action: 'Add a graph beside it', explanation: 'A LangGraph graph adds explicit state, but the earlier agent loop stays outside it. LangChain agents are built on LangGraph, so the loop could have been a node in this graph instead.' },
       { toolId: 'temporal', action: 'Introduce competing control', explanation: 'This cautionary recipe adds Temporal retries without deciding which layer owns them. Temporal ships an experimental LangGraph plugin; the products can coexist when their responsibilities are separated.' },
-      { toolId: 'openai', action: 'Add cognition to the overlap', explanation: 'Model capability does not resolve the control conflict, and nothing traces the overlapping loops. The recipe recommends one agent loop, clear boundaries, and tracing.' },
+      { toolId: 'openai', action: 'Add cognition to the overlap', explanation: 'Model capability does not resolve the control conflict, and no tracing tool covers the overlapping loops. The recipe recommends one agent loop, clear boundaries, and tracing.' },
     ],
     links: [
       { first: 'langchain', second: 'langgraph', kind: 'tension', note: 'In this design the LangChain agent loop runs beside the graph instead of inside it, so two loops hold state.' },
