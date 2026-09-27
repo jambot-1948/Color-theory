@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "studio": "remotion studio src/index.ts",
-    "render:build": "remotion render src/index.ts Act3-Build out/act3-build.mp4 --codec=h264 --crf=18"
+    "render": "remotion render src/index.ts Overview out/chromatic-architecture-overview.mp4 --codec=h264 --crf=18"
   },
   "keywords": [],
   "author": "",

@@ -2,7 +2,7 @@ import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoCon
 // Everything below comes from the site itself: same data, same build rules, same brick renderer.
 import { architecturalChromaticsData as data } from '../../../preview/src/architectural-chromatics-data'
 import { assemblyStories } from '../../../preview/src/assemblyStories'
-import { slotLinks, slotTools, slotsFromTools } from '../../../preview/src/bricks/capabilityModel'
+import { slotLinks, slotTools, slotsFromTools, type SlotTool } from '../../../preview/src/bricks/capabilityModel'
 import { readBuild, verdictCopy, type Seat } from '../../../preview/src/bricks/buildModel'
 import { sceneBricks } from '../../../preview/src/bricks/scene'
 import { Baseplate, BrickIcon, IsoBrick, type SceneBrick } from '../../../preview/src/bricks/Brick'
@@ -174,7 +174,7 @@ function chipFor(index: number) {
   const newest = reading.seats.at(-1)
   if (!newest || newest.seat === 'base') return { tone: 'base', label: 'On the baseplate' }
   if (newest.seat === 'clash') return { tone: 'forced', label: 'Forced: one capability, two products' }
-  if (newest.seat === 'snap') return { tone: 'snap', label: `Snaps onto ${newest.partner?.product?.name ?? newest.partner?.name}` }
+  if (newest.seat === 'snap') return { tone: 'snap', label: `Snaps onto ${(newest.partner as SlotTool | undefined)?.product?.name ?? newest.partner?.name}` }
   return { tone: 'loose', label: 'Sits loose' }
 }
 

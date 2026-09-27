@@ -7,14 +7,17 @@ every snap, forced fit, and verdict is computed by `readBuild`, the same as the 
 ```bash
 npm install
 npm run studio        # live preview and scrubbing in the browser
-npm run render:build  # renders out/act3-build.mp4
+npm run render        # renders out/chromatic-architecture-overview.mp4
 ```
 
 ## Acts
-| # | Act | Status |
-|---|-----|--------|
-| 1 | The pile | planned |
-| 2 | Picture → word: brick, colour, sticker, height | planned |
-| 3 | The build: Lean Knowledge Agent | **built** (`src/acts/BuildAct.tsx`, 34s) |
-| 4 | Growth over time, with the accretion wrong turn | planned |
-| 5 | Pull back to four editions | planned |
+| # | Act | File | Length |
+|---|-----|------|--------|
+| 1 | The pile: gray, role-less products | `src/acts/PileAct.tsx` | 12s |
+| 2 | Picture → word: brick, colour, label, height | `src/acts/VocabAct.tsx` | 30s |
+| 3 | The build: Lean Knowledge Agent (place, snap, force, missing) | `src/acts/BuildAct.tsx` | 34s |
+| 4 | Growth: Foundations from Week 1 to Year 1, then the platform-before-product wrong turn | `src/acts/GrowthAct.tsx` | 37s |
+| 5 | The foundation: three systems resting on Foundations, then the end card | `src/acts/FoundationAct.tsx` | 22s |
+
+`Overview` strings all five together (about 2:15). Each act is also its own composition for quick iteration.
+`src/lib/motion.tsx` holds the shared motion: parts drop in, move between steps, and lift away when removed.
