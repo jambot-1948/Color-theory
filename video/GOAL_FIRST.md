@@ -1,6 +1,6 @@
 # Draft: goal-first cut of the overview
 
-Status: exploration, 2026-09-29. Nothing in `src/` has changed. This responds to two notes from a friend who liked the video:
+Status: built 2026-09-29 as the `Overview` composition (see HANDOFF.md). Jamil chose this cut and moved Growth to a clip. Final running order differs slightly from the draft below: four acts, 2:02, with the seams folded into act 4. This responds to two notes from a friend who liked the video:
 
 1. **Start with the end in mind.** Open with a job to be done, name what the job demands, then show which pieces fit. Don't open with pieces.
 2. **Systems of systems.** A real build is like a LEGO set with a ship and a plane: each is its own model with its own parts, and the set is both.

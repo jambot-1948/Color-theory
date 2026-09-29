@@ -1,9 +1,23 @@
 # Handoff: Chromatic Architecture animated overview
 
-Last session: 2026-09-27/28. Branch: `video/animated-overview` on `jambot-1948/Color-theory`. `main` is untouched.
+Last session: 2026-09-29. Branch: `video/animated-overview` on `jambot-1948/Color-theory`. `main` is untouched.
 
-## What exists
-A 2:15, 1080p, 30fps Remotion video (`Overview` composition) in five acts. Silent, with kinetic text. It is the **talk version for thejambot.com**. Jamil does not want a separate LinkedIn cut; he may record a GIF from it.
+## What exists (2026-09-29: goal-first cut)
+`Overview` is now the **goal-first cut**: 2:02, four acts, anchored on one job ("a tool to explore how a project team works"). Rationale and trade-offs are in `GOAL_FIRST.md`; the matching site plan is `../SITE_GOALS_AND_SYSTEMS.md`.
+
+| # | Act | File | Frames |
+|---|-----|------|--------|
+| 1 | The job; the gray pile flashes by as "the usual answer" | `src/acts/JobAct.tsx` | 450 |
+| 2 | Five questions; each lights hue chips and drops placeholders on the system that owns the role (Data, AI, Foundations, Harness "only if it acts") | `src/acts/QuestionsAct.tsx` | 1080 |
+| 3 | The data system up close: *Holds, parts missing* → Governance Gap *Looks built, reads wrong* → add GX Core + DataHub → *Snaps together* | `src/acts/DataBuildAct.tsx` | 1080 |
+| 4 | The set: Data, AI, Harness (pale) on Foundations, verdict per system; open seams "Unproven, not wrong"; end card | `src/acts/SetAct.tsx` | 1080 |
+
+The job, questions and chosen builds live in `src/goal.ts`. `readSystem()` reads a build with the site's rules and counts the job's unfilled roles as `gaps`. Move it to `preview/src/jobs.ts` when the site gets jobs (phase 2 of the site plan).
+
+Clips (Remotion folder "Clips"): `Clip-Growth` (the old act 4, kept for the site's growth page), `Clip-LeanAgentBuild` (the old act 3, mirrors the site hero), and `Previous-*` for the rest of the earlier cut.
+
+## The earlier five-act cut (now clips)
+A 2:15 cut in five acts. Silent, with kinetic text. It is the **talk version for thejambot.com**. Jamil does not want a separate LinkedIn cut; he may record a GIF from it.
 
 | # | Act | File | Frames |
 |---|-----|------|--------|
@@ -17,11 +31,15 @@ Shared code: `src/lib/motion.tsx` (MorphScene: parts drop in, glide between keyf
 
 ## Decisions already made (don't relitigate without asking)
 - **Reuse the site, don't redraw it.** Every act imports from `../preview/src`: the `IsoBrick` / `Baseplate` renderer, the edition data, `capabilities.ts`, `growthTracks.ts`, `*Stories.ts`, and `readBuild` / `verdictCopy`. Snaps, forced fits, gaps and verdicts are **computed**, never typed in. If the data changes, the video changes.
-- **Foundations carries the back half** (acts 4–5), because Jamil wanted it to balance the AI-heavy concepts.
+- **Foundations carries the back half** (acts 4–5), because Jamil wanted it to balance the AI-heavy concepts. *Superseded 2026-09-29:* Jamil chose the goal-first cut and dropped Growth from the main video (kept as `Clip-Growth`). Foundations is now the base of the set in act 4.
+- **Goal-first cut (2026-09-29).** The job's questions are editorial and the video says so ("a starting checklist, not a rule"). Seams between systems are drawn open because no cross-domain link is recorded.
 - **Honesty boundaries from BRICKS.md stay visible.** Act 3 ends with the line "Stacking shows relationships and tiers, not runtime wiring or data flow." Act 2 says height is "a reading aid, not data flow." Products appear only as sticker text, never as vendor logos.
 - Visual register follows PRODUCT.md: neutral chrome, colour only from the hue system, and no 3D, neon or gradients.
 
 ## Open questions and ideas to explore
+- Goal-first cut: in act 4 the systems are still small at 1080p (sticker text barely readable). A slow push-in per system would help.
+- Goal-first cut: the AI system reads *Holds, parts missing* (Interface) because The Knowledge Agent recipe has no interface part. Honest, but unexplained on screen. Either add a caption or give the AI system an interface part (Streamlit reads loose today).
+- Goal-first cut: the job's questions still sit in `video/src/goal.ts`; see the site plan for moving them.
 - **Year 1 reads "Holds, with loose parts."** That verdict is computed. Some new platform parts have no recorded pairing in `foundations-data.ts`. Either add the pairings (a data fix that would also change the site) or keep it as a talking point.
 - Act 5's three upper systems are small at 1080p; their sticker text isn't readable. Consider a slow zoom per system, or fewer bricks.
 - Act 1's pile uses products from all domains but no Foundations capabilities. It could mix in more Foundations products.
