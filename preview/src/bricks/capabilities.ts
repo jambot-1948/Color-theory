@@ -25,7 +25,7 @@ export const capabilities: Record<EditionId, Capability[]> = {
     { id: 'ci-pipeline', name: 'CI pipeline', hue: 'delivery', summary: 'Builds, tests, and scans every change automatically.', products: ['github-actions'] },
     { id: 'artifact-registry', name: 'Artifact registry', hue: 'delivery', summary: 'Stores versioned images and packages that deployments pull from.', products: ['harbor'] },
     { id: 'gitops', name: 'GitOps sync', hue: 'delivery', summary: 'Keeps what is running in line with what is declared in Git.', products: ['argocd'] },
-    { id: 'managed-platform', name: 'Managed platform', hue: 'platform', summary: 'Runs the app without you managing servers or clusters.', products: ['heroku'] },
+    { id: 'managed-platform', name: 'Managed platform', hue: 'platform', summary: 'Runs the app without you managing servers or clusters.', products: ['render'] },
     { id: 'container-images', name: 'Container images', hue: 'platform', summary: 'Packages the app and its dependencies into a portable image.', products: ['docker'] },
     { id: 'orchestration', name: 'Container orchestration', hue: 'platform', summary: 'Schedules containers across machines and restarts them when they fail.', products: ['kubernetes'] },
     { id: 'iac', name: 'Infrastructure as code', hue: 'platform', summary: 'Declares cloud resources in reviewable files instead of console clicks.', products: ['terraform'] },

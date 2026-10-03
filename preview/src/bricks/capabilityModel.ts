@@ -121,6 +121,9 @@ export function encodeSlots(slots: Slot[]) {
   return slots.map(slot => slot.product ? `${slot.capability}:${slot.product}` : slot.capability).join(',')
 }
 
+// Products replaced in a review keep old share links working.
+const retired: Record<string, string> = { heroku: 'render' }
+
 export function decodeSlots(edition: EditionId, value: string | null | undefined): Slot[] {
   if (!value) return []
   const slots: Slot[] = []
@@ -128,8 +131,9 @@ export function decodeSlots(edition: EditionId, value: string | null | undefined
     const [capId, productId] = part.split(':')
     const byCap = capabilityById(edition, capId)
     // Older links carry product ids only.
-    const capability = byCap ?? capabilityOf(edition, capId)
-    const product = byCap ? productId : capId
+    const id = byCap ? productId : capId
+    const product = id && (retired[id] ?? id)
+    const capability = byCap ?? capabilityOf(edition, product)
     if (!capability || slots.some(slot => slot.capability === capability.id && slot.product === product)) continue
     slots.push({ capability: capability.id, product: product && capability.products.includes(product) ? product : undefined })
   }

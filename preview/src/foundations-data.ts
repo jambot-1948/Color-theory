@@ -204,11 +204,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source, cross-platform JavaScript runtime for servers, APIs, and tooling.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["nextjs", "postgresql", "redis", "rabbitmq", "auth0", "opentelemetry", "docker", "heroku"],
+      pairsWellWith: ["nextjs", "postgresql", "redis", "rabbitmq", "auth0", "opentelemetry", "docker", "render"],
       conflictsWith: [],
       patterns: ["twelve-factor", "observable-service"],
       notes:
-        "A runtime, not a framework: routing, validation, and structure are choices the team makes. The OpenTelemetry JavaScript SDK offers Node.js auto-instrumentation; Redis publishes node-redis; the RabbitMQ tutorials include Node.js; there is an official Node.js Docker image and a Heroku Node.js buildpack. Supported by the OpenJS Foundation; MIT-licensed.",
+        "A runtime, not a framework: routing, validation, and structure are choices the team makes. The OpenTelemetry JavaScript SDK offers Node.js auto-instrumentation; Redis publishes node-redis; the RabbitMQ tutorials include Node.js; there is an official Node.js Docker image, and Render runs Node.js natively. Supported by the OpenJS Foundation; MIT-licensed.",
     },
     {
       id: "django",
@@ -220,11 +220,11 @@ export const foundationsData: FDChromaticsData = {
         "Python web framework with an ORM, migrations, authentication, and an admin interface included.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["postgresql", "redis", "opentelemetry", "heroku"],
+      pairsWellWith: ["postgresql", "redis", "opentelemetry", "render"],
       conflictsWith: [],
       patterns: ["twelve-factor", "observable-service"],
       notes:
-        "Batteries included, so many early decisions are already made. PostgreSQL is an officially supported database (15 and later as of Django 6.1), and Redis is a built-in cache backend. OpenTelemetry has a Django instrumentation package; Heroku's Python getting-started app is a Django app. Django 6.0 added a tasks interface, but it does not run background jobs itself: production needs a separate worker backend. Maintained by the Django Software Foundation; BSD-licensed.",
+        "Batteries included, so many early decisions are already made. PostgreSQL is an officially supported database (15 and later as of Django 6.1), and Redis is a built-in cache backend. OpenTelemetry has a Django instrumentation package; Render publishes a Django deployment guide. Django 6.0 added a tasks interface, but it does not run background jobs itself: production needs a separate worker backend. Maintained by the Django Software Foundation; BSD-licensed.",
     },
     {
       id: "spring-boot",
@@ -254,11 +254,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source relational database with transactions, SQL, and a large extension ecosystem.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["nodejs", "django", "spring-boot", "keycloak", "vault", "heroku", "aws"],
+      pairsWellWith: ["nodejs", "django", "spring-boot", "keycloak", "vault", "render", "aws"],
       conflictsWith: [],
       patterns: ["twelve-factor"],
       notes:
-        "Backups, upgrades, and connection limits are real work unless a managed service (such as Heroku Postgres or Amazon RDS) takes them on, and even then restores need testing. Keycloak can use it as its database; Vault's database secrets engine can issue PostgreSQL credentials. Released under the PostgreSQL Licence.",
+        "Backups, upgrades, and connection limits are real work unless a managed service (such as Render Postgres or Amazon RDS) takes them on, and even then restores need testing. Keycloak can use it as its database; Vault's database secrets engine can issue PostgreSQL credentials. Released under the PostgreSQL Licence.",
     },
     {
       id: "redis",
@@ -371,11 +371,11 @@ export const foundationsData: FDChromaticsData = {
         "Hosted Git repositories with pull requests, code review, branch protection, and issue tracking.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["github-actions", "argocd", "heroku"],
+      pairsWellWith: ["github-actions", "argocd", "render"],
       conflictsWith: [],
       patterns: ["gitops-loop", "secrets-in-code"],
       notes:
-        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; the Heroku CLI can connect a GitHub repository to a Heroku pipeline. Proprietary SaaS from Microsoft.",
+        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; Render can auto-deploy from a linked GitHub repository. Proprietary SaaS from Microsoft.",
     },
     {
       id: "github-actions",
@@ -430,20 +430,20 @@ export const foundationsData: FDChromaticsData = {
 
     // ── Platform ───────────────────────────────────────────────────────
     {
-      id: "heroku",
-      name: "Heroku",
+      id: "render",
+      name: "Render",
       primaryHue: "platform",
       category: "Managed PaaS",
       maturity: "production",
       description:
-        "Managed platform from Salesforce that builds and runs applications from source with buildpacks or Docker images, with add-ons such as Heroku Postgres.",
+        "Managed platform that builds and runs web services, workers, and cron jobs from a Git repository or a Dockerfile, with managed Render Postgres.",
       complexityAdded: "low",
       trustContribution: "medium",
       pairsWellWith: ["nodejs", "django", "postgresql", "github", "docker", "terraform"],
       conflictsWith: [],
       patterns: ["twelve-factor"],
       notes:
-        "Less to operate, at the price of a vendor dependency and the platform's limits on how apps run. Offers Node.js and Python buildpacks, a Container Registry for Docker images, pipelines that can be connected to a GitHub repository, and a Terraform provider. Proprietary PaaS.",
+        "Less to operate, at the price of a vendor dependency and the platform's limits on how apps run. Native Node.js and Python runtimes build from source; other stacks, such as Java, deploy through a Dockerfile or a prebuilt image. Auto-deploys from a linked GitHub repository, offers deploy hooks for triggering deploys from CI, and has an official Terraform provider. One example of many: Fly.io, Railway, Google Cloud Run, and Heroku fill the same capability with different trade-offs. Proprietary PaaS.",
     },
     {
       id: "docker",
@@ -455,11 +455,11 @@ export const foundationsData: FDChromaticsData = {
         "Builds and runs OCI container images that package an application with its dependencies.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["nodejs", "spring-boot", "trivy", "github-actions", "harbor", "heroku", "kubernetes", "self-hosted"],
+      pairsWellWith: ["nodejs", "spring-boot", "trivy", "github-actions", "harbor", "render", "kubernetes", "self-hosted"],
       conflictsWith: [],
       patterns: ["twelve-factor", "secrets-in-code"],
       notes:
-        "Packaging, not a platform on its own: something still has to run, restart, and scale containers. Secrets baked into image layers remain readable from the image. Images can be built in GitHub Actions with docker/build-push-action, scanned by Trivy, stored in a registry such as Harbor, and run on Kubernetes, Heroku, or the team's own machines. Docker Engine installs on Linux servers; on macOS it comes through Docker Desktop, which needs a paid subscription for commercial use in organizations with more than 250 employees or more than $10 million in annual revenue.",
+        "Packaging, not a platform on its own: something still has to run, restart, and scale containers. Secrets baked into image layers remain readable from the image. Images can be built in GitHub Actions with docker/build-push-action, scanned by Trivy, stored in a registry such as Harbor, and run on Kubernetes, a managed platform such as Render, or the team's own machines. Docker Engine installs on Linux servers; on macOS it comes through Docker Desktop, which needs a paid subscription for commercial use in organizations with more than 250 employees or more than $10 million in annual revenue.",
     },
     {
       id: "kubernetes",
@@ -487,11 +487,11 @@ export const foundationsData: FDChromaticsData = {
         "Infrastructure as code tool: describes cloud and service resources in configuration files, shows a plan of changes, then applies it.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["aws", "kubernetes", "heroku", "vault", "github-actions", "trivy", "grafana", "pagerduty"],
+      pairsWellWith: ["aws", "kubernetes", "render", "vault", "github-actions", "trivy", "grafana", "pagerduty"],
       conflictsWith: [],
       patterns: ["paved-road", "snowflake-server", "platform-before-product"],
       notes:
-        "State files can contain secrets and must be stored and locked carefully. Providers exist for AWS, Kubernetes, Heroku, Vault, Grafana, and PagerDuty; hashicorp/setup-terraform runs it in GitHub Actions; Trivy can scan its plans. Terraform 1.6 and later is under the Business Source License 1.1, with IBM as licensor. OpenTofu is a community fork under MPL 2.0.",
+        "State files can contain secrets and must be stored and locked carefully. Providers exist for AWS, Kubernetes, Render, Vault, Grafana, and PagerDuty; hashicorp/setup-terraform runs it in GitHub Actions; Trivy can scan its plans. Terraform 1.6 and later is under the Business Source License 1.1, with IBM as licensor. OpenTofu is a community fork under MPL 2.0.",
     },
     {
       id: "aws",
@@ -767,14 +767,14 @@ export const foundationsData: FDChromaticsData = {
     {
       id: "starter-app",
       name: "The Starter App",
-      tools: ["nextjs", "nodejs", "postgresql", "heroku"],
+      tools: ["nextjs", "nodejs", "postgresql", "render"],
       patternIds: ["twelve-factor"],
       useCase:
         "A small team getting a first web application in front of users: a Next.js front end, Node.js on the server, PostgreSQL for data, and a managed platform so nobody runs servers. Think: internal tool, first product, pilot.",
       whyItWorks: [
         "Next.js and its server code run on Node.js, so one language covers front end and back end",
         "PostgreSQL holds application data with transactions and a familiar SQL model",
-        "Heroku builds from source with its Node.js buildpack and offers Heroku Postgres, so there is no infrastructure to hand-build",
+        "Render builds the Node.js app from source and offers Render Postgres, so there is no infrastructure to hand-build",
         "Config in the environment keeps the app close to twelve-factor from the start",
       ],
       whereItBreaks: [
@@ -788,7 +788,7 @@ export const foundationsData: FDChromaticsData = {
     {
       id: "authenticated-app",
       name: "The Authenticated App",
-      tools: ["nextjs", "nodejs", "postgresql", "heroku", "auth0", "github-actions"],
+      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github-actions"],
       patternIds: ["twelve-factor"],
       useCase:
         "The starter app once real users log in and more than one person commits: hosted identity, and a CI workflow that runs tests before a change ships.",
@@ -799,7 +799,7 @@ export const foundationsData: FDChromaticsData = {
       ],
       whereItBreaks: [
         "Authentication is not authorization: what each user may do is still application code",
-        "The recipe does not say how a passing build reaches Heroku: a deploy step in the workflow or a Heroku-side deploy from GitHub needs choosing",
+        "The recipe does not say how a passing build reaches Render: a deploy hook called from the workflow or Render's own auto-deploy from GitHub needs choosing",
         "Still nothing watches production or pages anyone when it fails",
       ],
       missingHues: ["operations"],
@@ -808,7 +808,7 @@ export const foundationsData: FDChromaticsData = {
     {
       id: "watched-app",
       name: "The Watched App",
-      tools: ["nextjs", "nodejs", "postgresql", "heroku", "auth0", "github-actions", "opentelemetry", "pagerduty"],
+      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github-actions", "opentelemetry", "pagerduty"],
       patternIds: ["observable-service"],
       useCase:
         "The authenticated app with instrumentation and on-call paging: every role has a part, though a telemetry backend with alert rules is still needed before anyone is paged.",
@@ -891,10 +891,10 @@ export const foundationsData: FDChromaticsData = {
       fix: [
         "Add CI first: run tests in GitHub Actions before anything reaches the deploy branch",
         "Instrument the service with OpenTelemetry and alert on what users feel",
-        "Consider a managed platform (Heroku is this edition's example) until there is a second service and a team to run a cluster, keeping Terraform for what remains",
+        "Consider a managed platform (Render is this edition's example) until there is a second service and a team to run a cluster, keeping Terraform for what remains",
       ],
       missingHues: ["experience", "data", "trust", "operations"],
-      upgradePath: ["github-actions", "opentelemetry", "heroku"],
+      upgradePath: ["github-actions", "opentelemetry", "render"],
     },
     {
       id: "self-hosted-app",

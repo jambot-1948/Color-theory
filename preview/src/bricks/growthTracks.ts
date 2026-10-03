@@ -33,7 +33,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
     stages: [
       {
         id: 'prototype', horizon: 'Week 1', name: 'Ship it',
-        add: ['nextjs', 'nodejs', 'postgresql', 'heroku'], missing: ['trust', 'operations'],
+        add: ['nextjs', 'nodejs', 'postgresql', 'render'], missing: ['trust', 'operations'],
         summary: 'A front end, an API, and a database on a managed platform. People can use it.',
         why: 'The quickest way to learn whether anyone wants it is to put it in front of them.',
         watch: 'Anyone can reach every endpoint, and nothing tells you when it breaks.',
@@ -54,14 +54,14 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       },
       {
         id: 'scale', horizon: 'Year 1', name: 'Own the platform',
-        add: ['kubernetes', 'argocd', 'terraform'], remove: ['heroku'],
+        add: ['kubernetes', 'argocd', 'terraform'], remove: ['render'],
         summary: 'Infrastructure declared in code, and deployments driven from Git.',
         why: 'Enough services and teams that one shared, paved road beats each team’s own setup.',
         watch: 'A platform is a product with its own team. Budget for the people, not just the cluster.',
       },
       {
         id: 'platform-first', horizon: 'Month 1', name: 'Wrong turn: platform before product', from: 'prototype', branch: true, caution: true,
-        add: ['kubernetes', 'argocd', 'terraform'], remove: ['heroku'], missing: ['trust', 'operations'],
+        add: ['kubernetes', 'argocd', 'terraform'], remove: ['render'], missing: ['trust', 'operations'],
         summary: 'Kubernetes, GitOps, and Terraform arrive before login, tests, or monitoring.',
         why: 'It looks like the grown-up setup, and the team wants to build it right the first time.',
         watch: 'Weeks go into the platform while the product still has no tests and no way to see failures.',
