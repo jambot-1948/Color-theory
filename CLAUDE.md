@@ -9,6 +9,13 @@ The Chromatic Architecture framework applies color theory metaphors to technolog
 
 Core premise: **How things combine matters more than what they are individually.**
 
+## Product Selection
+The site cannot cover every tool, and does not try to. Each capability carries a few established, widely recognized products that show the site is current.
+- Prefer products a practitioner would recognize today; replace ones that are winding down (for example, Heroku moved to sustaining engineering in February 2026, so Render fills Managed platform).
+- Name well-known alternatives in a product's notes instead of adding every one as a product.
+- No rankings, market-share, or "leading" claims. Product facts come from primary sources, and date-sensitive ones (GA/preview, licences, acquisitions) carry a month.
+- A tool that appears only in cautionary recipes reads as the villain; give established tools at least one positive recipe.
+
 ## Battletesting Process
 See `BATTLETEST.md` for the full validation framework. Key steps:
 
