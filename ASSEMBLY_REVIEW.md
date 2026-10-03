@@ -13,7 +13,7 @@ Use an instruction-manual structure to help a consultant understand a tool combi
 | Data engineering | 14 | 11 | 7 | 9 | 9 |
 | Agent harness | 19 | 18 | 7 | 10 | 10 |
 
-Counts as of the September 26, 2026 credibility pass, updated in October 2026 for a currency pass: Render replaced Heroku, NeMo Guardrails replaced Guardrails AI, Mem0 replaced Letta, and Databricks, Gemini, pgvector, Azure, and Google Cloud were added, with new positive recipes so no established tool appears only in cautionary ones. Every tool, pattern, and recipe id resolves, every pairing is declared on both tools, and `missingHues` lists roles absent as both primary and secondary role.
+Counts as of the September 26, 2026 credibility pass, updated in October 2026 for a currency pass: Render replaced Heroku, NeMo Guardrails replaced Guardrails AI, Mem0 replaced Letta, and Databricks, Gemini, pgvector, Azure, and Google Cloud were added, with new positive recipes so no established tool appears only in cautionary ones. Modal entries state only what predates this pass; claims about Modal Sandboxes that could not be read from Modal's own documentation were removed. Every tool, pattern, and recipe id resolves, every pairing is declared on both tools, and `missingHues` lists roles absent as both primary and secondary role.
 
 The four editions share the same general shape, but their roles and instructions are domain-specific. Foundations is generic by design; the other three build on it. All four editions have authored step stories for every recipe (`assemblyStories`, `dataStories`, `harnessStories`, `foundationsStories`). These are editorial, not technical build instructions, and still need domain review. See `SOFTWARE_REFRESH.md` for the September 2026 capability audit.
 

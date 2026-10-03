@@ -195,11 +195,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Application kernel, written in Go and running in userspace, that sits between a container and the host kernel. Its OCI runtime, runsc, works with Docker and Kubernetes.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["docker", "kubernetes", "modal"],
+      pairsWellWith: ["docker", "kubernetes"],
       conflictsWith: [],
       patterns: ["sandboxed-loop"],
       notes:
-        "Adds an isolation layer between untrusted containers and the host kernel; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. On Kubernetes, a RuntimeClass with the runsc handler lets each pod opt in. Modal documents its Sandboxes as built on gVisor, so there it is part of the platform rather than something the team installs. Apache-2.0 licensed.",
+        "Adds an isolation layer between untrusted containers and the host kernel; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. On Kubernetes, a RuntimeClass with the runsc handler lets each pod opt in. Apache-2.0 licensed.",
     },
 
     // ── Permissions ────────────────────────────────────────────────────
@@ -398,11 +398,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Serverless container platform for ML and LLM workloads, with GPU requests, container autoscaling limits, per-input retries, and Sandboxes: separate containers for running untrusted code.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["gvisor"],
+      pairsWellWith: [],
       conflictsWith: [],
       patterns: ["sandboxed-loop", "unsandboxed-execution"],
       notes:
-        "Runs GPU and container workloads without managing servers. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal documents Sandboxes as built on gVisor, with options to block all network access or limit outbound traffic to allowlists. Modal is not an LLM tracing tool; prompt-level visibility needs a separate one. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here; a build that uses them shows gVisor as the isolation runtime.",
+        "Runs GPU and container workloads without managing servers. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; prompt-level visibility needs a separate one. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here.",
     },
     {
       id: "docker",
@@ -866,21 +866,20 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
     {
       id: "contained-serverless",
       name: "The Contained Serverless Agent",
-      tools: ["modal", "mcp", "gvisor", "opa", "redis", "langfuse"],
+      tools: ["modal", "mcp", "e2b", "opa", "redis", "langfuse"],
       patternIds: ["sandboxed-loop", "gated-action"],
       useCase:
-        "The Open Door Agent with its doors shut: the agent loop still runs in a Modal Function with session context in Redis, but model-written code runs in Modal Sandboxes, tool calls are checked against policy, and each run is traced. Think: an on-demand analysis or support agent that writes and runs code.",
+        "The Open Door Agent with its doors shut: the agent loop still runs in a Modal Function with session context in Redis, but model-written code runs in an E2B sandbox, tool calls are checked against policy, and each run is traced. Think: an on-demand analysis or support agent that writes and runs code.",
       whyItWorks: [
-        "Modal runs the agent loop without servers to manage, and starts a separate Sandbox for each piece of model-written code",
-        "Modal documents Sandboxes as built on gVisor, so generated code runs behind gVisor's application kernel, not in the Function that holds the secrets",
-        "Sandboxes can block network access or limit it to allowlists, so the code reaches only what the task needs",
+        "Modal runs the agent loop without servers to manage",
+        "E2B runs model-written code in a separate microVM, not in the Function that holds the secrets",
         "OPA returns a decision for each MCP tool call before it runs, from policy the team writes",
         "Redis keeps session context fast to read between invocations",
         "Langfuse traces model and tool calls, including MCP client and server spans, and sandbox runs when the agent code records them",
       ],
       whereItBreaks: [
         "Routing every MCP tool call through OPA is harness code, and a new server or a direct SDK call can skip it",
-        "Nothing bounds model spend or resumes a multi-step run after a failure; Modal's per-input retries, when set, rerun the whole call",
+        "Nothing bounds model spend or resumes a multi-step run after a failure",
         "Redis durability depends on its persistence setting; decide whether it is a cache or the session's system of record",
         "Langfuse events must be flushed before the Function returns, or the last spans are lost",
       ],
@@ -890,26 +889,26 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
     {
       id: "contained-fleet",
       name: "The Contained Worker Fleet",
-      tools: ["kubernetes", "gvisor", "ray", "postgresql", "mem0", "opentelemetry"],
-      patternIds: [],
+      tools: ["kubernetes", "gvisor", "ray", "mcp", "opa", "mem0", "langfuse"],
+      patternIds: ["gated-action"],
       useCase:
-        "A self-hosted fleet that runs many agent tasks in parallel on the team's own cluster, with worker pods under gVisor and a memory layer that carries what agents learned into later tasks. Think: batch research, enrichment, or code-migration agents working through a large backlog.",
+        "A self-hosted fleet that runs many agent tasks in parallel on the team's own cluster, with worker pods under gVisor, tool calls checked against policy, a memory layer that carries what agents learned into later tasks, and every run traced. Think: batch research, enrichment, or code-migration agents working through a large backlog.",
       whyItWorks: [
         "Kubernetes runs the cluster, and a RuntimeClass with gVisor's runsc handler lets the worker pods that run model-written code opt into gVisor",
         "Ray, through the KubeRay operator, spreads agent tasks across those workers and retries tasks lost to a failed worker",
+        "MCP gives the agents a defined set of tools, and OPA returns a decision for each call before it runs",
         "Mem0 extracts facts from each task and recalls the relevant ones for later tasks, scoped by user, agent, or run",
-        "PostgreSQL with pgvector holds Mem0's memories on infrastructure the team controls",
-        "OpenTelemetry carries traces and metrics from the cluster to a backend the team chooses",
+        "Langfuse traces model and tool calls, including MCP client and server spans",
       ],
       whereItBreaks: [
         "gVisor adds overhead and implements its own system-call surface; test Ray workers under runsc before relying on it",
-        "Which tools the agents call, and what each task may do, is left open",
+        "Routing every MCP tool call through OPA is harness code, and a call that skips it is ungated",
         "Ray retries lost tasks but not application errors by default, and nothing resumes a long multi-step run or bounds model spend",
         "Mem0 extraction only adds memories; deleting stale or wrong ones is a job the team schedules",
-        "Operational load is substantial: a cluster, a Ray deployment, a database, and a telemetry backend",
+        "Operational load is substantial: a cluster, a Ray deployment, a memory store, and a tracing backend",
       ],
-      missingHues: ["tools", "permissions", "recovery"],
-      upgradePath: ["mcp", "opa", "temporal"],
+      missingHues: ["recovery"],
+      upgradePath: ["temporal"],
     },
   ],
 };
