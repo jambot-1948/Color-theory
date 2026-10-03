@@ -190,7 +190,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: [],
       notes:
-        "Brings app-store releases and device-specific testing with it; a mobile client does not remove the need for a back end. Auth0 publishes a React Native SDK. Maintained by Meta and the community; MIT-licensed.",
+        "Brings app-store releases and device-specific testing with it; a mobile client does not remove the need for a back end. Auth0 publishes a React Native SDK. Flutter, and native apps written in Swift for iOS or Kotlin for Android, fill the same part. Maintained by Meta and the community; MIT-licensed.",
     },
 
     // ── Service ────────────────────────────────────────────────────────
