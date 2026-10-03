@@ -29,7 +29,7 @@ export const capabilities: Record<EditionId, Capability[]> = {
     { id: 'container-images', name: 'Container images', hue: 'platform', summary: 'Packages the app and its dependencies into a portable image.', products: ['docker'] },
     { id: 'orchestration', name: 'Container orchestration', hue: 'platform', summary: 'Schedules containers across machines and restarts them when they fail.', products: ['kubernetes'] },
     { id: 'iac', name: 'Infrastructure as code', hue: 'platform', summary: 'Declares cloud resources in reviewable files instead of console clicks.', products: ['terraform'] },
-    { id: 'cloud', name: 'Cloud provider', hue: 'platform', summary: 'The compute, network, and storage everything else runs on.', products: ['aws'] },
+    { id: 'cloud', name: 'Cloud provider', hue: 'platform', summary: 'The compute, network, and storage everything else runs on.', products: ['aws', 'azure', 'google-cloud'] },
     { id: 'self-hosted', name: 'Self-hosted hardware', hue: 'platform', summary: 'Your own servers, workstations, or small machines, on premises or in a colo. You run the patching, power, and backups.', products: ['self-hosted'] },
     { id: 'telemetry', name: 'Telemetry standard', hue: 'operations', summary: 'Vendor-neutral traces, metrics, and logs from instrumented services. Not a storage or alerting backend itself.', products: ['opentelemetry'] },
     { id: 'metrics', name: 'Metrics', hue: 'operations', summary: 'Time series of how the system is behaving.', products: ['prometheus'] },

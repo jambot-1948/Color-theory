@@ -254,11 +254,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source relational database with transactions, SQL, and a large extension ecosystem.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["nodejs", "django", "spring-boot", "keycloak", "vault", "render", "aws"],
+      pairsWellWith: ["nodejs", "django", "spring-boot", "keycloak", "vault", "render", "aws", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["twelve-factor"],
       notes:
-        "Backups, upgrades, and connection limits are real work unless a managed service (such as Render Postgres or Amazon RDS) takes them on, and even then restores need testing. Keycloak can use it as its database; Vault's database secrets engine can issue PostgreSQL credentials. Released under the PostgreSQL Licence.",
+        "Backups, upgrades, and connection limits are real work unless a managed service (such as Render Postgres, Amazon RDS, Azure Database for PostgreSQL, or Cloud SQL for PostgreSQL) takes them on, and even then restores need testing. Keycloak can use it as its database; Vault's database secrets engine can issue PostgreSQL credentials. Released under the PostgreSQL Licence.",
     },
     {
       id: "redis",
@@ -286,11 +286,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source message broker for queues and publish/subscribe between services, supporting AMQP and other protocols.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["nodejs", "spring-boot", "kubernetes", "prometheus"],
+      pairsWellWith: ["nodejs", "spring-boot", "kubernetes", "prometheus", "aws"],
       conflictsWith: [],
       patterns: [],
       notes:
-        "A queue moves failures rather than removing them: consumers still need retries, idempotency, and a dead-letter plan. Spring Boot has RabbitMQ starters; a RabbitMQ Cluster Operator manages clusters on Kubernetes; a built-in plugin exposes Prometheus metrics. Core is MPL 2.0 licensed.",
+        "A queue moves failures rather than removing them: consumers still need retries, idempotency, and a dead-letter plan. Spring Boot has RabbitMQ starters; a RabbitMQ Cluster Operator manages clusters on Kubernetes; a built-in plugin exposes Prometheus metrics; Amazon MQ runs managed RabbitMQ brokers on AWS. Core is MPL 2.0 licensed.",
     },
 
     // ── Trust ──────────────────────────────────────────────────────────
@@ -336,11 +336,11 @@ export const foundationsData: FDChromaticsData = {
         "Centralized secrets management with encryption, access control, audit logging, and dynamic credentials.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["postgresql", "kubernetes", "github-actions", "terraform"],
+      pairsWellWith: ["postgresql", "kubernetes", "github-actions", "terraform", "aws", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["paved-road"],
       notes:
-        "Complex to operate; smaller footprints may be served by a platform's own secret store. The database secrets engine can generate PostgreSQL logins; the Vault Secrets Operator syncs secrets into Kubernetes Secrets; the Vault GitHub Action reads secrets into workflows; a Terraform provider manages Vault. Current versions are under the Business Source License 1.1, with IBM as licensor.",
+        "Complex to operate; smaller footprints may be served by a platform's own secret store. The database secrets engine can generate PostgreSQL logins, and the AWS, Azure, and Google Cloud secrets engines issue short-lived cloud credentials; the Vault Secrets Operator syncs secrets into Kubernetes Secrets; the Vault GitHub Action reads secrets into workflows; a Terraform provider manages Vault. Current versions are under the Business Source License 1.1, with IBM as licensor.",
     },
     {
       id: "trivy",
@@ -375,7 +375,7 @@ export const foundationsData: FDChromaticsData = {
       conflictsWith: [],
       patterns: ["gitops-loop", "secrets-in-code"],
       notes:
-        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; Render can auto-deploy from a linked GitHub repository. Proprietary SaaS from Microsoft.",
+        "Review only protects main if branch protection requires it. Committed secrets stay in history until rotated. Argo CD documents GitHub webhooks for faster sync; Render can auto-deploy from a linked GitHub repository. GitLab is a well-known alternative that combines repositories, merge requests, and CI/CD in one product, hosted or self-managed. Proprietary SaaS from Microsoft.",
     },
     {
       id: "github-actions",
@@ -387,11 +387,11 @@ export const foundationsData: FDChromaticsData = {
         "CI/CD service built into GitHub: workflows defined in the repository run builds, tests, and deploys on events such as pushes and pull requests.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["github", "docker", "harbor", "trivy", "terraform", "aws", "vault"],
+      pairsWellWith: ["github", "docker", "harbor", "trivy", "terraform", "aws", "vault", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["paved-road", "secrets-in-code"],
       notes:
-        "Third-party actions run with the workflow's secrets and permissions; pin them to full commit SHAs, as the 2026 trivy-action compromise showed. Official actions exist for Docker builds, Terraform setup, AWS credentials via OIDC, and Vault secrets. Pushing to Harbor uses a Harbor robot account, which Harbor provides for automation.",
+        "Third-party actions run with the workflow's secrets and permissions; pin them to full commit SHAs, as the 2026 trivy-action compromise showed. Official actions exist for Docker builds, Terraform setup, Vault secrets, and short-lived cloud credentials through OIDC: configure-aws-credentials for AWS, azure/login for Azure, and google-github-actions/auth for Google Cloud. Pushing to Harbor uses a Harbor robot account, which Harbor provides for automation. GitLab CI/CD fills the same capability for code hosted on GitLab.",
     },
     {
       id: "harbor",
@@ -471,11 +471,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source container orchestration: schedules, restarts, and scales containers across a cluster from declarative configuration.",
       complexityAdded: "high",
       trustContribution: "high",
-      pairsWellWith: ["spring-boot", "rabbitmq", "keycloak", "vault", "trivy", "harbor", "argocd", "docker", "terraform", "aws", "opentelemetry", "prometheus", "self-hosted"],
+      pairsWellWith: ["spring-boot", "rabbitmq", "keycloak", "vault", "trivy", "harbor", "argocd", "docker", "terraform", "aws", "opentelemetry", "prometheus", "self-hosted", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["gitops-loop", "platform-before-product"],
       notes:
-        "Steep learning curve and meaningful operating overhead, even when managed (for example Amazon EKS). Use it when container orchestration is warranted, not because it may be needed later. Components emit Prometheus-format metrics; operators exist for Keycloak, RabbitMQ, Vault secrets, and OpenTelemetry. Runs on premises as well as in a cloud; kubeadm installs it on the team's own Linux hosts, which then carry the cluster's upgrades as well as their own. CNCF graduated project; Apache-2.0 licensed.",
+        "Steep learning curve and meaningful operating overhead, even when managed (for example Amazon EKS, Azure Kubernetes Service, or Google Kubernetes Engine). Use it when container orchestration is warranted, not because it may be needed later. Components emit Prometheus-format metrics; operators exist for Keycloak, RabbitMQ, Vault secrets, and OpenTelemetry. Runs on premises as well as in a cloud; kubeadm installs it on the team's own Linux hosts, which then carry the cluster's upgrades as well as their own. CNCF graduated project; Apache-2.0 licensed.",
     },
     {
       id: "terraform",
@@ -487,11 +487,11 @@ export const foundationsData: FDChromaticsData = {
         "Infrastructure as code tool: describes cloud and service resources in configuration files, shows a plan of changes, then applies it.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["aws", "kubernetes", "render", "vault", "github-actions", "trivy", "grafana", "pagerduty"],
+      pairsWellWith: ["aws", "kubernetes", "render", "vault", "github-actions", "trivy", "grafana", "pagerduty", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["paved-road", "snowflake-server", "platform-before-product"],
       notes:
-        "State files can contain secrets and must be stored and locked carefully. Providers exist for AWS, Kubernetes, Render, Vault, Grafana, and PagerDuty; hashicorp/setup-terraform runs it in GitHub Actions; Trivy can scan its plans. Terraform 1.6 and later is under the Business Source License 1.1, with IBM as licensor. OpenTofu is a community fork under MPL 2.0.",
+        "State files can contain secrets and must be stored and locked carefully. Providers exist for AWS, Azure (azurerm), Google Cloud, Kubernetes, Render, Vault, Grafana, and PagerDuty; hashicorp/setup-terraform runs it in GitHub Actions; Trivy can scan its plans. Terraform 1.6 and later is under the Business Source License 1.1, with IBM as licensor. OpenTofu is a community fork under MPL 2.0.",
     },
     {
       id: "aws",
@@ -503,11 +503,43 @@ export const foundationsData: FDChromaticsData = {
         "Public cloud with compute, managed databases, managed Kubernetes, networking, and identity services.",
       complexityAdded: "high",
       trustContribution: "medium",
-      pairsWellWith: ["postgresql", "kubernetes", "terraform", "github-actions", "opentelemetry"],
+      pairsWellWith: ["postgresql", "kubernetes", "terraform", "github-actions", "opentelemetry", "rabbitmq", "vault", "prometheus", "grafana", "pagerduty"],
       conflictsWith: [],
       patterns: ["snowflake-server"],
       notes:
-        "Breadth is the strength and the cost: IAM, networking, and billing need owners from the start. Offers managed PostgreSQL (Amazon RDS) and Kubernetes (Amazon EKS); the Terraform AWS provider manages resources; configure-aws-credentials lets GitHub Actions assume a role through OIDC instead of stored keys; the AWS Distro for OpenTelemetry Collector sends telemetry to CloudWatch and other backends.",
+        "Breadth is the strength and the cost: IAM, networking, and billing need owners from the start. Offers managed PostgreSQL (Amazon RDS) and Kubernetes (Amazon EKS); the Terraform AWS provider manages resources; configure-aws-credentials lets GitHub Actions assume a role through OIDC instead of stored keys; the AWS Distro for OpenTelemetry Collector sends telemetry to CloudWatch and other backends. Amazon Managed Service for Prometheus stores Prometheus metrics and, since August 2025, can send alerts directly to PagerDuty; Grafana has a built-in CloudWatch data source; PagerDuty documents a CloudWatch integration; Amazon MQ runs managed RabbitMQ brokers; Vault's AWS secrets engine issues short-lived IAM credentials. Proprietary cloud from Amazon.",
+    },
+    {
+      id: "azure",
+      name: "Microsoft Azure",
+      primaryHue: "platform",
+      category: "Cloud Provider",
+      maturity: "production",
+      description:
+        "Public cloud with compute, managed databases, managed Kubernetes, networking, and identity services.",
+      complexityAdded: "high",
+      trustContribution: "medium",
+      pairsWellWith: ["postgresql", "kubernetes", "terraform", "github-actions", "opentelemetry", "vault", "prometheus", "grafana", "pagerduty"],
+      conflictsWith: [],
+      patterns: ["snowflake-server"],
+      notes:
+        "Breadth is the strength and the cost: identity (Microsoft Entra ID and Azure role assignments), networking, and billing need owners from the start. Offers managed PostgreSQL (Azure Database for PostgreSQL flexible server) and Kubernetes (Azure Kubernetes Service); the Terraform azurerm provider manages resources; azure/login lets GitHub Actions sign in through OIDC with a federated credential instead of stored secrets; the Azure Monitor OpenTelemetry Distro sends telemetry to Application Insights. Azure Monitor managed service for Prometheus stores Prometheus metrics; Grafana has a built-in Azure Monitor data source; PagerDuty documents an Azure alerts integration; Vault's Azure secrets engine issues short-lived service principals. Proprietary cloud from Microsoft.",
+    },
+    {
+      id: "google-cloud",
+      name: "Google Cloud",
+      primaryHue: "platform",
+      category: "Cloud Provider",
+      maturity: "production",
+      description:
+        "Public cloud with compute, managed databases, managed Kubernetes, networking, and identity services.",
+      complexityAdded: "high",
+      trustContribution: "medium",
+      pairsWellWith: ["postgresql", "kubernetes", "terraform", "github-actions", "opentelemetry", "vault", "prometheus", "grafana", "pagerduty"],
+      conflictsWith: [],
+      patterns: ["snowflake-server"],
+      notes:
+        "Breadth is the strength and the cost: IAM, networking, and billing need owners from the start. Offers managed PostgreSQL (Cloud SQL for PostgreSQL) and Kubernetes (Google Kubernetes Engine); the Terraform google provider manages resources; google-github-actions/auth lets GitHub Actions authenticate through Workload Identity Federation instead of service account keys; the Telemetry (OTLP) API accepts OpenTelemetry traces, metrics, and logs. Google Cloud Managed Service for Prometheus stores Prometheus metrics; Grafana has a built-in Google Cloud Monitoring data source; Cloud Monitoring can notify PagerDuty; Vault's Google Cloud secrets engine issues short-lived service account keys and OAuth tokens. Proprietary cloud from Google.",
     },
     {
       id: "self-hosted",
@@ -537,11 +569,11 @@ export const foundationsData: FDChromaticsData = {
         "Vendor-neutral instrumentation framework for traces, metrics, and logs. Exports over OTLP to many backends; it is not a storage or UI backend itself.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["nextjs", "nodejs", "django", "spring-boot", "kubernetes", "aws", "prometheus"],
+      pairsWellWith: ["nextjs", "nodejs", "django", "spring-boot", "kubernetes", "aws", "prometheus", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["observable-service", "unwatched-release"],
       notes:
-        "Instrumentation without a backend, dashboards, and alert rules watches nothing. Next.js, Spring Boot, the Node.js SDK, and Django instrumentation all emit OpenTelemetry; Prometheus can receive OTLP metrics once its receiver is enabled; an operator manages collectors on Kubernetes. A CNCF project.",
+        "Instrumentation without a backend, dashboards, and alert rules watches nothing. Next.js, Spring Boot, the Node.js SDK, and Django instrumentation all emit OpenTelemetry; Prometheus can receive OTLP metrics once its receiver is enabled; an operator manages collectors on Kubernetes. AWS, Azure, and Google Cloud each accept OpenTelemetry data into their own monitoring services. Hosted backends such as Datadog (through its Agent), Grafana Cloud, and New Relic also accept OTLP, so the instrumentation can stay while the backend changes. A CNCF project.",
     },
     {
       id: "prometheus",
@@ -553,11 +585,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source metrics system: scrapes and stores time series, queries them with PromQL, and evaluates alert rules, with Alertmanager routing notifications.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["spring-boot", "rabbitmq", "argocd", "kubernetes", "opentelemetry", "grafana", "pagerduty", "self-hosted"],
+      pairsWellWith: ["spring-boot", "rabbitmq", "argocd", "kubernetes", "opentelemetry", "grafana", "pagerduty", "self-hosted", "aws", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["observable-service", "gitops-loop"],
       notes:
-        "Metrics only; logs and traces need other stores. Long-term retention and high availability take extra design. Alertmanager has a PagerDuty receiver; Grafana has a Prometheus data source; the OTLP receiver is off by default. The official node_exporter exposes hardware and OS metrics from Linux and other Unix hosts, which is how Prometheus watches the team's own machines. CNCF graduated project; Apache-2.0 licensed.",
+        "Metrics only; logs and traces need other stores. Long-term retention and high availability take extra design. Alertmanager has a PagerDuty receiver; Grafana has a Prometheus data source; the OTLP receiver is off by default. The official node_exporter exposes hardware and OS metrics from Linux and other Unix hosts, which is how Prometheus watches the team's own machines. AWS, Azure, and Google Cloud each offer a managed Prometheus-compatible service. Alternatives to running it yourself include Grafana Cloud and New Relic, which accept Prometheus remote write, and Datadog, whose Agent can scrape Prometheus endpoints. CNCF graduated project; Apache-2.0 licensed.",
     },
     {
       id: "grafana",
@@ -569,11 +601,11 @@ export const foundationsData: FDChromaticsData = {
         "Open-source dashboards and alerting over many data sources, including Prometheus.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["prometheus", "pagerduty", "keycloak", "terraform"],
+      pairsWellWith: ["prometheus", "pagerduty", "keycloak", "terraform", "aws", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["observable-service", "gitops-loop"],
       notes:
-        "A dashboard nobody looks at is not monitoring; alert rules and owners matter more than panel count. Documents a PagerDuty contact point and Keycloak login; a Terraform provider can manage dashboards and alerts as code. AGPLv3 licensed, with a hosted Grafana Cloud offering.",
+        "A dashboard nobody looks at is not monitoring; alert rules and owners matter more than panel count. Documents a PagerDuty contact point and Keycloak login; a Terraform provider can manage dashboards and alerts as code. Built-in data sources read Amazon CloudWatch, Azure Monitor, and Google Cloud Monitoring. AGPLv3 licensed, with a hosted Grafana Cloud offering; Datadog and New Relic are hosted alternatives that bundle dashboards with their own telemetry storage.",
     },
     {
       id: "pagerduty",
@@ -585,11 +617,11 @@ export const foundationsData: FDChromaticsData = {
         "Hosted on-call and incident response service: receives alerts, routes them to whoever is on call, and escalates if nobody responds.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: ["prometheus", "grafana", "terraform"],
+      pairsWellWith: ["prometheus", "grafana", "terraform", "aws", "azure", "google-cloud"],
       conflictsWith: [],
       patterns: ["unwatched-release"],
       notes:
-        "Pages only on alerts something else raises; it does not measure the system. Noisy alerts train people to ignore pages. Prometheus Alertmanager and Grafana both document PagerDuty integrations; a Terraform provider manages schedules and services as code. Proprietary SaaS.",
+        "Pages only on alerts something else raises; it does not measure the system. Noisy alerts train people to ignore pages. Prometheus Alertmanager and Grafana both document PagerDuty integrations, as do the monitoring services of AWS (CloudWatch), Azure (Azure Monitor alerts), and Google Cloud (Cloud Monitoring); a Terraform provider manages schedules and services as code. Proprietary SaaS.",
     },
   ],
 
@@ -788,12 +820,13 @@ export const foundationsData: FDChromaticsData = {
     {
       id: "authenticated-app",
       name: "The Authenticated App",
-      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github-actions"],
+      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github", "github-actions"],
       patternIds: ["twelve-factor"],
       useCase:
-        "The starter app once real users log in and more than one person commits: hosted identity, and a CI workflow that runs tests before a change ships.",
+        "The starter app once real users log in and more than one person commits: hosted identity, code review on GitHub, and a CI workflow that runs tests before a change ships.",
       whyItWorks: [
         "Auth0 handles login through its Next.js and Node.js SDKs, so the team does not store passwords",
+        "GitHub hosts the code, and branch protection can require review and a passing check before a pull request merges",
         "A GitHub Actions workflow runs tests on every pull request",
         "The rest of the starter app is unchanged, so the step up is small",
       ],
@@ -808,18 +841,19 @@ export const foundationsData: FDChromaticsData = {
     {
       id: "watched-app",
       name: "The Watched App",
-      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github-actions", "opentelemetry", "pagerduty"],
+      tools: ["nextjs", "nodejs", "postgresql", "render", "auth0", "github", "github-actions", "opentelemetry", "pagerduty"],
       patternIds: ["observable-service"],
       useCase:
         "The authenticated app with instrumentation and on-call paging: every role has a part, though a telemetry backend with alert rules is still needed before anyone is paged.",
       whyItWorks: [
         "Next.js and the Node.js SDK both emit OpenTelemetry, so front-end server code and back end share one instrumentation standard",
         "PagerDuty routes alerts to whoever is on call and escalates when nobody answers",
-        "Each hue is covered by one product, with no duplicated roles",
+        "Every hue is covered, and each capability is filled by one product, with no duplicated roles",
       ],
       whereItBreaks: [
         "OpenTelemetry is not a backend: traces and metrics need somewhere to be stored, queried, and turned into alerts before PagerDuty sees anything",
         "Covering every hue is not the same as every role being deep; identity, CI, and platform are all at their simplest",
+        "Branch protection on GitHub is off until someone turns it on; without it, a change can merge without review or a passing build",
         "Alert rules and on-call rotations are team work no product supplies",
       ],
       missingHues: [],
@@ -869,6 +903,29 @@ export const foundationsData: FDChromaticsData = {
       ],
       missingHues: ["experience", "service", "data"],
       upgradePath: ["github-actions", "trivy", "opentelemetry"],
+    },
+    {
+      id: "enterprise-service",
+      name: "The Enterprise Service",
+      tools: ["spring-boot", "postgresql", "rabbitmq", "keycloak", "github-actions", "kubernetes", "aws", "prometheus"],
+      patternIds: ["twelve-factor"],
+      useCase:
+        "A Java back-end service in an organisation that already runs Spring: a Spring Boot API with PostgreSQL, RabbitMQ for work handed between services, Keycloak for login, and Kubernetes on AWS, with Prometheus watching it. Think: an orders or claims service that other teams' applications call.",
+      whyItWorks: [
+        "Spring Boot auto-configures the PostgreSQL connection and, through Spring AMQP, the RabbitMQ connection, from properties in the environment",
+        "Spring Security validates Keycloak-issued tokens over OAuth 2.0 and OpenID Connect, and Keycloak can keep its own data in PostgreSQL",
+        "Actuator supplies Kubernetes liveness and readiness probes and, with Micrometer, a Prometheus endpoint; RabbitMQ's built-in plugin exposes its own metrics",
+        "On AWS, the cluster can run on Amazon EKS and PostgreSQL on Amazon RDS, and GitHub Actions reaches the account through OIDC rather than stored keys",
+      ],
+      whereItBreaks: [
+        "No front end: the service answers other applications, so the clients that call it are someone else's recipe",
+        "A queue moves failures rather than removing them: consumers need retries, idempotency, and a dead-letter queue",
+        "RabbitMQ and Keycloak each need an owner, whether they run on the cluster through their operators or RabbitMQ moves to Amazon MQ",
+        "The recipe does not say where images are stored or how a passing build reaches the cluster; a registry and a deploy step need choosing",
+        "Prometheus collects metrics only; traces need instrumentation such as the OpenTelemetry Java agent, and alerts need a receiver someone watches",
+      ],
+      missingHues: ["experience"],
+      upgradePath: ["opentelemetry", "grafana", "pagerduty"],
     },
     {
       id: "platform-before-product",

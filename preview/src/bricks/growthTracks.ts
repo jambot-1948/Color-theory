@@ -40,7 +40,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       },
       {
         id: 'pilot', horizon: 'Month 1', name: 'Signed in & tested',
-        add: ['auth0', 'github-actions'], missing: ['operations'],
+        add: ['auth0', 'github', 'github-actions'], missing: ['operations'],
         summary: 'Users sign in, and every change runs through tests before it ships.',
         why: 'Real users bring real data, and changes now need a safety net.',
         watch: 'Deploys are safer, but you still hear about failures from users first.',
