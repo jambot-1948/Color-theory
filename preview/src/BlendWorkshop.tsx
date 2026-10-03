@@ -30,7 +30,7 @@ const editions = {
   foundations: { data: foundationsData, title: 'Foundations', defaultTools: ['nextjs', 'nodejs', 'postgresql', 'render'] },
   ai: { data: architecturalChromaticsData, title: 'AI applications', defaultTools: ['openai', 'pinecone', 'langsmith'] },
   data: { data: dataEngineeringChromaticsData, title: 'Data engineering', defaultTools: dataEngineeringChromaticsData.recipes[0].tools },
-  harness: { data: agentHarnessChromaticsData, title: 'Agent harness', defaultTools: agentHarnessChromaticsData.recipes[0].tools },
+  harness: { data: agentHarnessChromaticsData, title: 'Agent harness', defaultTools: agentHarnessChromaticsData.recipes.find(recipe => recipe.id === 'gated-function')!.tools },
 } as const
 
 export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof typeof editions }) {

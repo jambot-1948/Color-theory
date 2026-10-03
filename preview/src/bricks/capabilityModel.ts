@@ -122,7 +122,7 @@ export function encodeSlots(slots: Slot[]) {
 }
 
 // Products replaced in a review keep old share links working.
-const retired: Record<string, string> = { heroku: 'render' }
+const retired: Record<string, string> = { heroku: 'render', guardrails: 'nemo-guardrails', letta: 'mem0' }
 
 export function decodeSlots(edition: EditionId, value: string | null | undefined): Slot[] {
   if (!value) return []

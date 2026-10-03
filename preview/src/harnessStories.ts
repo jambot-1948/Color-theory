@@ -16,6 +16,26 @@ export const harnessStories: Record<string, AssemblyStory> = {
       { first: 'lambda', second: 'mcp', kind: 'recipe', note: 'The function connects to MCP servers with the credentials it holds, so its execution role and API keys are the only permission boundary.' },
     ],
   },
+  'gated-function': {
+    recipeId: 'gated-function',
+    steps: [
+      { toolId: 'lambda', action: 'Run the loop on demand', explanation: 'The function runs the agent loop per request. Its execution role still bounds what the whole function can reach.' },
+      { toolId: 'postgresql', action: 'Keep run state', explanation: 'Runs, tasks, and results live in PostgreSQL rather than in the short-lived function.' },
+      { toolId: 'mcp', action: 'Expose defined tools', explanation: 'MCP servers give the agent a named set of tools instead of ad hoc calls.' },
+      { toolId: 'e2b', action: 'Contain generated code', explanation: 'Model-written code runs in an E2B sandbox, away from the function and its credentials.' },
+      { toolId: 'opa', action: 'Gate each tool call', explanation: 'Every tool call is checked against policy before it runs; irreversible ones can be held for a person.' },
+      { toolId: 'langfuse', action: 'Trace every run', explanation: 'Model and tool calls are traced, so a bad action can be found and explained afterwards.' },
+    ],
+    links: [
+      { first: 'lambda', second: 'postgresql', kind: 'fit', note: 'The function reads and writes run state in PostgreSQL; plan connection handling for many short invocations.' },
+      { first: 'lambda', second: 'mcp', kind: 'recipe', note: 'The function connects to MCP servers; in this recipe every call passes the policy check first.' },
+      { first: 'mcp', second: 'e2b', kind: 'fit', note: 'The E2B SDK can start an MCP gateway inside a sandbox.' },
+      { first: 'mcp', second: 'opa', kind: 'recipe', note: 'The recipe checks each MCP tool call against OPA. Neither product does this for the other; the harness must route every call through the check.' },
+      { first: 'lambda', second: 'opa', kind: 'recipe', note: 'The function can query an OPA server or evaluate policy compiled to WebAssembly; enforcing the decision is harness code.' },
+      { first: 'lambda', second: 'langfuse', kind: 'fit', note: 'Langfuse traces can be sent from the function; flush them before the invocation ends.' },
+      { first: 'mcp', second: 'langfuse', kind: 'fit', note: 'Langfuse documents linking MCP client and server traces.' },
+    ],
+  },
   'sandboxed-coder': {
     recipeId: 'sandboxed-coder',
     steps: [
@@ -122,6 +142,46 @@ export const harnessStories: Record<string, AssemblyStory> = {
       { first: 'mcp', second: 'redis', kind: 'recipe', note: 'The recipe keeps tool results in the Redis session; nothing in it limits which tools a session may call.' },
       { first: 'modal', second: 'redis', kind: 'recipe', note: 'The recipe has the Modal Function read and write session context in Redis; that connection is application code.' },
       { first: 'mcp', second: 'modal', kind: 'tension', note: 'In this design broad tool access and in-process code execution share one container and its credentials, so one bad completion can reach both.' },
+    ],
+  },
+  'contained-serverless': {
+    recipeId: 'contained-serverless',
+    steps: [
+      { toolId: 'modal', action: 'Run the loop serverless', explanation: 'The agent loop runs in a Modal Function that holds the model and tool credentials. Generated code never runs here.' },
+      { toolId: 'mcp', action: 'Define the tools', explanation: 'Expose the agent\'s actions as MCP tools with narrow inputs, so there is a defined list to write policy for.' },
+      { toolId: 'gvisor', action: 'Run code in a Sandbox', explanation: 'Model-written code goes to a Modal Sandbox, which Modal builds on gVisor. Pass no production secrets in, and block or allowlist its network.' },
+      { toolId: 'opa', action: 'Check each call', explanation: 'Before a tool runs, the harness asks OPA whether this session may call it with these arguments. OPA decides; the harness must enforce.' },
+      { toolId: 'redis', action: 'Keep sessions fast', explanation: 'Session context sits in Redis between invocations. Choose its persistence setting to match how much a lost session matters.' },
+      { toolId: 'langfuse', action: 'Trace each run', explanation: 'Record model calls, tool calls, and policy decisions, and flush events before the Function returns.' },
+    ],
+    links: [
+      { first: 'modal', second: 'gvisor', kind: 'fit', note: 'Modal documents its Sandboxes as built on gVisor; the team uses the Sandbox API and does not install gVisor itself.' },
+      { first: 'modal', second: 'mcp', kind: 'recipe', note: 'The recipe has the Modal Function act as the MCP client; which servers it connects to, and with which credentials, is configuration the team owns.' },
+      { first: 'mcp', second: 'opa', kind: 'recipe', note: 'The recipe checks each MCP tool call against OPA. Neither product does this for the other; the harness must route every call through the check.' },
+      { first: 'modal', second: 'opa', kind: 'recipe', note: 'The Function can query an OPA server or evaluate policy compiled to WebAssembly; either way, enforcing the decision is harness code.' },
+      { first: 'modal', second: 'redis', kind: 'recipe', note: 'The recipe has the Modal Function read and write session context in Redis; that connection is application code.' },
+      { first: 'mcp', second: 'langfuse', kind: 'fit', note: 'Langfuse documents linking MCP client and server traces.' },
+      { first: 'modal', second: 'langfuse', kind: 'recipe', note: 'The recipe traces runs from the agent code inside the Function; Langfuse\'s guidance for short-lived functions is to flush events before exit.' },
+    ],
+  },
+  'contained-fleet': {
+    recipeId: 'contained-fleet',
+    steps: [
+      { toolId: 'kubernetes', action: 'Provide the cluster', explanation: 'Run the fleet on the team\'s own cluster. Kubernetes schedules and restarts pods but does not judge what agents do.' },
+      { toolId: 'gvisor', action: 'Contain the workers', explanation: 'Install runsc on the nodes and set the gVisor RuntimeClass on the worker pods that run model-written code. Measure the overhead first.' },
+      { toolId: 'ray', action: 'Spread the work', explanation: 'Deploy Ray with the KubeRay operator and fan agent tasks out across workers. Ray retries tasks lost to a failed worker, not application errors.' },
+      { toolId: 'postgresql', action: 'Hold the memory store', explanation: 'Run PostgreSQL with pgvector as Mem0\'s vector store, separate from any other application data, and back it up.' },
+      { toolId: 'mem0', action: 'Carry lessons forward', explanation: 'Mem0 extracts facts from each finished task and recalls relevant ones for later tasks. Schedule deletion of stale memories; extraction only adds.' },
+      { toolId: 'opentelemetry', action: 'Standardise telemetry', explanation: 'Emit traces and metrics from the cluster over OTLP to a backend the team chooses.' },
+    ],
+    links: [
+      { first: 'kubernetes', second: 'gvisor', kind: 'fit', note: 'gVisor documents a Kubernetes RuntimeClass with the runsc handler, so each pod can opt in.' },
+      { first: 'kubernetes', second: 'ray', kind: 'fit', note: 'The KubeRay operator runs Ray clusters on Kubernetes.' },
+      { first: 'gvisor', second: 'ray', kind: 'recipe', note: 'The recipe sets the gVisor RuntimeClass on Ray worker pods. This is not a documented integration of the two, so test Ray under runsc before relying on it.' },
+      { first: 'ray', second: 'mem0', kind: 'recipe', note: 'The recipe has Ray tasks call Mem0 to read and add memories; scoping memories by agent or run is application work.' },
+      { first: 'postgresql', second: 'mem0', kind: 'fit', note: 'Mem0 documents pgvector on PostgreSQL as a vector store, and its self-hosted server uses it by default.' },
+      { first: 'kubernetes', second: 'opentelemetry', kind: 'fit', note: 'OpenTelemetry instruments Kubernetes workloads and exports over OTLP to the chosen backend.' },
+      { first: 'ray', second: 'opentelemetry', kind: 'recipe', note: 'The recipe sends traces from Ray tasks over OpenTelemetry; that instrumentation is application work.' },
     ],
   },
 }

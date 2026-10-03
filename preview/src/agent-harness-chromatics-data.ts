@@ -161,7 +161,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Open protocol, with official SDKs, for exposing tools, resources, and prompts from servers to AI applications. The current specification version is 2026-07-28.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["e2b", "langfuse", "litellm", "promptfoo", "temporal", "letta", "local-machine"],
+      pairsWellWith: ["e2b", "langfuse", "litellm", "promptfoo", "temporal", "mem0", "local-machine"],
       conflictsWith: [],
       patterns: ["gated-action", "sandboxed-loop", "open-door"],
       notes:
@@ -195,11 +195,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Application kernel, written in Go and running in userspace, that sits between a container and the host kernel. Its OCI runtime, runsc, works with Docker and Kubernetes.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["docker", "kubernetes"],
+      pairsWellWith: ["docker", "kubernetes", "modal"],
       conflictsWith: [],
       patterns: ["sandboxed-loop"],
       notes:
-        "Adds an isolation layer between untrusted containers and the host kernel; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. Apache-2.0 licensed.",
+        "Adds an isolation layer between untrusted containers and the host kernel; it is not a VM and not a syscall filter. The project documents runtime costs over native containers, especially for system-call-heavy work, and it implements its own system-call surface, so check compatibility and measure before adopting. On Kubernetes, a RuntimeClass with the runsc handler lets each pod opt in. Modal documents its Sandboxes as built on gVisor, so there it is part of the platform rather than something the team installs. Apache-2.0 licensed.",
     },
 
     // ── Permissions ────────────────────────────────────────────────────
@@ -247,11 +247,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Durable, queryable database for persisting agent state, conversation history, and structured context.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["lambda", "temporal", "vault", "litellm", "langfuse"],
+      pairsWellWith: ["lambda", "temporal", "vault", "litellm", "langfuse", "mem0"],
       conflictsWith: [],
       patterns: ["durable-agent", "stateless-learner"],
       notes:
-        "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility. Self-hosted Temporal, self-hosted Langfuse, and the LiteLLM proxy can each use PostgreSQL for their own persistence; keep those databases separate from agent context. What to keep and what to expire is a design decision the database does not make.",
+        "Durable and queryable. Redis can complement it for low-latency session access rather than competing for the same responsibility. Self-hosted Temporal, self-hosted Langfuse, and the LiteLLM proxy can each use PostgreSQL for their own persistence; keep those databases separate from agent context. Mem0 can store memories in PostgreSQL with the pgvector extension. What to keep and what to expire is a design decision the database does not make.",
     },
     {
       id: "redis",
@@ -263,27 +263,27 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Fast in-memory data store for agent sessions, caches, and short-lived context; durability depends on the persistence configuration.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["litellm"],
+      pairsWellWith: ["litellm", "mem0"],
       conflictsWith: [],
       patterns: ["stateless-learner"],
       notes:
-        "RDB snapshots and append-only persistence are available. Decide whether Redis is a cache, a session store, or a durable system of record before pairing it with PostgreSQL. The LiteLLM proxy can also use Redis for shared state across instances.",
+        "RDB snapshots and append-only persistence are available. Decide whether Redis is a cache, a session store, or a durable system of record before pairing it with PostgreSQL. The LiteLLM proxy can also use Redis for shared state across instances, and Mem0 documents Redis as a vector store for memories (through redisvl).",
     },
     {
-      id: "letta",
-      name: "Letta",
+      id: "mem0",
+      name: "Mem0",
       primaryHue: "context",
       category: "Agent Memory",
-      maturity: "emerging",
+      maturity: "production",
       description:
-        "Stateful agent platform (formerly MemGPT) whose agents rewrite their own memory blocks over time, with context tracked in git. Development has moved to Letta Code, a full agent harness with CLI, desktop app, and SDK.",
+        "Memory layer for agents: a model extracts facts from conversations, stores them per user, agent, or run, and later calls retrieve the relevant ones. Runs as a Python or TypeScript library, a self-hosted server, or the managed Mem0 Platform.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["mcp"],
+      pairsWellWith: ["postgresql", "redis", "litellm", "mcp"],
       conflictsWith: [],
       patterns: ["stateless-learner"],
       notes:
-        "Letta is no longer a memory layer to drop into another harness: the V1 API server is retired, and Letta Code brings its own loop, permissions, and runtime. Agent memory is stored in Letta Cloud by default or locally. Agents can call MCP tools. Self-editing memory makes what the agent remembers a behaviour to review, not a fixed store. Apache-2.0 licensed.",
+        "Mem0 decides what to extract; what to forget stays with the team. Its memory algorithm released in April 2026 only adds memories during extraction and no longer updates or deletes them, so stale facts remain until they are deleted through the API, by ID, in batches, or by user, agent, or run. Extraction calls a model (OpenAI by default), so conversation text goes to that provider; it can call models through LiteLLM instead. Memories live in a configurable vector store, including PostgreSQL with pgvector (the self-hosted server's default) and Redis. Mem0 publishes a hosted MCP server whose memories live in the Mem0 account. Graph memory is a Platform feature and was removed from the open-source package. Alternatives include Zep, a managed service built on its open-source Graphiti framework, and Letta, which now ships Letta Code, a full agent harness with its own memory rather than a layer for another harness. Apache-2.0 licensed.",
     },
 
     // ── Evidence ───────────────────────────────────────────────────────
@@ -364,7 +364,7 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Open-source LLM gateway (proxy server) and Python SDK that calls many model providers through one OpenAI-format API, with retries and fallbacks across deployments, budgets, rate limits, and virtual keys.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["langfuse", "postgresql", "redis", "promptfoo", "mcp"],
+      pairsWellWith: ["langfuse", "postgresql", "redis", "promptfoo", "mcp", "mem0"],
       conflictsWith: [],
       patterns: ["eval-gate", "cascading-failure"],
       notes:
@@ -398,11 +398,11 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
         "Serverless container platform for ML and LLM workloads, with GPU requests, container autoscaling limits, per-input retries, and Sandboxes: separate containers for running untrusted code.",
       complexityAdded: "low",
       trustContribution: "medium",
-      pairsWellWith: [],
+      pairsWellWith: ["gvisor"],
       conflictsWith: [],
       patterns: ["sandboxed-loop", "unsandboxed-execution"],
       notes:
-        "Runs GPU and container workloads without managing servers. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal is not an LLM tracing tool; prompt-level visibility needs a separate one. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here.",
+        "Runs GPU and container workloads without managing servers. Warm-container settings trade cost for cold-start latency. Sandboxes are a separate API from ordinary Modal Functions: code executed inside a Function runs with that Function's environment and secrets. Modal documents Sandboxes as built on gVisor, with options to block all network access or limit outbound traffic to allowlists. Modal is not an LLM tracing tool; prompt-level visibility needs a separate one. Its Sandboxes count toward the Sandbox role only when a build actually runs code in them, so it has no secondary Sandbox hue here; a build that uses them shows gVisor as the isolation runtime.",
     },
     {
       id: "docker",
@@ -705,6 +705,27 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       upgradePath: ["langfuse", "opa", "temporal"],
     },
     {
+      id: "gated-function",
+      name: "The Gated Function",
+      tools: ["lambda", "postgresql", "mcp", "e2b", "opa", "langfuse"],
+      patternIds: ["sandboxed-loop", "gated-action"],
+      useCase:
+        "The Silent Worker with its gaps filled: the same function-hosted agent, now running model-written code in a sandbox, checking each tool call against policy, and tracing every run.",
+      whyItWorks: [
+        "Lambda runs the agent loop on demand, with no servers to manage",
+        "E2B runs model-written code in a separate microVM instead of inside the function",
+        "Each MCP tool call is checked against OPA policy before it runs, so the execution role is no longer the only boundary",
+        "Langfuse traces model and tool calls, including MCP calls, so each run can be reviewed",
+      ],
+      whereItBreaks: [
+        "Each invocation has a 15-minute limit; long or multi-step runs need checkpointing or a durable workflow",
+        "Routing every tool call through the policy check is harness code, and a call that skips it is ungated",
+        "The function still holds credentials; a secrets manager would issue and rotate them instead",
+      ],
+      missingHues: ["recovery"],
+      upgradePath: ["temporal", "vault"],
+    },
+    {
       id: "sandboxed-coder",
       name: "The Sandboxed Coder",
       tools: ["mcp", "e2b", "langfuse", "postgresql"],
@@ -841,6 +862,54 @@ export const agentHarnessChromaticsData: AHChromaticsData = {
       ],
       missingHues: ["sandbox", "permissions", "recovery"],
       upgradePath: ["gvisor", "opa", "temporal"],
+    },
+    {
+      id: "contained-serverless",
+      name: "The Contained Serverless Agent",
+      tools: ["modal", "mcp", "gvisor", "opa", "redis", "langfuse"],
+      patternIds: ["sandboxed-loop", "gated-action"],
+      useCase:
+        "The Open Door Agent with its doors shut: the agent loop still runs in a Modal Function with session context in Redis, but model-written code runs in Modal Sandboxes, tool calls are checked against policy, and each run is traced. Think: an on-demand analysis or support agent that writes and runs code.",
+      whyItWorks: [
+        "Modal runs the agent loop without servers to manage, and starts a separate Sandbox for each piece of model-written code",
+        "Modal documents Sandboxes as built on gVisor, so generated code runs behind gVisor's application kernel, not in the Function that holds the secrets",
+        "Sandboxes can block network access or limit it to allowlists, so the code reaches only what the task needs",
+        "OPA returns a decision for each MCP tool call before it runs, from policy the team writes",
+        "Redis keeps session context fast to read between invocations",
+        "Langfuse traces model and tool calls, including MCP client and server spans, and sandbox runs when the agent code records them",
+      ],
+      whereItBreaks: [
+        "Routing every MCP tool call through OPA is harness code, and a new server or a direct SDK call can skip it",
+        "Nothing bounds model spend or resumes a multi-step run after a failure; Modal's per-input retries, when set, rerun the whole call",
+        "Redis durability depends on its persistence setting; decide whether it is a cache or the session's system of record",
+        "Langfuse events must be flushed before the Function returns, or the last spans are lost",
+      ],
+      missingHues: ["recovery"],
+      upgradePath: ["litellm", "temporal"],
+    },
+    {
+      id: "contained-fleet",
+      name: "The Contained Worker Fleet",
+      tools: ["kubernetes", "gvisor", "ray", "postgresql", "mem0", "opentelemetry"],
+      patternIds: [],
+      useCase:
+        "A self-hosted fleet that runs many agent tasks in parallel on the team's own cluster, with worker pods under gVisor and a memory layer that carries what agents learned into later tasks. Think: batch research, enrichment, or code-migration agents working through a large backlog.",
+      whyItWorks: [
+        "Kubernetes runs the cluster, and a RuntimeClass with gVisor's runsc handler lets the worker pods that run model-written code opt into gVisor",
+        "Ray, through the KubeRay operator, spreads agent tasks across those workers and retries tasks lost to a failed worker",
+        "Mem0 extracts facts from each task and recalls the relevant ones for later tasks, scoped by user, agent, or run",
+        "PostgreSQL with pgvector holds Mem0's memories on infrastructure the team controls",
+        "OpenTelemetry carries traces and metrics from the cluster to a backend the team chooses",
+      ],
+      whereItBreaks: [
+        "gVisor adds overhead and implements its own system-call surface; test Ray workers under runsc before relying on it",
+        "Which tools the agents call, and what each task may do, is left open",
+        "Ray retries lost tasks but not application errors by default, and nothing resumes a long multi-step run or bounds model spend",
+        "Mem0 extraction only adds memories; deleting stale or wrong ones is a job the team schedules",
+        "Operational load is substantial: a cluster, a Ray deployment, a database, and a telemetry backend",
+      ],
+      missingHues: ["tools", "permissions", "recovery"],
+      upgradePath: ["mcp", "opa", "temporal"],
     },
   ],
 };

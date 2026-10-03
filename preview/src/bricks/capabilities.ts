@@ -68,7 +68,7 @@ export const capabilities: Record<EditionId, Capability[]> = {
     { id: 'secrets', name: 'Secrets manager', hue: 'permissions', summary: 'Issues and rotates credentials instead of embedding them in the agent.', products: ['vault'] },
     { id: 'relational-state', name: 'Relational store', hue: 'context', summary: 'Durable records of runs, tasks, and results.', products: ['postgresql'] },
     { id: 'fast-state', name: 'In-memory store', hue: 'context', summary: 'Low-latency session state, queues, and caches.', products: ['redis'] },
-    { id: 'agent-memory', name: 'Agent memory', hue: 'context', summary: 'Decides what an agent keeps, recalls, and forgets across sessions.', products: ['letta'] },
+    { id: 'agent-memory', name: 'Agent memory', hue: 'context', summary: 'Decides what an agent keeps, recalls, and forgets across sessions.', products: ['mem0'] },
     { id: 'llm-tracing', name: 'LLM tracing', hue: 'evidence', summary: 'Traces prompts, tool calls, cost, and scores per run.', products: ['langfuse'] },
     { id: 'telemetry-standard', name: 'Telemetry standard', hue: 'evidence', summary: 'Vendor-neutral traces, metrics, and logs over OTLP. Not a storage or UI backend itself.', products: ['opentelemetry'] },
     { id: 'eval-gates', name: 'Eval gates', hue: 'evidence', summary: 'Test suites that must pass before a prompt, model, or tool change ships.', products: ['promptfoo'] },
