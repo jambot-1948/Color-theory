@@ -79,15 +79,15 @@ export const assemblyStories: Record<string, AssemblyStory> = {
       { toolId: 'temporal', action: 'Start with durable control', explanation: 'Place long-running work and recovery under a durable workflow layer.' },
       { toolId: 'claude', action: 'Add cognition', explanation: 'The model handles reasoning and language work inside the production workflow.' },
       { toolId: 'pinecone', action: 'Add retrieval memory', explanation: 'Introduce a retrieval store when the workflow needs context from a body of knowledge.' },
-      { toolId: 'guardrails', action: 'Constrain model boundaries', explanation: 'Add validation and policy checks around model inputs or outputs.' },
+      { toolId: 'nemo-guardrails', action: 'Constrain model boundaries', explanation: 'Add input and output rails around the model calls. Each rail that calls a model adds latency, so choose which checks block a response.' },
       { toolId: 'langsmith', action: 'Make behavior inspectable', explanation: 'Tracing helps the team inspect what the model saw and did. This remains a higher-cost system to operate.' },
     ],
     links: [
       { first: 'temporal', second: 'claude', kind: 'fit', note: 'Temporal\'s AI Cookbook includes a Claude tool-calling loop that runs each model call as an Activity.' },
       { first: 'temporal', second: 'pinecone', kind: 'recipe', note: 'No product integration: retrieval calls run as ordinary workflow steps that the application implements.' },
-      { first: 'claude', second: 'guardrails', kind: 'fit', note: 'The model and validation layer are a curated pairing.' },
+      { first: 'claude', second: 'nemo-guardrails', kind: 'fit', note: 'NeMo Guardrails reaches Claude through its anthropic engine, which needs its opt-in LangChain framework and langchain-anthropic.' },
       { first: 'claude', second: 'langsmith', kind: 'fit', note: 'The model and tracing layer are a curated pairing.' },
-      { first: 'temporal', second: 'guardrails', kind: 'recipe', note: 'No product integration: validation runs inside workflow steps, and the application decides what a failed check does.' },
+      { first: 'temporal', second: 'nemo-guardrails', kind: 'recipe', note: 'No product integration: rails run inside workflow steps, and the application decides what a blocked input or response does to the workflow.' },
     ],
   },
   'reflective-ai-system': {
@@ -114,6 +114,21 @@ export const assemblyStories: Record<string, AssemblyStory> = {
       { first: 'ollama', second: 'langchain', kind: 'fit', note: 'LangChain publishes the langchain-ollama package with ChatOllama.' },
       { first: 'langchain', second: 'streamlit', kind: 'fit', note: 'Streamlit\'s documentation includes a LangChain app tutorial.' },
       { first: 'ollama', second: 'streamlit', kind: 'recipe', note: 'No direct integration: the Streamlit app calls LangChain, which calls the local Ollama server. Running both on one machine, with Ollama\'s cloud features off, keeps prompts on that machine.' },
+    ],
+  },
+  'postgres-rag-app': {
+    recipeId: 'postgres-rag-app',
+    steps: [
+      { toolId: 'vercel', action: 'Make the interface', explanation: 'Start with the Next.js app people use to ask questions and read answers.' },
+      { toolId: 'supabase', action: 'Add app services', explanation: 'Supabase supplies Postgres, auth, and storage. Documents, users, and permissions live in one database.' },
+      { toolId: 'pgvector', action: 'Index embeddings in Postgres', explanation: 'Enable the vector extension and store embeddings beside the rows they describe, so Row Level Security and ordinary filters apply to retrieval.' },
+      { toolId: 'gemini', action: 'Add model capability', explanation: 'Gemini embeds documents and questions, and writes answers from the retrieved rows. Tracing, evaluation, and workflow control are still to be addressed.' },
+    ],
+    links: [
+      { first: 'vercel', second: 'supabase', kind: 'fit', note: 'The interface and backend platform are a curated pairing.' },
+      { first: 'supabase', second: 'pgvector', kind: 'fit', note: 'Supabase offers pgvector as its vector extension and documents RAG with Row Level Security.' },
+      { first: 'vercel', second: 'gemini', kind: 'fit', note: 'Vercel\'s AI SDK has a Google provider (@ai-sdk/google), and Google\'s documentation includes an AI SDK example.' },
+      { first: 'pgvector', second: 'gemini', kind: 'recipe', note: 'No direct integration: the app embeds text with a Gemini embedding model and stores the vectors in pgvector. Questions must be embedded with the same model.' },
     ],
   },
   'muddy-agent-recipe': {

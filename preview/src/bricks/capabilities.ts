@@ -37,15 +37,15 @@ export const capabilities: Record<EditionId, Capability[]> = {
     { id: 'alerting', name: 'Alerting & on-call', hue: 'operations', summary: 'Routes alerts, such as an SLO at risk, to the on-call person.', products: ['pagerduty'] },
   ],
   ai: [
-    { id: 'model-api', name: 'Model API', hue: 'cognition', summary: 'A language model you call through an API, hosted by a provider or run on your own hardware.', products: ['openai', 'claude', 'ollama'] },
+    { id: 'model-api', name: 'Model API', hue: 'cognition', summary: 'A language model you call through an API, hosted by a provider or run on your own hardware.', products: ['openai', 'claude', 'gemini', 'ollama'] },
     { id: 'agent-runtime', name: 'Agent runtime', hue: 'intent', summary: 'Runs the agent loop: prompts, tool calls, and handoffs.', products: ['openai-agents-sdk', 'langchain'] },
     { id: 'agent-graph', name: 'Agent state graph', hue: 'logic', summary: 'Makes an agent’s steps, branches, and state explicit and resumable.', products: ['langgraph'] },
     { id: 'durable-workflow', name: 'Durable workflow', hue: 'logic', summary: 'Retries and resumes long-running work across failures and restarts.', products: ['temporal'] },
-    { id: 'vector-retrieval', name: 'Vector store', hue: 'memory', summary: 'Indexes embeddings and returns relevant material for a question. Not conversation memory on its own.', products: ['pinecone'] },
+    { id: 'vector-retrieval', name: 'Vector store', hue: 'memory', summary: 'Indexes embeddings and returns relevant material for a question. Not conversation memory on its own.', products: ['pinecone', 'pgvector'] },
     { id: 'app-interface', name: 'App front end', hue: 'interface', summary: 'The interface where people ask and read answers, and where it is hosted, from internal prototype to public product.', products: ['vercel', 'streamlit'] },
     { id: 'app-backend', name: 'App backend', hue: 'velocity', summary: 'Managed database, auth, and storage behind the interface.', products: ['supabase'] },
     { id: 'tracing-evals', name: 'Tracing & evals', hue: 'trust', summary: 'Records what the model and agent did so it can be debugged and evaluated.', products: ['langsmith'] },
-    { id: 'output-validation', name: 'Input/output validation', hue: 'trust', summary: 'Checks model inputs and outputs against rules before they are used.', products: ['guardrails'] },
+    { id: 'output-validation', name: 'Input/output validation', hue: 'trust', summary: 'Checks model inputs and outputs against rules before they are used.', products: ['nemo-guardrails'] },
   ],
   data: [
     { id: 'managed-ingestion', name: 'Managed ELT connectors', hue: 'ingest', summary: 'Prebuilt connectors that copy data from source systems.', products: ['fivetran', 'openflow'] },

@@ -150,7 +150,7 @@ export const architecturalChromaticsData: ChromaticsData = {
     "trustSurface",
   ],
 
-  // --- 13 TOOLS ---
+  // --- 15 TOOLS ---
   // One per distinct architectural role. Like a box of crayons — you don't need
   // five shades of brown when one common brown is sufficient.
 
@@ -184,11 +184,11 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Agent framework with model and tool integrations. Its agent runtime uses LangGraph primitives; use LangGraph directly when you need finer workflow control.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["openai", "claude", "pinecone", "langgraph", "langsmith", "guardrails", "ollama", "streamlit"],
+      pairsWellWith: ["openai", "claude", "gemini", "pinecone", "pgvector", "langgraph", "langsmith", "nemo-guardrails", "ollama", "streamlit"],
       conflictsWith: [],
       patterns: ["conductor", "muddy-mix"],
       notes:
-        "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs. The langchain-ollama package (ChatOllama) connects to a local Ollama server, and Streamlit's documentation includes a LangChain app tutorial.",
+        "Use the higher-level agent API for straightforward loops. With a separate workflow engine, name which layer owns retries, state, and handoffs. The langchain-ollama package (ChatOllama) connects to a local Ollama server, langchain-google-genai to Gemini, and langchain-postgres (PGVectorStore) to pgvector. Streamlit's documentation includes a LangChain app tutorial.",
     },
 
     // LOGIC
@@ -203,7 +203,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Graph-based orchestration for stateful agent and multi-step workflow control. Lets you define agent behavior as explicit state machines, and its checkpointing overlaps with durable workflow engines.",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "openai", "pinecone", "langsmith", "temporal", "ollama"],
+      pairsWellWith: ["langchain", "openai", "gemini", "pinecone", "langsmith", "temporal", "ollama", "nemo-guardrails"],
       conflictsWith: [],
       patterns: ["conductor", "orchestration-pileup", "modular-palette"],
       notes:
@@ -239,7 +239,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Model and API platform for reasoning, generation, summarization, and multimodal work. Choose a model and API mode for the specific task.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith", "openai-agents-sdk", "streamlit", "supabase", "guardrails"],
+      pairsWellWith: ["langchain", "langgraph", "pinecone", "vercel", "langsmith", "openai-agents-sdk", "streamlit", "supabase", "nemo-guardrails"],
       conflictsWith: [],
       patterns: ["bright-demo", "thin-wrapper", "conductor", "cognitive-core"],
       notes:
@@ -256,11 +256,28 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Model platform for language, reasoning, and tool-use workloads. Safety and reliability still depend on evaluation and application controls.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["langsmith", "guardrails", "temporal", "langchain"],
+      pairsWellWith: ["langsmith", "nemo-guardrails", "temporal", "langchain"],
       conflictsWith: [],
       patterns: ["reflective-loop", "cognitive-core", "governance-shell"],
       notes:
         "Compare candidate models on your own tasks, cost, latency, and policy requirements rather than assuming one provider is inherently safer.",
+    },
+    {
+      id: "gemini",
+      name: "Google Gemini",
+      primaryHue: "cognition",
+      secondaryHue: "intent",
+      category: "Model Provider",
+      maturity: "production",
+      description:
+        "Google's model family for language, reasoning, multimodal input, and tool use, called through the Gemini API or Vertex AI. Gemini embedding models can also produce the vectors a retrieval store indexes.",
+      complexityAdded: "low",
+      trustContribution: "low",
+      pairsWellWith: ["langchain", "langgraph", "langsmith", "vercel", "nemo-guardrails"],
+      conflictsWith: [],
+      patterns: ["bright-demo", "thin-wrapper", "cognitive-core"],
+      notes:
+        "LangChain publishes langchain-google-genai (ChatGoogleGenerativeAI), and Google's documentation includes a ReAct agent built with LangGraph and an agent built with Vercel's AI SDK through its Google provider (@ai-sdk/google). LangSmith traces the google-genai client through wrap_gemini, in beta as of October 2026. The Gemini API also offers an OpenAI-compatible endpoint for Chat Completions and embeddings; check which features your OpenAI-based tooling needs before relying on it. Compare candidate models on your own tasks, cost, latency, and policy requirements.",
     },
     {
       id: "ollama",
@@ -272,7 +289,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Runs open-weight models on your own machine and serves them over a local REST API, including an OpenAI-compatible endpoint at /v1 (chat completions, completions, embeddings, models, and Responses).",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["langchain", "langgraph", "openai-agents-sdk"],
+      pairsWellWith: ["langchain", "langgraph", "openai-agents-sdk", "nemo-guardrails"],
       conflictsWith: [],
       patterns: ["thin-wrapper", "velocity-stack"],
       notes:
@@ -297,6 +314,23 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Only as good as the data fed into it. Poor chunking, bad sources, or weak retrieval design creates false confidence.",
     },
 
+    {
+      id: "pgvector",
+      name: "pgvector",
+      primaryHue: "memory",
+      category: "Vector Search Extension",
+      maturity: "production",
+      description:
+        "Open-source PostgreSQL extension for vector similarity search, so embeddings sit in the same database as the rows they describe. Supports exact search and approximate HNSW and IVFFlat indexes.",
+      complexityAdded: "low",
+      trustContribution: "medium",
+      pairsWellWith: ["supabase", "langchain"],
+      conflictsWith: [],
+      patterns: ["long-memory-system", "retrieval-illusion"],
+      notes:
+        "PostgreSQL License; version 0.8.7 was released in October 2026. Many hosted Postgres services offer it, including Supabase, which documents it as the vector extension and shows Row Level Security limiting which documents a similarity search returns. LangChain's langchain-postgres package provides PGVectorStore (its older PGVector class is deprecated). Vector indexes share the database's memory and need tuning as they grow. Managed vector databases such as Pinecone are the alternative when retrieval should run as a separate service. Like any retrieval store, it is only as good as the data and chunking behind it.",
+    },
+
     // INTERFACE
     {
       id: "vercel",
@@ -309,7 +343,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Next.js application framework with Vercel deployment for web-facing AI products. Hosting and framework are separate choices, even when used together.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["openai", "supabase"],
+      pairsWellWith: ["openai", "gemini", "supabase"],
       conflictsWith: [],
       patterns: ["bright-demo", "thin-wrapper", "velocity-stack"],
       notes:
@@ -345,7 +379,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Backend-as-a-service built on managed Postgres, with auth, storage, realtime, edge functions, and pgvector for embeddings.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["vercel", "streamlit", "openai"],
+      pairsWellWith: ["vercel", "streamlit", "openai", "pgvector"],
       conflictsWith: [],
       patterns: ["bright-demo", "velocity-stack"],
       notes:
@@ -363,28 +397,28 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Debugging, evaluation, and monitoring for LLM applications and agents. Traces record what the model received and returned.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["langchain", "langgraph", "openai", "claude", "openai-agents-sdk"],
+      pairsWellWith: ["langchain", "langgraph", "openai", "claude", "gemini", "openai-agents-sdk"],
       conflictsWith: [],
       patterns: ["reflective-loop", "durable-spine", "conductor", "trust-gap"],
       notes:
         "Trace and evaluation coverage make agent behavior easier to inspect. Scope retention, sensitive inputs, and integration cost for the deployment.",
     },
     {
-      id: "guardrails",
-      name: "Guardrails AI",
+      id: "nemo-guardrails",
+      name: "NVIDIA NeMo Guardrails",
       primaryHue: "trust",
       secondaryHue: "intent",
       category: "Governance",
-      maturity: "production",
+      maturity: "emerging",
       description:
-        "Open-source validators that check model inputs and outputs against schemas and policies. Coverage depends on the validators you choose.",
+        "Open-source toolkit that places programmable rails between application code and the model: input, dialog, retrieval, execution (tool), and output rails, configured in YAML and Colang. Coverage depends on the rails you configure.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["claude", "openai", "langchain"],
+      pairsWellWith: ["langchain", "langgraph", "openai", "claude", "gemini", "ollama"],
       conflictsWith: [],
       patterns: ["governance-shell", "durable-spine"],
       notes:
-        "Validators are installed as Python packages and run in your application. In July 2026 Guardrails announced that validators move to standard PyPI packages and that it is discontinuing hosted remote inference, with a planned cutoff of August 25, 2026. Decide early which checks block a response and which only log.",
+        "Apache 2.0 Python library; version 0.24.1 was released in September 2026, and PyPI still lists it as Beta. Since 0.22 (May 2026) it calls OpenAI-compatible endpoints, including OpenAI and a local Ollama server, without LangChain; Anthropic and Gemini engines need its opt-in LangChain framework and the matching langchain-anthropic or langchain-google-genai package. For LangChain it offers RunnableRails around chains and GuardrailsMiddleware for create_agent agents, and its docs include a LangGraph guide. Rails can call Llama Guard, NVIDIA's NemoGuard safety models, or the application model through self-check rails; each model-based check adds a call and latency. Alternatives include Guardrails AI, acquired by Harvey in September 2026, whose Apache 2.0 library remains on PyPI and whose validators NeMo Guardrails can also run. Decide early which rails block a response and what the user sees instead.",
     },
   ],
 
@@ -622,7 +656,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "No governance",
       ],
       missingHues: ["logic", "trust"],
-      upgradePath: ["pinecone", "langsmith"],
+      upgradePath: ["pgvector", "langsmith"],
     },
     {
       id: "internal-knowledge-agent",
@@ -642,18 +676,18 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Prompt and workflow complexity compounds fast",
       ],
       missingHues: ["interface", "velocity"],
-      upgradePath: ["guardrails", "vercel"],
+      upgradePath: ["nemo-guardrails", "vercel"],
     },
     {
       id: "enterprise-ai-workflow",
       name: "The Enterprise-Ready Stack",
-      tools: ["temporal", "claude", "pinecone", "guardrails", "langsmith"],
+      tools: ["temporal", "claude", "pinecone", "nemo-guardrails", "langsmith"],
       patternIds: ["durable-spine", "governance-shell", "conductor"],
       useCase:
         "Regulated, production-critical, or enterprise-sensitive AI workflows where failure has real consequences.",
       whyItWorks: [
         "Temporal records each workflow's event history and resumes work after failures",
-        "Guardrails validators check model inputs and outputs in the application, independent of the model provider",
+        "NeMo Guardrails input and output rails check what reaches Claude and what comes back, through its LangChain-based Anthropic engine",
         "LangSmith surfaces what the model actually did",
       ],
       whereItBreaks: [
@@ -683,6 +717,27 @@ export const architecturalChromaticsData: ChromaticsData = {
       ],
       missingHues: ["memory", "interface", "velocity"],
       upgradePath: ["pinecone", "vercel"],
+    },
+    {
+      id: "postgres-rag-app",
+      name: "The Postgres RAG App",
+      tools: ["vercel", "supabase", "pgvector", "gemini"],
+      patternIds: ["long-memory-system", "bright-demo"],
+      useCase:
+        "A web app that answers from the team's own documents, with embeddings kept in the same Postgres database as the documents, users, and permissions. Think: a help center or policy assistant.",
+      whyItWorks: [
+        "Retrieval runs in the application's Postgres database, so there is no separate vector service to operate",
+        "Supabase documents pgvector with Row Level Security, so a similarity search can return only rows the user may see",
+        "Vercel's AI SDK has a Google provider, and Google's documentation includes an AI SDK example",
+      ],
+      whereItBreaks: [
+        "No tracing or evaluation: retrieval quality and answers are not measured",
+        "No workflow control; multi-step agent behavior has no explicit home",
+        "Stored and query embeddings must come from the same model, so changing models means re-embedding the corpus",
+        "Vector indexes share the database's memory with the application and need tuning as they grow",
+      ],
+      missingHues: ["logic", "trust"],
+      upgradePath: ["langgraph", "langsmith"],
     },
     {
       id: "muddy-agent-recipe",
@@ -729,7 +784,7 @@ export const architecturalChromaticsData: ChromaticsData = {
         "Private only while it stays local: a signed-in Ollama can route to cloud models, and a Streamlit app reachable on the network needs authentication",
       ],
       missingHues: ["memory", "trust"],
-      upgradePath: ["guardrails", "langsmith"],
+      upgradePath: ["nemo-guardrails", "langsmith"],
     },
   ],
 };

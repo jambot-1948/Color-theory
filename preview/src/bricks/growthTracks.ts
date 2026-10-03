@@ -89,7 +89,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
       },
       {
         id: 'production', horizon: 'Quarter 1', name: 'Production',
-        add: ['langsmith', 'guardrails'],
+        add: ['langsmith', 'nemo-guardrails'],
         summary: 'The trust tier: see what the model did, and check what goes in and comes out.',
         why: 'Once decisions depend on the output, the team needs traces to debug and checks on inputs and outputs.',
         watch: 'Decide what is safe to record in traces before volume grows.',
