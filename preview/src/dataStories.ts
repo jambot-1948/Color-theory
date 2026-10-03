@@ -32,6 +32,38 @@ export const dataStories: Record<string, AssemblyStory> = {
       { first: 'dbt', second: 'great-expectations', kind: 'fit', note: 'Curated pairing: split checks between dbt tests and GX Core deliberately so they do not duplicate or leave gaps.' },
     ],
   },
+  'scheduled-warehouse': {
+    recipeId: 'scheduled-warehouse',
+    steps: [
+      { toolId: 'fivetran', action: 'Replicate sources', explanation: 'Managed connectors load SaaS and database data. Airflow triggers each sync, rather than Fivetran running on its own timer.' },
+      { toolId: 'airflow', action: 'Own the schedule', explanation: 'One DAG runs syncs, models, and checks in dependency order, and retries or alerts when a step fails.' },
+      { toolId: 'dbt', action: 'Model after loading', explanation: 'Cosmos turns the dbt project into Airflow tasks, so each model runs only after its sources have landed.' },
+      { toolId: 'snowflake', action: 'Store the tiers', explanation: 'The warehouse holds raw and modelled layers and enforces access through its roles.' },
+      { toolId: 'great-expectations', action: 'Gate promotion', explanation: 'GX Core checks run as tasks before data is promoted; decide which failures stop the DAG and which only alert.' },
+    ],
+    links: [
+      { first: 'fivetran', second: 'airflow', kind: 'fit', note: 'The Fivetran-maintained Airflow provider triggers a sync and waits for it to finish.' },
+      { first: 'airflow', second: 'dbt', kind: 'fit', note: 'Astronomer Cosmos runs dbt projects as Airflow tasks.' },
+      { first: 'dbt', second: 'snowflake', kind: 'fit', note: 'dbt models and tests run against Snowflake through its adapter.' },
+      { first: 'airflow', second: 'snowflake', kind: 'fit', note: 'Airflow has a Snowflake provider for work outside dbt.' },
+      { first: 'airflow', second: 'great-expectations', kind: 'fit', note: 'GX Core checks can run as Airflow tasks; a failed check can stop downstream tasks.' },
+    ],
+  },
+  'lakehouse-stack': {
+    recipeId: 'lakehouse-stack',
+    steps: [
+      { toolId: 'fivetran', action: 'Replicate sources', explanation: 'Fivetran loads into Databricks tables registered in Unity Catalog. Lakeflow Connect could do this instead; pick one per source.' },
+      { toolId: 'databricks', action: 'Land in open tables', explanation: 'Tables live on object storage in Delta Lake or Iceberg format, with Unity Catalog controlling who can read them.' },
+      { toolId: 'dbt', action: 'Model on the lakehouse', explanation: 'dbt runs on a Databricks SQL warehouse through the adapter Databricks maintains.' },
+      { toolId: 'airflow', action: 'Keep the schedule', explanation: 'Airflow triggers Databricks jobs. If Lakeflow Jobs also schedule work, write down which one owns what.' },
+    ],
+    links: [
+      { first: 'fivetran', second: 'databricks', kind: 'fit', note: 'Databricks is a supported Fivetran destination; Fivetran requires Unity Catalog for it.' },
+      { first: 'databricks', second: 'dbt', kind: 'fit', note: 'The dbt-databricks adapter is maintained by Databricks.' },
+      { first: 'fivetran', second: 'dbt', kind: 'fit', note: 'Fivetran loads tables, and dbt models them from there.' },
+      { first: 'airflow', second: 'databricks', kind: 'fit', note: "Airflow's Databricks provider triggers existing Lakeflow Jobs; Databricks documents this pattern." },
+    ],
+  },
   'streaming-pipeline': {
     recipeId: 'streaming-pipeline',
     steps: [

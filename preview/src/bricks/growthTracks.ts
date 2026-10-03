@@ -154,7 +154,7 @@ export const growthTracks: Record<EditionId, GrowthTrack> = {
         add: ['airflow'],
         links: [{ first: 'dagster', second: 'airflow', kind: 'tension', note: 'In this design both orchestrators own overlapping assets and trigger each other, so lineage breaks at the boundary.' }],
         summary: 'A new team arrives with the orchestrator it already knows.',
-        why: 'Each scheduler owns “different things”, until they start triggering each other.',
+        why: 'Each scheduler owns “different things”, until they start triggering each other. Either tool can be the right single choice; the trouble is having two.',
         watch: 'Failures can start anywhere and trace nowhere. Consolidate, or draw a hard ownership line.',
       },
     ],

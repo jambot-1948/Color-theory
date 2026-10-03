@@ -53,7 +53,7 @@ export const capabilities: Record<EditionId, Capability[]> = {
     { id: 'sql-transformation', name: 'SQL transformation', hue: 'transform', summary: 'Versioned, tested SQL models that turn raw tables into trusted ones.', products: ['dbt'] },
     { id: 'distributed-processing', name: 'Distributed processing', hue: 'transform', summary: 'Batch and stream computation across a cluster.', products: ['spark'] },
     { id: 'orchestration', name: 'Pipeline orchestration', hue: 'orchestrate', summary: 'Schedules, orders, and retries pipeline work, and tracks what ran.', products: ['dagster', 'airflow'] },
-    { id: 'warehouse', name: 'Cloud warehouse', hue: 'store', summary: 'Managed storage and SQL compute for analytics.', products: ['snowflake'] },
+    { id: 'warehouse', name: 'Warehouse / lakehouse', hue: 'store', summary: 'Managed storage and SQL compute for analytics, whether in a warehouse’s own storage or as open-format tables on object storage.', products: ['snowflake', 'databricks'] },
     { id: 'open-table', name: 'Open table format', hue: 'store', summary: 'Tables on object storage that several engines can read and write.', products: ['iceberg'] },
     { id: 'query-engine', name: 'Federated query', hue: 'serve', summary: 'One SQL engine over many storage systems.', products: ['trino'] },
     { id: 'semantic-layer', name: 'Semantic layer', hue: 'serve', summary: 'Shared metric and entity definitions that every consumer queries.', products: ['cube'] },

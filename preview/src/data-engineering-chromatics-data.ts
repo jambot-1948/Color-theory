@@ -161,7 +161,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Distributed event streaming platform that keeps a durable, replayable log of events for high-throughput, fault-tolerant pipelines.",
       complexityAdded: "high",
       trustContribution: "medium",
-      pairsWellWith: ["spark", "iceberg", "snowflake", "openflow", "datahub"],
+      pairsWellWith: ["spark", "iceberg", "snowflake", "openflow", "datahub", "databricks"],
       conflictsWith: [],
       patterns: ["kappa-architecture", "lambda-architecture"],
       notes:
@@ -177,7 +177,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Managed connector platform for replicating data from SaaS applications and databases into warehouses or data lakes. Reduces the connector code a team maintains.",
       complexityAdded: "low",
       trustContribution: "low",
-      pairsWellWith: ["dbt", "snowflake", "iceberg", "dagster", "datahub"],
+      pairsWellWith: ["dbt", "snowflake", "iceberg", "dagster", "datahub", "databricks", "airflow"],
       conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
@@ -210,11 +210,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "SQL-first transformation framework that treats data models as software — with versioning, testing, documentation, and lineage built in.",
       complexityAdded: "low",
       trustContribution: "high",
-      pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran", "airflow", "trino", "spark", "cube", "datahub"],
+      pairsWellWith: ["snowflake", "great-expectations", "dagster", "fivetran", "airflow", "trino", "spark", "cube", "datahub", "databricks"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine", "observability-first"],
       notes:
-        "dbt v2, the Rust rewrite that replaces the separate Fusion engine, released 2.0.0 in September 2026; dbt v1 (Python) continues on its own branch. Adapters exist for Snowflake, Trino, and Spark; check v2 support for your adapter and validate project compatibility before upgrading. dbt Labs and Fivetran merged on June 1, 2026.",
+        "dbt v2, the Rust rewrite that replaces the separate Fusion engine, released 2.0.0 in September 2026; dbt v1 (Python) continues on its own branch. Adapters exist for Snowflake, Databricks, Trino, and Spark; check v2 support for your adapter and validate project compatibility before upgrading. dbt Labs and Fivetran merged on June 1, 2026.",
     },
     {
       id: "spark",
@@ -226,11 +226,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Distributed computation engine for large-scale batch and streaming data transformation.",
       complexityAdded: "high",
       trustContribution: "low",
-      pairsWellWith: ["kafka", "iceberg", "dagster", "dbt", "airflow"],
+      pairsWellWith: ["kafka", "iceberg", "dagster", "dbt", "airflow", "databricks"],
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
-        "Suited to scale-out compute. For SQL models that run inside a warehouse, dbt is often the simpler choice.",
+        "Suited to scale-out compute; Databricks runs it as a managed service. For SQL models that run inside a warehouse, dbt is often the simpler choice.",
     },
     {
       id: "airflow",
@@ -239,14 +239,14 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       category: "Workflow Orchestration",
       maturity: "production",
       description:
-        "Python workflow orchestrator built around DAGs, with a large provider ecosystem (including Snowflake and Spark providers).",
+        "Python workflow orchestrator built around DAGs, with a large provider ecosystem (including Snowflake, Databricks, and Spark providers).",
       complexityAdded: "medium",
       trustContribution: "low",
-      pairsWellWith: ["dbt", "spark", "great-expectations", "snowflake", "datahub"],
+      pairsWellWith: ["dbt", "spark", "great-expectations", "snowflake", "datahub", "databricks", "fivetran"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "lambda-architecture"],
       notes:
-        "Airflow 3 (3.3.x as of September 2026) supports asset-aware and event-driven scheduling. Dagster remains an alternative asset-centered orchestrator; using both is a boundary and operations decision, not a tool incompatibility.",
+        "Airflow 3 (3.3.x as of September 2026) supports asset-aware and event-driven scheduling. A Fivetran-maintained provider triggers and waits on syncs, and Astronomer Cosmos runs dbt projects as tasks. Dagster remains an alternative asset-centered orchestrator; using both is a boundary and operations decision, not a tool incompatibility.",
     },
     {
       id: "dagster",
@@ -259,7 +259,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Asset-based orchestration platform with built-in lineage, asset checks, and partitioned backfills.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "spark", "snowflake", "iceberg", "fivetran", "datahub"],
+      pairsWellWith: ["dbt", "spark", "snowflake", "iceberg", "fivetran", "datahub", "databricks"],
       conflictsWith: [],
       patterns: ["tiered-refinery", "observability-first"],
       notes:
@@ -283,6 +283,23 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Cloud warehouse with native dbt project execution, Openflow ingestion, and a Kafka connector built on Snowpipe Streaming. Access control is enforced here, not in the catalog. Compare the managed native path with external orchestration and connector platforms for the workload.",
     },
     {
+      id: "databricks",
+      name: "Databricks",
+      primaryHue: "store",
+      secondaryHue: "serve",
+      category: "Lakehouse Platform",
+      maturity: "production",
+      description:
+        "Data platform built on Apache Spark that keeps tables in open formats (Delta Lake or Apache Iceberg) on cloud object storage, with SQL warehouses for analytics and Unity Catalog for access control and lineage.",
+      complexityAdded: "medium",
+      trustContribution: "medium",
+      pairsWellWith: ["spark", "iceberg", "dbt", "fivetran", "kafka", "airflow", "dagster", "great-expectations", "cube", "datahub"],
+      conflictsWith: [],
+      patterns: ["tiered-refinery"],
+      notes:
+        "Bundles parts this edition otherwise shows separately: Lakeflow Connect for ingestion, declarative pipelines, Lakeflow Jobs for orchestration, and Unity Catalog, which enforces access and records lineage for what lives in Databricks. Using them means fewer vendors; running Fivetran, Airflow, or a cross-stack catalog alongside means deciding which side owns each job. Unity Catalog managed Iceberg tables are generally available as of September 2026, alongside Delta Lake. The dbt adapter is maintained by Databricks. Spark and Delta Lake are open source; the managed platform is proprietary.",
+    },
+    {
       id: "iceberg",
       name: "Apache Iceberg",
       primaryHue: "store",
@@ -292,11 +309,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Open table format for large analytic datasets with ACID transactions, time travel, and schema evolution on top of object storage.",
       complexityAdded: "medium",
       trustContribution: "medium",
-      pairsWellWith: ["spark", "trino", "dagster", "kafka", "snowflake", "fivetran"],
+      pairsWellWith: ["spark", "trino", "dagster", "kafka", "snowflake", "fivetran", "databricks"],
       conflictsWith: [],
       patterns: ["lambda-architecture", "kappa-architecture"],
       notes:
-        "A table format, not a storage system: it needs object storage beneath it and engines such as Spark, Trino, or Snowflake to read and write it. Several engines can read and write the same tables, which reduces dependence on any one of them.",
+        "A table format, not a storage system: it needs object storage beneath it and engines such as Spark, Trino, Snowflake, or Databricks to read and write it. Several engines can read and write the same tables, which reduces dependence on any one of them.",
     },
     {
       id: "trino",
@@ -325,7 +342,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Semantic and metrics API layer between the warehouse and consumers. Defines metrics once and serves them through APIs, with query caching and access control.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["snowflake", "dbt", "trino", "datahub"],
+      pairsWellWith: ["snowflake", "dbt", "trino", "datahub", "databricks"],
       conflictsWith: [],
       patterns: ["semantic-spine"],
       notes:
@@ -341,7 +358,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "GX Core data-validation framework for defining, running, and documenting expectations at pipeline checkpoints.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["dbt", "airflow", "snowflake", "datahub"],
+      pairsWellWith: ["dbt", "airflow", "snowflake", "datahub", "databricks"],
       conflictsWith: [],
       patterns: ["observability-first", "tiered-refinery"],
       notes:
@@ -358,11 +375,11 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
         "Metadata platform for discovery, ownership, and lineage across the stack. Access policies are documented here, but the warehouse and query engines enforce them.",
       complexityAdded: "medium",
       trustContribution: "high",
-      pairsWellWith: ["snowflake", "dbt", "kafka", "dagster", "airflow", "great-expectations", "cube", "fivetran", "trino"],
+      pairsWellWith: ["snowflake", "dbt", "kafka", "dagster", "airflow", "great-expectations", "cube", "fivetran", "trino", "databricks"],
       conflictsWith: [],
       patterns: ["observability-first"],
       notes:
-        "Works best when fed by existing systems: DataHub has ingestion sources or plugins for Snowflake, dbt, Kafka, Fivetran, Trino, Cube, Airflow, Dagster, and GX. Catalog coverage decays without named owners.",
+        "Works best when fed by existing systems: DataHub has ingestion sources or plugins for Snowflake, Databricks, dbt, Kafka, Fivetran, Trino, Cube, Airflow, Dagster, and GX. Catalog coverage decays without named owners.",
     },
   ],
 
@@ -580,8 +597,53 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       ],
       missingHues: ["orchestrate", "govern"],
       upgradePath: [
-        "Add Dagster for asset-level orchestration and lineage",
+        "Add one orchestrator, such as Airflow or Dagster, to run loads, models, and checks in order",
         "Add DataHub to record ownership and lineage; keep access enforced in Snowflake",
+      ],
+    },
+    {
+      id: "scheduled-warehouse",
+      name: "The Scheduled Warehouse",
+      tools: ["fivetran", "airflow", "dbt", "snowflake", "great-expectations"],
+      patternIds: ["tiered-refinery", "observability-first"],
+      useCase:
+        "A batch analytics stack in which one orchestrator runs syncs, models, and checks in dependency order, so a failed check can stop promotion.",
+      whyItWorks: [
+        "Airflow triggers Fivetran syncs and waits for them through the Fivetran-maintained provider",
+        "Astronomer Cosmos runs the dbt project as Airflow tasks, so models start only after their sources land",
+        "GX Core checks run as tasks between modelling and promotion, and a failed check can stop the DAG",
+      ],
+      whereItBreaks: [
+        "Airflow itself has to run somewhere: a managed service, or a team operating the scheduler, workers, and metadata database",
+        "If dbt or Snowflake tasks also schedule work, decide which one owns each schedule",
+        "No catalog: ownership and cross-tool lineage are unrecorded, and access is managed only through warehouse roles",
+      ],
+      missingHues: ["govern"],
+      upgradePath: [
+        "Add DataHub to record ownership and lineage from Airflow, dbt, and Snowflake; keep access enforced in Snowflake",
+      ],
+    },
+    {
+      id: "lakehouse-stack",
+      name: "The Lakehouse Stack",
+      tools: ["fivetran", "databricks", "dbt", "airflow"],
+      patternIds: ["tiered-refinery"],
+      useCase:
+        "Tables in an open format on object storage, modelled with dbt on Databricks, for a team that already runs Fivetran and Airflow.",
+      whyItWorks: [
+        "Fivetran loads into Databricks as a supported destination, governed through Unity Catalog",
+        "dbt models run on Databricks SQL warehouses through the Databricks-maintained adapter",
+        "Airflow's Databricks provider triggers Lakeflow Jobs, so the schedule stays where the team already runs it",
+      ],
+      whereItBreaks: [
+        "Databricks also offers Lakeflow Connect and Lakeflow Jobs; running Fivetran and Airflow alongside means writing down which side owns each source and schedule",
+        "No quality gates beyond dbt tests",
+        "Unity Catalog enforces access and traces lineage inside Databricks; ownership across the rest of the stack is unrecorded",
+      ],
+      missingHues: ["govern"],
+      upgradePath: [
+        "Add GX Core checks at promotion points",
+        "Add DataHub if ownership and lineage must span tools outside Databricks",
       ],
     },
     {
