@@ -64,6 +64,26 @@ export const dataStories: Record<string, AssemblyStory> = {
       { first: 'airflow', second: 'databricks', kind: 'fit', note: "Airflow's Databricks provider triggers existing Lakeflow Jobs; Databricks documents this pattern." },
     ],
   },
+  'governed-metrics-stack': {
+    recipeId: 'governed-metrics-stack',
+    steps: [
+      { toolId: 'fivetran', action: 'Replicate sources', explanation: 'Managed connectors load SaaS and database data into Snowflake.' },
+      { toolId: 'dbt', action: 'Model the tables', explanation: 'dbt builds and tests the modelled tables that metrics will be defined on.' },
+      { toolId: 'snowflake', action: 'Store the tiers', explanation: 'The warehouse holds raw and modelled layers, enforces access through its roles, and answers the queries Cube sends.' },
+      { toolId: 'cube', action: 'Define metrics once', explanation: 'Cube models measures and dimensions on top of dbt models and serves them through its APIs. The agreement holds only if consumers query Cube rather than the tables.' },
+      { toolId: 'datahub', action: 'Catalog and trace', explanation: 'DataHub collects metadata from each part, so a Cube view can be traced back to its warehouse tables and owners. Access is still enforced in Snowflake and Cube.' },
+    ],
+    links: [
+      { first: 'fivetran', second: 'snowflake', kind: 'fit', note: 'Snowflake is a supported Fivetran destination.' },
+      { first: 'fivetran', second: 'dbt', kind: 'fit', note: 'Fivetran loads tables into the warehouse, and dbt models them from there.' },
+      { first: 'dbt', second: 'snowflake', kind: 'fit', note: 'dbt models and tests run against Snowflake through its adapter.' },
+      { first: 'dbt', second: 'cube', kind: 'fit', note: 'The cube_dbt package reads the dbt manifest so Cube can define cubes and dimensions from dbt models.' },
+      { first: 'snowflake', second: 'cube', kind: 'fit', note: 'Cube connects to Snowflake as a data source through its Snowflake driver.' },
+      { first: 'cube', second: 'datahub', kind: 'fit', note: 'DataHub’s Cube source ingests cubes and views as datasets and can link them to upstream warehouse tables.' },
+      { first: 'dbt', second: 'datahub', kind: 'fit', note: 'DataHub’s dbt source records models and their lineage.' },
+      { first: 'snowflake', second: 'datahub', kind: 'fit', note: 'DataHub’s Snowflake source collects tables, usage, and lineage.' },
+    ],
+  },
   'streaming-pipeline': {
     recipeId: 'streaming-pipeline',
     steps: [

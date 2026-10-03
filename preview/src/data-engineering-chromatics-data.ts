@@ -280,7 +280,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["tiered-refinery", "semantic-spine"],
       notes:
-        "Cloud warehouse with native dbt project execution, Openflow ingestion, and a Kafka connector built on Snowpipe Streaming. Access control is enforced here, not in the catalog. Compare the managed native path with external orchestration and connector platforms for the workload.",
+        "Cloud warehouse with native dbt project execution, Openflow ingestion, and a Kafka connector built on Snowpipe Streaming. Access control is enforced here, not in the catalog. Compare the managed native path with external orchestration and connector platforms for the workload. Google BigQuery, Amazon Redshift, and Microsoft Fabric (Warehouse and Lakehouse) fill the same part.",
     },
     {
       id: "databricks",
@@ -297,7 +297,7 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       conflictsWith: [],
       patterns: ["tiered-refinery"],
       notes:
-        "Bundles parts this edition otherwise shows separately: Lakeflow Connect for ingestion, declarative pipelines, Lakeflow Jobs for orchestration, and Unity Catalog, which enforces access and records lineage for what lives in Databricks. Using them means fewer vendors; running Fivetran, Airflow, or a cross-stack catalog alongside means deciding which side owns each job. Unity Catalog managed Iceberg tables are generally available as of September 2026, alongside Delta Lake. The dbt adapter is maintained by Databricks. Spark and Delta Lake are open source; the managed platform is proprietary.",
+        "Bundles parts this edition otherwise shows separately: Lakeflow Connect for ingestion, declarative pipelines, Lakeflow Jobs for orchestration, and Unity Catalog, which enforces access and records lineage for what lives in Databricks. Using them means fewer vendors; running Fivetran, Airflow, or a cross-stack catalog alongside means deciding which side owns each job. Unity Catalog managed Iceberg tables are generally available as of September 2026, alongside Delta Lake. The dbt adapter is maintained by Databricks. Spark and Delta Lake are open source; the managed platform is proprietary. Google BigQuery, Amazon Redshift, and Microsoft Fabric (Warehouse and Lakehouse) fill the same part.",
     },
     {
       id: "iceberg",
@@ -644,6 +644,29 @@ export const dataEngineeringChromaticsData: DEChromaticsData = {
       upgradePath: [
         "Add GX Core checks at promotion points",
         "Add DataHub if ownership and lineage must span tools outside Databricks",
+      ],
+    },
+    {
+      id: "governed-metrics-stack",
+      name: "The Governed Metrics Stack",
+      tools: ["fivetran", "dbt", "snowflake", "cube", "datahub"],
+      patternIds: ["semantic-spine", "tiered-refinery"],
+      useCase:
+        "Business metrics defined once in a semantic layer on top of dbt models, so dashboards, notebooks, and applications query the same definitions, with the catalog recording where each metric comes from.",
+      whyItWorks: [
+        "Fivetran loads Snowflake, and dbt models and tests the tables there",
+        "Cube builds its data model on dbt models through the cube_dbt package and queries Snowflake through its Snowflake driver",
+        "DataHub ingests metadata from Fivetran, dbt, Snowflake, and Cube, so lineage can run from source table to Cube view",
+      ],
+      whereItBreaks: [
+        "Metrics agree only while consumers query through Cube rather than warehouse tables directly",
+        "No orchestrator: loads, models, and Cube cache refreshes run on separate timers unless one tool owns the order",
+        "Quality relies on dbt tests; there are no separate checks at promotion points",
+      ],
+      missingHues: ["orchestrate"],
+      upgradePath: [
+        "Add one orchestrator, such as Airflow or Dagster, to run loads and models in order",
+        "Add GX Core checks where dbt tests are not enough",
       ],
     },
     {
