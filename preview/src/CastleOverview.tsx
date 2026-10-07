@@ -34,43 +34,43 @@ const brick = (id: string, group: string, label: string, x: number, y: number, z
 
 const hexOf = (id: string) => layers.find(layer => layer.id === id)!.hex
 
-// The castle, in stud units on an 18 x 10 baseplate. Front (+y) faces the box-art camera.
+// The castle, in stud units on a 16 x 8 baseplate it covers edge to edge. Front (+y) faces the box-art camera.
 const castle: SceneBrick[] = [
   // Foundations: the courtyard, curtain walls, corner towers, and the rooms that keep it running.
-  brick('court', 'foundations', '', 1, 1, 0, 16, 6),
-  brick('wall-left', 'foundations', 'Front end', 3, 7, 0, 4, 2, H, 'Walls'),
-  brick('wall-right', 'foundations', 'Back end', 11, 7, 0, 4, 2),
-  brick('crest-l1', 'foundations', '', 3, 7, H, 1, 2, CREST),
-  brick('crest-l2', 'foundations', '', 5, 7, H, 1, 2, CREST),
-  brick('crest-r1', 'foundations', '', 11, 7, H, 1, 2, CREST),
-  brick('crest-r2', 'foundations', '', 13, 7, H, 1, 2, CREST),
-  brick('corner-left', 'foundations', 'Login', 1, 7, 0, 2, 2, 3 * H),
-  brick('corner-right', 'foundations', 'Data', 15, 7, 0, 2, 2, 3 * H),
-  brick('rooms-low', 'foundations', 'Cloud & CI/CD', 12, 1, H, 5, 4, H, 'Rooms'),
-  brick('rooms-high', 'foundations', 'Monitoring', 12, 1, 2 * H, 5, 4),
+  brick('court', 'foundations', '', 0, 0, 0, 16, 6),
+  brick('wall-left', 'foundations', 'Front end', 2, 6, 0, 4, 2, H, 'Walls'),
+  brick('wall-right', 'foundations', 'Back end', 10, 6, 0, 4, 2),
+  brick('crest-l1', 'foundations', '', 2, 6, H, 1, 2, CREST),
+  brick('crest-l2', 'foundations', '', 4, 6, H, 1, 2, CREST),
+  brick('crest-r1', 'foundations', '', 10, 6, H, 1, 2, CREST),
+  brick('crest-r2', 'foundations', '', 12, 6, H, 1, 2, CREST),
+  brick('corner-left', 'foundations', 'Login', 0, 6, 0, 2, 2, 3 * H),
+  brick('corner-right', 'foundations', 'Data', 14, 6, 0, 2, 2, 3 * H),
+  brick('rooms-low', 'foundations', 'Cloud & CI/CD', 11, 0, H, 5, 4, H, 'Rooms'),
+  brick('rooms-high', 'foundations', 'Monitoring', 11, 0, 2 * H, 5, 4),
   // Data: the storerooms.
-  brick('stores-1', 'data', 'Ingest', 1, 1, H, 5, 4, H, 'Stores'),
-  brick('stores-2', 'data', 'Store', 1, 1, 2 * H, 5, 4),
-  brick('stores-3', 'data', 'Quality & catalog', 1, 1, 3 * H, 5, 4),
+  brick('stores-1', 'data', 'Ingest', 0, 0, H, 5, 4, H, 'Stores'),
+  brick('stores-2', 'data', 'Store', 0, 0, 2 * H, 5, 4),
+  brick('stores-3', 'data', 'Quality & catalog', 0, 0, 3 * H, 5, 4),
   // AI application: the keep, the tower everyone sees first.
-  brick('keep-1', 'ai', 'Knowledge', 7, 1, H, 4, 3),
-  brick('keep-2', 'ai', 'Model', 7, 1, 2 * H, 4, 3),
-  brick('keep-3', 'ai', 'Agent', 7, 1, 3 * H, 4, 3),
-  brick('keep-4', 'ai', 'Interface', 7, 1, 4 * H, 4, 3, H, 'Tower'),
-  brick('keep-crest-1', 'ai', '', 7, 1, 5 * H, 1, 1, CREST),
-  brick('keep-crest-2', 'ai', '', 10, 1, 5 * H, 1, 1, CREST),
-  brick('keep-crest-3', 'ai', '', 7, 3, 5 * H, 1, 1, CREST),
-  brick('keep-crest-4', 'ai', '', 10, 3, 5 * H, 1, 1, CREST),
+  brick('keep-1', 'ai', 'Knowledge', 6, 0, H, 4, 3),
+  brick('keep-2', 'ai', 'Model', 6, 0, 2 * H, 4, 3),
+  brick('keep-3', 'ai', 'Agent', 6, 0, 3 * H, 4, 3),
+  brick('keep-4', 'ai', 'Interface', 6, 0, 4 * H, 4, 3, H, 'Tower'),
+  brick('keep-crest-1', 'ai', '', 6, 0, 5 * H, 1, 1, CREST),
+  brick('keep-crest-2', 'ai', '', 9, 0, 5 * H, 1, 1, CREST),
+  brick('keep-crest-3', 'ai', '', 6, 2, 5 * H, 1, 1, CREST),
+  brick('keep-crest-4', 'ai', '', 9, 2, 5 * H, 1, 1, CREST),
   // Agent harness: the gatehouse between the castle and the world.
-  brick('gate-left', 'harness', '', 7, 7, 0, 1, 2, 2 * H),
-  brick('gate-right', 'harness', '', 10, 7, 0, 1, 2, 2 * H),
-  brick('gate-top', 'harness', 'Gatehouse', 7, 7, 2 * H, 4, 2, H, 'Harness'),
-  brick('gate-crest-1', 'harness', '', 7, 7, 3 * H, 1, 2, CREST),
-  brick('gate-crest-2', 'harness', '', 10, 7, 3 * H, 1, 2, CREST),
+  brick('gate-left', 'harness', '', 6, 6, 0, 1, 2, 2 * H),
+  brick('gate-right', 'harness', '', 9, 6, 0, 1, 2, 2 * H),
+  brick('gate-top', 'harness', 'Gatehouse', 6, 6, 2 * H, 4, 2, H, 'Harness'),
+  brick('gate-crest-1', 'harness', '', 6, 6, 3 * H, 1, 2, CREST),
+  brick('gate-crest-2', 'harness', '', 9, 6, 3 * H, 1, 2, CREST),
 ]
 
 // The manual view lifts each layer a little off the one below, like an exploded instruction page.
-const lift: Record<string, number> = { foundations: 0, data: 0.5, harness: 0.5, ai: 1.1 }
+const lift: Record<string, number> = { foundations: 0, data: 0.5, harness: 0, ai: 1.4 }
 const BOX: Camera = { azimuth: 0, elevation: 12 }
 const MANUAL: Camera = ISO_CAMERA
 const SWING_MS = 1800
@@ -118,7 +118,7 @@ export default function CastleOverview() {
         <p className="fc-sub">If you want to build the equivalent, here is what each layer asks of you.</p>
         <div className={`fc-scene${focus ? ' has-focus' : ''}`} data-focus={focus} style={{ '--fc-labels': Math.max(0, t * 2 - 1).toFixed(2) } as CSSProperties}>
           <span className="fc-boxart" style={{ opacity: Math.max(0, 1 - t * 2.5) }} aria-hidden="true">Want to build this?</span>
-          <BrickScene bricks={bricks} plate={{ w: 18, d: 10 }} unit={17} maxTier={6} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" camera={camera} label="A LEGO castle built in layers: an operating-model baseplate, foundation walls and rooms, data storerooms, an AI tower, and a harness gatehouse." />
+          <BrickScene bricks={bricks} plate={{ w: 16, d: 8 }} unit={17} maxTier={6} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" camera={camera} label="A LEGO castle built in layers: an operating-model baseplate, foundation walls and rooms, data storerooms, an AI tower, and a harness gatehouse." />
           <div className="fc-views" role="group" aria-label="Castle view">
             <button type="button" aria-pressed={view === 'box'} onClick={() => setTarget(0)}>Box</button>
             <button type="button" aria-pressed={view === 'manual'} onClick={() => setTarget(1)}>Manual</button>
