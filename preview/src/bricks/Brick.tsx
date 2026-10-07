@@ -20,6 +20,8 @@ export interface SceneBrick {
   isNew?: boolean
   badge?: Seat
   restsAt?: number
+  // Optional grouping, rendered as data-group so a page can highlight one set of bricks.
+  group?: string
 }
 
 const INK = '#1d2420'
@@ -198,7 +200,7 @@ export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, 
   return <svg className={`iso-scene${className ? ` ${className}` : ''}`} viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${(maxX - minX).toFixed(1)} ${(maxY - minY).toFixed(1)}`} role="img" aria-labelledby={titleId}>
     <title id={titleId}>{label}</title>
     <Baseplate w={plate.w} d={plate.d} p={p} label={plateLabel} />
-    {sorted.map(({ brick }) => <g key={brick.id} className={brick.isNew ? 'iso-drop' : undefined}><IsoBrick brick={brick} p={p} /></g>)}
+    {sorted.map(({ brick }) => <g key={brick.id} className={brick.isNew ? 'iso-drop' : undefined} data-group={brick.group}><IsoBrick brick={brick} p={p} /></g>)}
     {bricks.filter(brick => showBadges === 'all' ? brick.state !== 'ghost' && brick.state !== 'removed' : showBadges === 'new' && brick.isNew).map(brick => <Badge key={`badge-${brick.id}`} brick={brick} p={p} />)}
     {showArrow && newest && <DropArrow brick={newest} p={p} />}
   </svg>

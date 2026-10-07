@@ -1,0 +1,30 @@
+.fd-castle{background:#f2f5f2;border-bottom:1px solid #d8e0d9}
+.fc-inner{max-width:1540px;margin:auto;padding:40px 48px 30px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr);gap:20px 40px;align-items:start}
+.fc-left h1{margin:0;color:#192b26;font-size:58px;line-height:1;font-weight:760;letter-spacing:0}
+.fc-lead{margin:20px 0 6px;color:#2f443a;font-size:20px;line-height:1.45;max-width:46ch}
+.fc-sub{margin:0;color:#526259;font-size:15px}
+.fc-scene{min-width:0;margin-top:6px}
+.fc-scene .iso-scene{max-height:560px}
+.fc-scene g[data-group]>g{transition:opacity .2s ease}
+.fc-scene.has-focus g[data-group]>g{opacity:.16}
+.fc-scene[data-focus=foundations] g[data-group=foundations]>g,.fc-scene[data-focus=data] g[data-group=data]>g,.fc-scene[data-focus=ai] g[data-group=ai]>g,.fc-scene[data-focus=harness] g[data-group=harness]>g{opacity:1}
+.fc-scene[data-focus=base] .iso-plinth{filter:drop-shadow(0 0 6px #c9b98f)}
+.fc-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fc-layers li{padding:10px 14px 11px;background:#fff;border:1px solid #d6dfd8;border-radius:6px;transition:border-color .2s,box-shadow .2s,opacity .3s}
+.fc-layers li.is-active{border-color:#7f9a8b;box-shadow:0 2px 10px #1f3a2c14}
+.fc-layers li.is-pending{opacity:.45}
+.fc-head{display:flex;align-items:center;gap:8px}
+.fc-head i{width:12px;height:12px;border-radius:2px;flex:none}
+.fc-num{font-size:11px;font-weight:800;color:#6a756d}
+.fc-head strong{font-size:15px;color:#1b2c26}
+.fc-head small{font-size:12px;color:#5d6d63}
+.fc-layers p{margin:5px 0 7px;font-size:13px;line-height:1.45;color:#3c4f45}
+.fc-parts{display:flex;flex-wrap:wrap;gap:4px}
+.fc-parts span{font-size:11px;padding:2px 7px;border-radius:3px;background:#eef3ef;color:#33443b}
+.fc-layers a{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;font-weight:700;color:#1d5f59;text-decoration:none}
+.fc-layers a:hover{text-decoration:underline}
+.fc-layers a:focus-visible{outline:2px solid #186f67;outline-offset:2px}
+.fc-caveat{grid-column:1/-1;margin:4px 0 0;font-size:12px;color:#5b6a61}
+@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{max-height:420px}}
+@media(max-width:700px){.fc-inner{padding:30px 18px 26px}.fc-left h1{font-size:42px}.fc-lead{font-size:16px}.fc-sub{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.fc-scene g[data-group]>g,.fc-layers li{transition:none}}
