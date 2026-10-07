@@ -1,8 +1,8 @@
 import { useId } from 'react'
 import {
   BRICK_HEIGHT, PLATE_HEIGHT, STUD_HEIGHT, STUD_RADIUS,
-  SEAT_COLORS, circleRadii, darken, depthSort, inkOn, leftFaceMatrix, lighten, pathFrom, projector, rightFaceMatrix,
-  type Box, type Projector,
+  SEAT_COLORS, darken, depthSort, inkOn, lighten, pathFrom, projector,
+  type Box, type Camera, type Projector,
 } from './iso'
 import type { Seat } from './buildModel'
 
@@ -34,13 +34,13 @@ function displaced(box: Box, state: BrickState): Box {
 }
 
 function Studs({ box, fill, side, stroke, p, dashed }: { box: Box, fill: string, side: string, stroke: string, p: Projector, dashed?: boolean }) {
-  const [rx, ry] = circleRadii(STUD_RADIUS, p.unit)
+  const [rx, ry] = p.radii(STUD_RADIUS)
   const studs: [number, number][] = []
   for (let i = 0; i < box.w; i++) for (let j = 0; j < box.d; j++) studs.push([i, j])
   studs.sort((a, b) => a[0] + a[1] - (b[0] + b[1]))
   return <g>{studs.map(([i, j]) => {
     const [cx, cyBase] = p.point(box.x + i + 0.5, box.y + j + 0.5, box.z + box.h)
-    const cyTop = cyBase - STUD_HEIGHT * p.unit
+    const cyTop = cyBase - p.rise(STUD_HEIGHT)
     return <g key={`${i}-${j}`}>
       {!dashed && <><ellipse cx={cx} cy={cyBase} rx={rx} ry={ry} fill={side} /><rect x={cx - rx} y={cyTop} width={rx * 2} height={cyBase - cyTop} fill={side} /></>}
       <ellipse cx={cx} cy={dashed ? cyBase : cyTop} rx={rx} ry={ry} fill={fill} stroke={stroke} strokeWidth={dashed ? 0.6 : 0.5} strokeDasharray={dashed ? '1.6 1.6' : undefined} />
@@ -109,13 +109,13 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
     <path d={rightFace} fill={right} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <path d={topFace} fill={top} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <Studs box={box} fill={top} side={right} stroke={ghost ? stroke : darken(brick.hex, 0.35)} p={p} dashed={ghost} />
-    {brick.sticker === undefined ? <text transform={leftFaceMatrix(P(x, y + d, z + h))} fontSize={fontSize} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>
+    {brick.sticker === undefined ? <text transform={p.leftFace(P(x, y + d, z + h))} fontSize={fontSize} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>
       {lines.map((line, index) => <tspan key={index} x={p.unit * 0.28} y={h * p.unit * (lines.length > 1 ? 0.44 + index * 0.4 : 0.66)}>{line}</tspan>)}
-    </text> : <g transform={leftFaceMatrix(P(x, y + d, z + h))}>
+    </text> : <g transform={p.leftFace(P(x, y + d, z + h))}>
       <text x={p.unit * 0.28} y={h * p.unit * 0.36} fontSize={p.unit * 0.37} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>{fitText(brick.label, w, 0.37)}</text>
       {!ghost && <Sticker text={brick.sticker} width={w} height={h} unit={p.unit} edge={darken(brick.hex, 0.45)} />}
     </g>}
-    {brick.tag && <text transform={rightFaceMatrix(P(x + w, y + d, z + h))} x={p.unit * 0.22} y={h * p.unit * 0.62} fontSize={p.unit * 0.3} fontWeight="700" fill={ghost ? ink : inkOn(right)} opacity=".85" style={{ letterSpacing: 0 }}>{brick.tag.toUpperCase().slice(0, 11)}</text>}
+    {brick.tag && p.sideness > 0.05 && <text transform={p.rightFace(P(x + w, y + d, z + h))} x={p.unit * 0.22} y={h * p.unit * 0.62} fontSize={p.unit * 0.3} fontWeight="700" fill={ghost ? ink : inkOn(right)} opacity={0.85 * p.sideness} style={{ letterSpacing: 0 }}>{brick.tag.toUpperCase().slice(0, 11)}</text>}
     {brick.state === 'removed' && <path d={`M ${P(x, y + d, z + h).join(' ')} L ${P(x + w, y + d, z).join(' ')} M ${P(x + w, y + d, z + h).join(' ')} L ${P(x, y + d, z).join(' ')}`} stroke={darken(brick.hex, 0.15)} strokeWidth="1" />}
   </g>
 }
@@ -133,7 +133,7 @@ export function Baseplate({ w, d, p, color = '#c9d3cc', label }: { w: number, d:
     {label && <g className="iso-plinth">
       <path d={pathFrom([P(x, y + d, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x, y + d, z)])} fill={plinth} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
       <path d={pathFrom([P(x + w, y, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x + w, y, z)])} fill={darken(plinth, 0.12)} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
-      <text transform={leftFaceMatrix(P(x, y + d, z))} x={p.unit * 0.4} y={p.unit * PLINTH_HEIGHT * 0.64} fontSize={p.unit * 0.4} fontWeight="750" fill={darken(plinth, 0.62)} style={{ letterSpacing: 0 }}>{label.toUpperCase()}</text>
+      <text transform={p.leftFace(P(x, y + d, z))} x={p.unit * 0.4} y={p.unit * PLINTH_HEIGHT * 0.64} fontSize={p.unit * 0.4} fontWeight="750" fill={darken(plinth, 0.62)} style={{ letterSpacing: 0 }}>{label.toUpperCase()}</text>
     </g>}
     <path d={pathFrom([P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)])} fill={darken(color, 0.08)} stroke={darken(color, 0.3)} strokeWidth=".7" />
     <path d={pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)])} fill={darken(color, 0.18)} stroke={darken(color, 0.3)} strokeWidth=".7" />
@@ -181,15 +181,20 @@ export interface SceneProps {
   maxTier?: number
   frame?: 'tall' | 'tight'
   plateLabel?: string
+  // A camera other than the isometric manual view, and the cameras the frame must fit so it holds still while the camera moves.
+  camera?: Camera
+  frameCameras?: Camera[]
 }
 
-export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, showBadges = 'new', className, maxTier = 4, frame, plateLabel }: SceneProps) {
-  const p = projector(unit)
+export function BrickScene({ bricks, plate, unit = 18, label, showArrow = true, showBadges = 'new', className, maxTier = 4, frame, plateLabel, camera, frameCameras }: SceneProps) {
+  const p = projector(unit, camera)
   const titleId = useId()
   // Frame the whole plate plus the tallest possible model so the camera never jumps between steps.
   const reach = maxTier * BRICK_HEIGHT + ((frame ?? (showArrow ? 'tall' : 'tight')) === 'tall' ? 2.6 : 0.9)
   const floor = -PLATE_HEIGHT - (plateLabel ? PLINTH_HEIGHT : 0)
-  const corners = [p.point(0, plate.d, floor), p.point(plate.w, 0, reach), p.point(plate.w, plate.d, floor), p.point(0, 0, reach), p.point(plate.w + 1.5, 0, reach)]
+  const corners = frameCameras
+    ? frameCameras.flatMap(view => { const q = projector(unit, view); return [0, plate.w].flatMap(cx => [0, plate.d].flatMap(cy => [floor, reach].map(cz => q.point(cx, cy, cz)))) })
+    : [p.point(0, plate.d, floor), p.point(plate.w, 0, reach), p.point(plate.w, plate.d, floor), p.point(0, 0, reach), p.point(plate.w + 1.5, 0, reach)]
   const minX = Math.min(...corners.map(c => c[0])) - 8
   const maxX = Math.max(...corners.map(c => c[0])) + 14
   const minY = Math.min(...corners.map(c => c[1])) - 4

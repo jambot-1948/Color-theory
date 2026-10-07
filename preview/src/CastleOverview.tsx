@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { BrickScene, type SceneBrick } from './bricks/Brick'
-import { BRICK_HEIGHT } from './bricks/iso'
+import { BRICK_HEIGHT, ISO_CAMERA, type Camera } from './bricks/iso'
 import './bricks/bricks.css'
 import './CastleOverview.css'
 
@@ -28,50 +28,87 @@ const layers: Layer[] = [
 ]
 
 const H = BRICK_HEIGHT
-const brick = (id: string, group: string, hex: string, label: string, x: number, y: number, z: number, w: number, d: number, h = H, tag?: string): SceneBrick =>
-  ({ id, group, hex, label, tag, box: { x, y, z, w, d, h }, state: 'seated' })
+const CREST = H / 2
+const brick = (id: string, group: string, label: string, x: number, y: number, z: number, w: number, d: number, h = H, tag?: string): SceneBrick =>
+  ({ id, group, hex: hexOf(group), label, tag, box: { x, y, z, w, d, h }, state: 'seated' })
 
 const hexOf = (id: string) => layers.find(layer => layer.id === id)!.hex
 
-// Bricks per layer, placed so no layer hides another's label from this viewpoint.
-const castle: Record<string, SceneBrick[]> = {
-  foundations: [brick('walls', 'foundations', hexOf('foundations'), 'Foundations', 1, 1, 0, 12, 8, H, 'Walls')],
-  data: [
-    brick('stores-low', 'data', hexOf('data'), 'Ingest & store', 1, 1, H, 5, 3, H, 'Stores'),
-    brick('stores-high', 'data', hexOf('data'), 'Quality & catalog', 1, 1, 2 * H, 5, 3, H),
-  ],
-  ai: [
-    brick('tower-1', 'ai', hexOf('ai'), 'Knowledge', 9, 1, H, 3, 3),
-    brick('tower-2', 'ai', hexOf('ai'), 'Model', 9, 1, 2 * H, 3, 3),
-    brick('tower-3', 'ai', hexOf('ai'), 'Agent', 9, 1, 3 * H, 3, 3),
-    brick('tower-4', 'ai', hexOf('ai'), 'Interface', 9, 1, 4 * H, 3, 3, H, 'Tower'),
-  ],
-  harness: [
-    brick('gate-left', 'harness', hexOf('harness'), '', 5, 7, H, 1, 2, H),
-    brick('gate-right', 'harness', hexOf('harness'), '', 9, 7, H, 1, 2, H),
-    brick('gate-top', 'harness', hexOf('harness'), 'Gatehouse', 5, 7, 2 * H, 5, 2, H, 'Harness'),
-  ],
-}
+// The castle, in stud units on an 18 x 10 baseplate. Front (+y) faces the box-art camera.
+const castle: SceneBrick[] = [
+  // Foundations: the courtyard, curtain walls, corner towers, and the rooms that keep it running.
+  brick('court', 'foundations', '', 1, 1, 0, 16, 6),
+  brick('wall-left', 'foundations', 'Front end', 3, 7, 0, 4, 2, H, 'Walls'),
+  brick('wall-right', 'foundations', 'Back end', 11, 7, 0, 4, 2),
+  brick('crest-l1', 'foundations', '', 3, 7, H, 1, 2, CREST),
+  brick('crest-l2', 'foundations', '', 5, 7, H, 1, 2, CREST),
+  brick('crest-r1', 'foundations', '', 11, 7, H, 1, 2, CREST),
+  brick('crest-r2', 'foundations', '', 13, 7, H, 1, 2, CREST),
+  brick('corner-left', 'foundations', 'Login', 1, 7, 0, 2, 2, 3 * H),
+  brick('corner-right', 'foundations', 'Data', 15, 7, 0, 2, 2, 3 * H),
+  brick('rooms-low', 'foundations', 'Cloud & CI/CD', 12, 1, H, 5, 4, H, 'Rooms'),
+  brick('rooms-high', 'foundations', 'Monitoring', 12, 1, 2 * H, 5, 4),
+  // Data: the storerooms.
+  brick('stores-1', 'data', 'Ingest', 1, 1, H, 5, 4, H, 'Stores'),
+  brick('stores-2', 'data', 'Store', 1, 1, 2 * H, 5, 4),
+  brick('stores-3', 'data', 'Quality & catalog', 1, 1, 3 * H, 5, 4),
+  // AI application: the keep, the tower everyone sees first.
+  brick('keep-1', 'ai', 'Knowledge', 7, 1, H, 4, 3),
+  brick('keep-2', 'ai', 'Model', 7, 1, 2 * H, 4, 3),
+  brick('keep-3', 'ai', 'Agent', 7, 1, 3 * H, 4, 3),
+  brick('keep-4', 'ai', 'Interface', 7, 1, 4 * H, 4, 3, H, 'Tower'),
+  brick('keep-crest-1', 'ai', '', 7, 1, 5 * H, 1, 1, CREST),
+  brick('keep-crest-2', 'ai', '', 10, 1, 5 * H, 1, 1, CREST),
+  brick('keep-crest-3', 'ai', '', 7, 3, 5 * H, 1, 1, CREST),
+  brick('keep-crest-4', 'ai', '', 10, 3, 5 * H, 1, 1, CREST),
+  // Agent harness: the gatehouse between the castle and the world.
+  brick('gate-left', 'harness', '', 7, 7, 0, 1, 2, 2 * H),
+  brick('gate-right', 'harness', '', 10, 7, 0, 1, 2, 2 * H),
+  brick('gate-top', 'harness', 'Gatehouse', 7, 7, 2 * H, 4, 2, H, 'Harness'),
+  brick('gate-crest-1', 'harness', '', 7, 7, 3 * H, 1, 2, CREST),
+  brick('gate-crest-2', 'harness', '', 10, 7, 3 * H, 1, 2, CREST),
+]
 
-const buildOrder = ['base', 'foundations', 'data', 'ai', 'harness']
-const STEP_MS = 900
+// The manual view lifts each layer a little off the one below, like an exploded instruction page.
+const lift: Record<string, number> = { foundations: 0, data: 0.5, harness: 0.5, ai: 1.1 }
+const BOX: Camera = { azimuth: 0, elevation: 12 }
+const MANUAL: Camera = ISO_CAMERA
+const SWING_MS = 1800
+const HOLD_MS = 2200
+const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 
 export default function CastleOverview() {
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  const [built, setBuilt] = useState(reduced ? buildOrder.length : 1)
+  const [t, setT] = useState(reduced ? 1 : 0)
+  const [target, setTarget] = useState<0 | 1>(reduced ? 1 : 0)
   const [focus, setFocus] = useState<string | undefined>()
-  const [settled, setSettled] = useState(reduced)
+  const frame = useRef<number>(0)
 
-  // Build the castle once, layer by layer, the first time the page opens.
+  // Hold on the box art, then swing to the manual view once.
   useEffect(() => {
-    if (settled) return
-    const timer = window.setTimeout(() => built >= buildOrder.length ? setSettled(true) : setBuilt(value => value + 1), STEP_MS)
+    if (reduced) return
+    const timer = window.setTimeout(() => setTarget(1), HOLD_MS)
     return () => window.clearTimeout(timer)
-  }, [built, settled])
+  }, [reduced])
 
-  const shown = buildOrder.slice(0, built)
-  const newest = buildOrder[built - 1]
-  const bricks = shown.flatMap(id => (castle[id] ?? []).map(item => ({ ...item, isNew: id === newest && !settled })))
+  useEffect(() => {
+    if (reduced) { setT(target); return }
+    const from = t
+    if (from === target) return
+    const start = performance.now()
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - start) / (SWING_MS * Math.abs(target - from)))
+      setT(from + (target - from) * ease(progress))
+      if (progress < 1) frame.current = requestAnimationFrame(step)
+    }
+    frame.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(frame.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, reduced])
+
+  const camera: Camera = { azimuth: BOX.azimuth + (MANUAL.azimuth - BOX.azimuth) * t, elevation: BOX.elevation + (MANUAL.elevation - BOX.elevation) * t }
+  const bricks = castle.map(item => ({ ...item, box: { ...item.box, z: item.box.z + lift[item.group!] * t } }))
+  const view = t < 0.5 ? 'box' : 'manual'
 
   return <section className="fd-castle" aria-labelledby="fd-title">
     <div className="fc-inner">
@@ -79,12 +116,17 @@ export default function CastleOverview() {
         <h1 id="fd-title">Chromatic Architecture</h1>
         <p className="fc-lead">Shipping software you can trust is like building a LEGO castle. It is not one big brick: it is a baseplate, walls, storerooms, a tower, and a gate, each resting on the layer below.</p>
         <p className="fc-sub">If you want to build the equivalent, here is what each layer asks of you.</p>
-        <div className={`fc-scene${focus ? ' has-focus' : ''}`} data-focus={focus}>
-          <BrickScene bricks={bricks} plate={{ w: 14, d: 10 }} unit={19} maxTier={5} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" label={`A castle built in layers: ${shown.map(id => layers.find(layer => layer.id === id)?.part).join(', ')}.`} />
+        <div className={`fc-scene${focus ? ' has-focus' : ''}`} data-focus={focus} style={{ '--fc-labels': Math.max(0, t * 2 - 1).toFixed(2) } as CSSProperties}>
+          <span className="fc-boxart" style={{ opacity: Math.max(0, 1 - t * 2.5) }} aria-hidden="true">Want to build this?</span>
+          <BrickScene bricks={bricks} plate={{ w: 18, d: 10 }} unit={17} maxTier={6} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" camera={camera} label="A LEGO castle built in layers: an operating-model baseplate, foundation walls and rooms, data storerooms, an AI tower, and a harness gatehouse." />
+          <div className="fc-views" role="group" aria-label="Castle view">
+            <button type="button" aria-pressed={view === 'box'} onClick={() => setTarget(0)}>Box</button>
+            <button type="button" aria-pressed={view === 'manual'} onClick={() => setTarget(1)}>Manual</button>
+          </div>
         </div>
       </div>
       <ol className="fc-layers">
-        {[...layers].reverse().map(layer => <li key={layer.id} className={`${focus === layer.id ? 'is-active' : ''}${shown.includes(layer.id) ? '' : ' is-pending'}`} onMouseEnter={() => setFocus(layer.id)} onMouseLeave={() => setFocus(undefined)} onFocus={() => setFocus(layer.id)} onBlur={() => setFocus(undefined)}>
+        {[...layers].reverse().map(layer => <li key={layer.id} className={focus === layer.id ? 'is-active' : undefined} onMouseEnter={() => setFocus(layer.id)} onMouseLeave={() => setFocus(undefined)} onFocus={() => setFocus(layer.id)} onBlur={() => setFocus(undefined)}>
           <div className="fc-head"><i style={{ background: layer.hex }} aria-hidden="true" /><span className="fc-num">{layer.number}</span><strong>{layer.part}</strong><small>{layer.name}</small></div>
           <p>{layer.question}</p>
           <div className="fc-parts">{layer.parts.map(part => <span key={part}>{part}</span>)}</div>

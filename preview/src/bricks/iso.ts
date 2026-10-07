@@ -11,15 +11,46 @@ export const SEAT_COLORS = { snap: '#2f7f7b', loose: '#a2742f', clash: '#c84c3a'
 
 const COS30 = Math.cos(Math.PI / 6)
 
+// Orthographic camera: azimuth turns the view around the vertical axis (0 looks straight at the
+// front, +y face; 45 is the manual's corner view), elevation tilts it down from horizontal.
+export interface Camera {
+  azimuth: number
+  elevation: number
+}
+
+// True isometric: the view every manual page uses.
+export const ISO_CAMERA: Camera = { azimuth: 45, elevation: (Math.asin(1 / Math.sqrt(3)) * 180) / Math.PI }
+
+// Keeps the isometric pixel scale: one stud along x or y spans cos 30 x unit across the screen.
+const SCALE = Math.sqrt(1.5)
+
 export interface Projector {
   unit: number
   point: (x: number, y: number, z: number) => [number, number]
+  // SVG matrices mapping text drawn along +x onto the front (+y) face and the right (+x) face.
+  leftFace: (origin: [number, number]) => string
+  rightFace: (origin: [number, number]) => string
+  // Screen ellipse radii of a horizontal circle, and the screen height of a vertical length.
+  radii: (r: number) => [number, number]
+  rise: (length: number) => number
+  // How much of the right (+x) face is turned towards the viewer, 0 to 1.
+  sideness: number
 }
 
-export function projector(unit: number): Projector {
+export function projector(unit: number, camera: Camera = ISO_CAMERA): Projector {
+  const a = (camera.azimuth * Math.PI) / 180
+  const e = (camera.elevation * Math.PI) / 180
+  const [ca, sa, ce, se] = [Math.cos(a), Math.sin(a), Math.cos(e), Math.sin(e)]
+  const k = SCALE * unit
+  const matrix = (m: number[], origin: [number, number]) => `matrix(${m.map(value => value.toFixed(4)).join(' ')} ${origin[0].toFixed(2)} ${origin[1].toFixed(2)})`
   return {
     unit,
-    point: (x, y, z) => [(x - y) * COS30 * unit, (x + y) * 0.5 * unit - z * unit],
+    point: (x, y, z) => [(x * ca - y * sa) * k, ((x * sa + y * ca) * se - z * ce) * k],
+    leftFace: origin => matrix([SCALE * ca, SCALE * sa * se, 0, SCALE * ce], origin),
+    rightFace: origin => matrix([SCALE * sa, -SCALE * ca * se, 0, SCALE * ce], origin),
+    radii: r => [r * k, r * k * se],
+    rise: length => length * k * ce,
+    sideness: Math.min(1, sa * 2.2),
   }
 }
 
@@ -27,12 +58,12 @@ export function pathFrom(points: [number, number][]) {
   return `M ${points.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join(' L ')} Z`
 }
 
-// Ellipse radii for a horizontal circle of radius r under this projection.
+// Ellipse radii for a horizontal circle of radius r under the isometric projection.
 export function circleRadii(r: number, unit: number): [number, number] {
   return [r * unit * COS30 * Math.SQRT2, r * unit * 0.5 * Math.SQRT2]
 }
 
-// SVG matrix that maps text drawn along +x onto the front-left (+y) face of a box.
+// SVG matrix that maps text drawn along +x onto the front-left (+y) face of a box (isometric).
 export function leftFaceMatrix(origin: [number, number]) {
   return `matrix(${COS30.toFixed(4)} 0.5 0 1 ${origin[0].toFixed(2)} ${origin[1].toFixed(2)})`
 }

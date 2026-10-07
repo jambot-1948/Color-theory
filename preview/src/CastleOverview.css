@@ -4,7 +4,7 @@
 .fc-lead{margin:20px 0 6px;color:#2f443a;font-size:20px;line-height:1.45;max-width:46ch}
 .fc-sub{margin:0;color:#526259;font-size:15px}
 .fc-scene{min-width:0;margin-top:6px}
-.fc-scene .iso-scene{max-height:560px}
+.fc-scene .iso-scene{height:470px;width:100%;max-height:none}
 .fc-scene g[data-group]>g{transition:opacity .2s ease}
 .fc-scene.has-focus g[data-group]>g{opacity:.16}
 .fc-scene[data-focus=foundations] g[data-group=foundations]>g,.fc-scene[data-focus=data] g[data-group=data]>g,.fc-scene[data-focus=ai] g[data-group=ai]>g,.fc-scene[data-focus=harness] g[data-group=harness]>g{opacity:1}
@@ -25,6 +25,17 @@
 .fc-layers a:hover{text-decoration:underline}
 .fc-layers a:focus-visible{outline:2px solid #186f67;outline-offset:2px}
 .fc-caveat{grid-column:1/-1;margin:4px 0 0;font-size:12px;color:#5b6a61}
-@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{max-height:420px}}
+@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{height:400px}}
+@media(max-width:700px){.fc-scene .iso-scene{height:300px}}
 @media(max-width:700px){.fc-inner{padding:30px 18px 26px}.fc-left h1{font-size:42px}.fc-lead{font-size:16px}.fc-sub{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.fc-scene g[data-group]>g,.fc-layers li{transition:none}}
+.fc-scene{position:relative}
+.fc-boxart{position:absolute;left:4px;top:8px;font-size:22px;font-weight:760;color:#1b2c26;pointer-events:none}
+.fc-views{position:absolute;right:4px;top:4px;display:flex;border:1px solid #bccbc0;border-radius:4px;overflow:hidden;background:#fff}
+.fc-views button{font:inherit;font-size:12px;font-weight:700;padding:6px 12px;border:0;background:transparent;color:#41554a;cursor:pointer}
+.fc-views button[aria-pressed=true]{background:#1e3931;color:#fff}
+.fc-views button:focus-visible{outline:2px solid #186f67;outline-offset:-2px}
+@media(max-width:700px){.fc-boxart{font-size:17px}}
+/* Box art shows the castle without labels; they fade in as the camera reaches the manual view. */
+.fc-scene .iso-brick text{opacity:var(--fc-labels,1)}
+.fc-scene.has-focus .iso-brick text{opacity:1}

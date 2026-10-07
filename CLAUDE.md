@@ -42,7 +42,7 @@ Collect feedback using the template at the end of `BATTLETEST.md`.
 - 7-segment color wheel with HUE_ANGLES at 51.4° intervals for each domain
 - SVG-based pattern diagrams + interactive color wheel + recipe composer
 - Review date: `preview/src/reviewed.ts` drives the "As of" footer on every page. Bump it only after re-checking products against primary sources
-- Landing page opens with a LEGO castle overview (`preview/src/CastleOverview.tsx`): baseplate (operating model), walls (Foundations), storerooms (Data), tower (AI), gatehouse (Harness), each with the question it asks and a link to its tab. It is a metaphor for layers, not an architecture diagram
+- Landing page opens with a LEGO castle overview (`preview/src/CastleOverview.tsx`). It starts as front-facing box art ("Want to build this?") and swings once to the isometric manual view, with Box/Manual toggles; `projector(unit, camera)` in `bricks/iso.ts` takes any azimuth/elevation, defaulting to the isometric manual camera. Layers: baseplate (operating model), walls (Foundations), storerooms (Data), tower (AI), gatehouse (Harness), each with the question it asks and a link to its tab. It is a metaphor for layers, not an architecture diagram
 - Below it, the landing example: a five-frame looping build (place, snap, snap, force, read what is missing); verdicts come from the same `readBuild` rules, it pauses on hover or any control, and does not autoplay under reduced motion
 - Isometric brick manual (capabilities are LEGO-style bricks and products are their printed labels; snap / loose / forced fits, maturity growth tracks). See `BRICKS.md`
 - TypeScript with domain-specific HueId union types
