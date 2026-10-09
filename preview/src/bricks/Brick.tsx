@@ -20,6 +20,9 @@ export interface SceneBrick {
   isNew?: boolean
   badge?: Seat
   restsAt?: number
+  // A roof is a pyramid over the box's footprint instead of a brick; a flag adds a pole and pennant at its peak.
+  shape?: 'brick' | 'roof'
+  flag?: string
   // Optional grouping, rendered as data-group so a page can highlight one set of bricks.
   group?: string
 }
@@ -80,6 +83,7 @@ function Sticker({ text, width, height, unit, edge }: { text: string | null, wid
 }
 
 export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
+  if (brick.shape === 'roof') return <IsoRoof brick={brick} p={p} />
   const box = displaced(brick.box, brick.state)
   const { x, y, z, w, d, h } = box
   const ghost = brick.state === 'ghost' || brick.state === 'removed'
@@ -120,6 +124,24 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   </g>
 }
 
+// A pointed roof: the front and right faces of a pyramid, with an optional flag at its peak.
+function IsoRoof({ brick, p }: { brick: SceneBrick, p: Projector }) {
+  const { x, y, z, w, d, h } = brick.box
+  const P = p.point
+  const apex = P(x + w / 2, y + d / 2, z + h)
+  const stroke = darken(brick.hex, 0.5)
+  const pole = 1.7
+  const top = P(x + w / 2, y + d / 2, z + h + pole)
+  return <g className="iso-brick is-roof">
+    <path d={pathFrom([P(x + w, y + d, z), P(x + w, y, z), apex])} fill={darken(brick.hex, 0.22)} stroke={stroke} strokeWidth=".8" strokeLinejoin="round" />
+    <path d={pathFrom([P(x, y + d, z), P(x + w, y + d, z), apex])} fill={brick.hex} stroke={stroke} strokeWidth=".8" strokeLinejoin="round" />
+    {brick.flag && <g className="iso-flag">
+      <line x1={apex[0]} y1={apex[1]} x2={top[0]} y2={top[1]} stroke="#5b5340" strokeWidth="1.2" strokeLinecap="round" />
+      <path d={pathFrom([top, P(x + w / 2 + 1.1, y + d / 2, z + h + pole - 0.3), P(x + w / 2, y + d / 2, z + h + pole - 0.6)])} fill={brick.flag} stroke={darken(brick.flag, 0.35)} strokeWidth=".6" strokeLinejoin="round" />
+    </g>}
+  </g>
+}
+
 const PLINTH_HEIGHT = 1.1
 
 // When the baseplate stands for something (Foundations' operating model), it sits on a labelled plinth.
@@ -133,7 +155,7 @@ export function Baseplate({ w, d, p, color = '#c9d3cc', label }: { w: number, d:
     {label && <g className="iso-plinth">
       <path d={pathFrom([P(x, y + d, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x, y + d, z)])} fill={plinth} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
       <path d={pathFrom([P(x + w, y, pz), P(x + w, y + d, pz), P(x + w, y + d, z), P(x + w, y, z)])} fill={darken(plinth, 0.12)} stroke={darken(plinth, 0.35)} strokeWidth=".7" />
-      <text transform={p.leftFace(P(x, y + d, z))} x={p.unit * 0.4} y={p.unit * PLINTH_HEIGHT * 0.64} fontSize={p.unit * 0.4} fontWeight="750" fill={darken(plinth, 0.62)} style={{ letterSpacing: 0 }}>{label.toUpperCase()}</text>
+      <text className="iso-plinth-label" transform={p.leftFace(P(x, y + d, z))} x={p.unit * 0.4} y={p.unit * PLINTH_HEIGHT * 0.64} fontSize={p.unit * 0.4} fontWeight="750" fill={darken(plinth, 0.62)} style={{ letterSpacing: 0 }}>{label.toUpperCase()}</text>
     </g>}
     <path d={pathFrom([P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)])} fill={darken(color, 0.08)} stroke={darken(color, 0.3)} strokeWidth=".7" />
     <path d={pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)])} fill={darken(color, 0.18)} stroke={darken(color, 0.3)} strokeWidth=".7" />

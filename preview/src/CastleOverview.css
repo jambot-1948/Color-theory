@@ -39,3 +39,5 @@
 /* Box art shows the castle without labels; they fade in as the camera reaches the manual view. */
 .fc-scene .iso-brick text{opacity:var(--fc-labels,1)}
 .fc-scene.has-focus .iso-brick text{opacity:1}
+/* The box art shows the castle alone; the baseplate's operating-model label appears in the manual view. */
+.fc-scene .iso-plinth-label{opacity:var(--fc-labels,1)}
