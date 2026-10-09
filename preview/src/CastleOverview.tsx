@@ -32,7 +32,7 @@ const CREST = H / 2
 const brick = (id: string, group: string, label: string, x: number, y: number, z: number, w: number, d: number, h = H, tag?: string): SceneBrick =>
   ({ id, group, hex: hexOf(group), label, tag, box: { x, y, z, w, d, h }, state: 'seated' })
 
-const hexOf = (id: string) => layers.find(layer => layer.id === id)!.hex
+const hexOf = (id: string) => layers.find(layer => layer.id === id)?.hex ?? '#8f9a93'
 
 const roof = (id: string, group: string, x: number, y: number, z: number, w: number, d: number, h: number, flag = true): SceneBrick =>
   ({ id, group, hex: darken(hexOf(group), 0.18), label: '', box: { x, y, z, w, d, h }, state: 'seated', shape: 'roof', flag: flag ? FLAG : undefined })
@@ -44,8 +44,8 @@ const FLAG = '#e0b44c'
 const castle: SceneBrick[] = [
   // Foundations: the courtyard, curtain walls, turrets, and the squat tower that keep it standing.
   brick('court', 'foundations', '', 0, 0, 0, 18, 6),
-  brick('turret-left', 'foundations', 'Login', 0, 5, 0, 3, 3, 4 * H),
-  roof('turret-left-roof', 'foundations', 0, 5, 4 * H, 3, 3, 4),
+  brick('turret-left', 'foundations', 'Login', 0, 5, 0, 3, 3, 6 * H),
+  roof('turret-left-roof', 'foundations', 0, 5, 6 * H, 3, 3, 5),
   brick('wall-left', 'foundations', 'Front end', 3, 6, 0, 4, 2, 2 * H, 'Walls'),
   brick('crest-l1', 'foundations', '', 3, 6, 2 * H, 1, 2, CREST),
   brick('crest-l2', 'foundations', '', 5, 6, 2 * H, 1, 2, CREST),
@@ -54,35 +54,41 @@ const castle: SceneBrick[] = [
   brick('crest-r2', 'foundations', '', 13, 6, 2 * H, 1, 2, CREST),
   brick('turret-right-1', 'foundations', 'Cloud & CI/CD', 11, 1, H, 4, 3, H, 'Rooms'),
   brick('turret-right-2', 'foundations', 'Monitoring', 11, 1, 2 * H, 4, 3),
-  brick('turret-right-3', 'foundations', '', 11, 1, 3 * H, 4, 3),
-  roof('turret-right-roof', 'foundations', 11, 1, 4 * H, 4, 3, 4.4),
-  brick('keep-right', 'foundations', 'Data', 15, 4, 0, 3, 4, 2 * H),
-  brick('keep-right-c1', 'foundations', '', 15, 4, 2 * H, 1, 1, CREST),
-  brick('keep-right-c2', 'foundations', '', 17, 4, 2 * H, 1, 1, CREST),
-  brick('keep-right-c3', 'foundations', '', 15, 7, 2 * H, 1, 1, CREST),
-  brick('keep-right-c4', 'foundations', '', 17, 7, 2 * H, 1, 1, CREST),
+  brick('turret-right-3', 'foundations', '', 11, 1, 3 * H, 4, 3, 3 * H),
+  roof('turret-right-roof', 'foundations', 11, 1, 6 * H, 4, 3, 5.6),
+  brick('keep-right', 'foundations', 'Data', 15, 4, 0, 3, 4, 3 * H),
+  brick('keep-right-c1', 'foundations', '', 15, 4, 3 * H, 1, 1, CREST),
+  brick('keep-right-c2', 'foundations', '', 17, 4, 3 * H, 1, 1, CREST),
+  brick('keep-right-c3', 'foundations', '', 15, 7, 3 * H, 1, 1, CREST),
+  brick('keep-right-c4', 'foundations', '', 17, 7, 3 * H, 1, 1, CREST),
+  // Slender turrets flanking the gate: decoration for the box art, set aside in the manual view.
+  brick('flank-left', 'deco', '', 5, 4, H, 2, 2, 5 * H),
+  roof('flank-left-roof', 'deco', 5, 4, 6 * H, 2, 2, 3.6),
+  brick('flank-right', 'deco', '', 11, 4, H, 2, 2, 5 * H),
+  roof('flank-right-roof', 'deco', 11, 4, 6 * H, 2, 2, 3.6),
   // Data: the storeroom hall behind the left wall.
   brick('stores-1', 'data', 'Ingest', 2, 1, H, 4, 3, H, 'Stores'),
   brick('stores-2', 'data', 'Store', 2, 1, 2 * H, 4, 3),
   brick('stores-3', 'data', 'Quality & catalog', 2, 1, 3 * H, 4, 3),
-  roof('stores-roof', 'data', 2, 1, 4 * H, 4, 3, 4),
+  brick('stores-4', 'data', '', 2, 1, 4 * H, 4, 3),
+  roof('stores-roof', 'data', 2, 1, 5 * H, 4, 3, 5),
   // AI application: the tall spire everyone sees first.
   brick('keep-1', 'ai', 'Knowledge', 7.5, 1.5, H, 3, 3),
   brick('keep-2', 'ai', 'Model', 7.5, 1.5, 2 * H, 3, 3),
   brick('keep-3', 'ai', 'Agent', 7.5, 1.5, 3 * H, 3, 3),
   brick('keep-4', 'ai', 'Interface', 7.5, 1.5, 4 * H, 3, 3, H, 'Tower'),
-  brick('keep-5', 'ai', '', 7.5, 1.5, 5 * H, 3, 3),
-  brick('spire-1', 'ai', '', 8, 2, 6 * H, 2, 2, 2 * H),
-  roof('spire-roof', 'ai', 8, 2, 8 * H, 2, 2, 4.4),
+  brick('keep-5', 'ai', '', 7.5, 1.5, 5 * H, 3, 3, 3 * H),
+  brick('spire-1', 'ai', '', 8, 2, 8 * H, 2, 2, 3 * H),
+  roof('spire-roof', 'ai', 8, 2, 11 * H, 2, 2, 7),
   // Agent harness: the peaked gatehouse between the castle and the world.
   brick('gate-left', 'harness', '', 7, 6, 0, 1, 2, 2 * H),
   brick('gate-right', 'harness', '', 10, 6, 0, 1, 2, 2 * H),
   brick('gate-top', 'harness', 'Gatehouse', 7, 6, 2 * H, 4, 2, H, 'Harness'),
-  roof('gate-roof', 'harness', 7, 6, 3 * H, 4, 2, 1.8, false),
+  roof('gate-roof', 'harness', 7, 6, 3 * H, 4, 2, 2.2, false),
 ]
 
 // The manual view lifts each layer a little off the one below, like an exploded instruction page.
-const lift: Record<string, number> = { foundations: 0, data: 0.5, harness: 0, ai: 1.8 }
+const lift: Record<string, number> = { foundations: 0, deco: 0, data: 0.5, harness: 0, ai: 2.4 }
 const BOX: Camera = { azimuth: 0, elevation: 12 }
 const MANUAL: Camera = ISO_CAMERA
 const SWING_MS = 1800
@@ -130,7 +136,7 @@ export default function CastleOverview() {
         <p className="fc-sub">If you want to build the equivalent, here is what each layer asks of you.</p>
         <div className={`fc-scene${focus ? ' has-focus' : ''}`} data-focus={focus} style={{ '--fc-labels': Math.max(0, t * 2 - 1).toFixed(2) } as CSSProperties}>
           <span className="fc-boxart" style={{ opacity: Math.max(0, 1 - t * 2.5) }} aria-hidden="true">Want to build this?</span>
-          <BrickScene bricks={bricks} plate={{ w: 18, d: 8 }} unit={17} maxTier={14} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" camera={camera} label="A LEGO castle built in layers: an operating-model baseplate, foundation walls and rooms, data storerooms, an AI tower, and a harness gatehouse." />
+          <BrickScene bricks={bricks} plate={{ w: 18, d: 8 }} unit={20} maxTier={17} frame="tight" showArrow={false} showBadges="none" plateLabel="Product operating model · teams · ownership" camera={camera} label="A LEGO castle built in layers: an operating-model baseplate, foundation walls and rooms, data storerooms, an AI tower, and a harness gatehouse." />
           <div className="fc-views" role="group" aria-label="Castle view">
             <button type="button" aria-pressed={view === 'box'} onClick={() => setTarget(0)}>Box</button>
             <button type="button" aria-pressed={view === 'manual'} onClick={() => setTarget(1)}>Manual</button>

@@ -4,7 +4,7 @@
 .fc-lead{margin:20px 0 6px;color:#2f443a;font-size:20px;line-height:1.45;max-width:46ch}
 .fc-sub{margin:0;color:#526259;font-size:15px}
 .fc-scene{min-width:0;margin-top:6px}
-.fc-scene .iso-scene{height:470px;width:100%;max-height:none}
+.fc-scene .iso-scene{height:640px;width:100%;max-height:none}
 .fc-scene g[data-group]>g{transition:opacity .2s ease}
 .fc-scene.has-focus g[data-group]>g{opacity:.16}
 .fc-scene[data-focus=foundations] g[data-group=foundations]>g,.fc-scene[data-focus=data] g[data-group=data]>g,.fc-scene[data-focus=ai] g[data-group=ai]>g,.fc-scene[data-focus=harness] g[data-group=harness]>g{opacity:1}
@@ -25,8 +25,8 @@
 .fc-layers a:hover{text-decoration:underline}
 .fc-layers a:focus-visible{outline:2px solid #186f67;outline-offset:2px}
 .fc-caveat{grid-column:1/-1;margin:4px 0 0;font-size:12px;color:#5b6a61}
-@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{height:400px}}
-@media(max-width:700px){.fc-scene .iso-scene{height:300px}}
+@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{height:560px}}
+@media(max-width:700px){.fc-scene .iso-scene{height:440px}}
 @media(max-width:700px){.fc-inner{padding:30px 18px 26px}.fc-left h1{font-size:42px}.fc-lead{font-size:16px}.fc-sub{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.fc-scene g[data-group]>g,.fc-layers li{transition:none}}
 .fc-scene{position:relative}
@@ -41,3 +41,7 @@
 .fc-scene.has-focus .iso-brick text{opacity:1}
 /* The box art shows the castle alone; the baseplate's operating-model label appears in the manual view. */
 .fc-scene .iso-plinth-label{opacity:var(--fc-labels,1)}
+/* Decorative turrets dress the box art and step aside in the manual view, so labels stay readable. */
+.fc-scene g[data-group=deco]>g{opacity:calc(1 - var(--fc-labels,0))}
+.fc-scene.has-focus g[data-group=deco]>g{opacity:calc((1 - var(--fc-labels,0)) * .16)}
+@media(max-width:700px){.fc-boxart{position:static;display:block;margin:2px 0 6px}}
