@@ -9,7 +9,7 @@ import './WorkshopNavigation.css'
 import './FrontDoor.css'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
-import WebbOverview from './WebbOverview'
+import Overview from './overview/Overview'
 import { BrickScene } from './bricks/Brick'
 import { slotLinks, slotTools, slotsFromTools } from './bricks/capabilityModel'
 import { capabilities } from './bricks/capabilities'
@@ -83,11 +83,11 @@ export default function FrontDoor() {
   return <div className="bw-app fd-app">
     <SiteHeader />
     <main>
-      <WebbOverview />
+      <Overview />
 
       <section className="fd-hero" aria-labelledby="fd-example-title">
         <div className="fd-hero-inner" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-          <div className="fd-intro"><span className="fd-kicker">ZOOM IN ON THE MIRROR</span><h2 id="fd-example-title">How parts fit</h2><p>Each layer is made of parts. Watch three parts of an AI application go together: what snaps, what’s forced, and what’s missing.</p><a className="fd-primary" href="?build=model-api:openai,agent-runtime:openai-agents-sdk,vector-retrieval:pinecone#/ai-applications">Build this example yourself <ArrowRight size={17} /></a></div>
+          <div className="fd-intro"><span className="fd-kicker">ZOOM IN ON ONE LAYER</span><h2 id="fd-example-title">How parts fit</h2><p>Each layer is made of parts. Watch three parts of an AI application go together: what snaps, what’s forced, and what’s missing.</p><a className="fd-primary" href="?build=model-api:openai,agent-runtime:openai-agents-sdk,vector-retrieval:pinecone#/ai-applications">Build this example yourself <ArrowRight size={17} /></a></div>
           <div className="fd-iso" aria-hidden="true">
             <BrickScene bricks={bricks} plate={{ w: 12, d: 6 }} unit={20} maxTier={4} frame="tall" showBadges={'missing' in current ? 'none' : 'all'} showArrow={bricks.some(brick => brick.isNew)} label={`Step ${step + 1} of ${frames.length}: ${tools.map(part => part.name).join(', ')}`} />
           </div>

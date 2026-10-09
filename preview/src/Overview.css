@@ -46,3 +46,7 @@
 .fc-scene.has-focus g[data-group=deco]>g{opacity:calc((1 - var(--fc-labels,0)) * .16)}
 @media(max-width:700px){.fc-boxart{position:static;display:block;margin:2px 0 6px}}
 .wb-callout.is-active text{fill:#0d1a15}
+.fc-models{display:flex;gap:6px;margin:14px 0 4px}
+.fc-models button{font:inherit;font-size:13px;font-weight:700;padding:7px 14px;border:1px solid #bccbc0;border-radius:20px;background:#fff;color:#33443b;cursor:pointer}
+.fc-models button[aria-selected=true]{background:#1e3931;border-color:#1e3931;color:#fff}
+.fc-models button:focus-visible{outline:2px solid #186f67;outline-offset:2px}
