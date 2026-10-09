@@ -23,6 +23,10 @@ export interface SceneBrick {
   // A roof is a pyramid over the box's footprint instead of a brick; a flag adds a pole and pennant at its peak.
   shape?: 'brick' | 'roof'
   flag?: string
+  // A slope brick: the top falls along x to `low` (a fraction of the height) at the 'to' end.
+  slope?: { to: 'x+' | 'x-', low: number }
+  // Technic-style beam: a row of pin holes along the front face.
+  holes?: boolean
   // Optional grouping, rendered as data-group so a page can highlight one set of bricks.
   group?: string
 }
@@ -84,6 +88,7 @@ function Sticker({ text, width, height, unit, edge }: { text: string | null, wid
 
 export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
   if (brick.shape === 'roof') return <IsoRoof brick={brick} p={p} />
+  if (brick.slope) return <IsoSlope brick={brick} p={p} />
   const box = displaced(brick.box, brick.state)
   const { x, y, z, w, d, h } = box
   const ghost = brick.state === 'ghost' || brick.state === 'removed'
@@ -113,6 +118,7 @@ export function IsoBrick({ brick, p }: { brick: SceneBrick, p: Projector }) {
     <path d={rightFace} fill={right} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <path d={topFace} fill={top} stroke={stroke} strokeWidth={strokeWidth} strokeDasharray={dash} strokeLinejoin="round" />
     <Studs box={box} fill={top} side={right} stroke={ghost ? stroke : darken(brick.hex, 0.35)} p={p} dashed={ghost} />
+    {brick.holes && <g transform={p.leftFace(P(x, y + d, z + h))}>{Array.from({ length: Math.floor(w) }, (_, i) => <g key={i}><circle cx={(i + 0.5) * p.unit} cy={h * p.unit * 0.5} r={p.unit * 0.3} fill={darken(brick.hex, 0.55)} /><circle cx={(i + 0.5) * p.unit} cy={h * p.unit * 0.5} r={p.unit * 0.16} fill={darken(brick.hex, 0.8)} /></g>)}</g>}
     {brick.sticker === undefined ? <text transform={p.leftFace(P(x, y + d, z + h))} fontSize={fontSize} fontWeight="750" fill={ink} style={{ letterSpacing: 0 }}>
       {lines.map((line, index) => <tspan key={index} x={p.unit * 0.28} y={h * p.unit * (lines.length > 1 ? 0.44 + index * 0.4 : 0.66)}>{line}</tspan>)}
     </text> : <g transform={p.leftFace(P(x, y + d, z + h))}>
@@ -139,6 +145,24 @@ function IsoRoof({ brick, p }: { brick: SceneBrick, p: Projector }) {
       <line x1={apex[0]} y1={apex[1]} x2={top[0]} y2={top[1]} stroke="#5b5340" strokeWidth="1.2" strokeLinecap="round" />
       <path d={pathFrom([top, P(x + w / 2 + 1.1, y + d / 2, z + h + pole - 0.3), P(x + w / 2, y + d / 2, z + h + pole - 0.6)])} fill={brick.flag} stroke={darken(brick.flag, 0.35)} strokeWidth=".6" strokeLinejoin="round" />
     </g>}
+  </g>
+}
+
+// A slope brick: front and right faces follow the slanted profile, and the top is a ramp with no studs.
+function IsoSlope({ brick, p }: { brick: SceneBrick, p: Projector }) {
+  const { x, y, z, w, d, h } = brick.box
+  const slope = brick.slope!
+  const low = h * slope.low
+  const [h0, h1] = slope.to === 'x+' ? [h, low] : [low, h]
+  const P = p.point
+  const stroke = darken(brick.hex, 0.5)
+  const front = pathFrom([P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h1), P(x, y + d, z + h0)])
+  const right = pathFrom([P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h1), P(x + w, y, z + h1)])
+  const ramp = pathFrom([P(x, y, z + h0), P(x + w, y, z + h1), P(x + w, y + d, z + h1), P(x, y + d, z + h0)])
+  return <g className="iso-brick is-slope">
+    <path d={front} fill={brick.hex} stroke={stroke} strokeWidth=".8" strokeLinejoin="round" />
+    <path d={right} fill={darken(brick.hex, 0.22)} stroke={stroke} strokeWidth=".8" strokeLinejoin="round" />
+    <path d={ramp} fill={lighten(brick.hex, slope.to === 'x+' ? 0.28 : 0.1)} stroke={stroke} strokeWidth=".8" strokeLinejoin="round" />
   </g>
 }
 

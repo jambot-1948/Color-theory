@@ -6,6 +6,20 @@ import type { Callout, OverviewModel, Point3 } from './types'
 const MANUAL: Camera = ISO_CAMERA
 
 // Draws one overview model at a point in its swing from box art (t = 0) to the manual view (t = 1).
+// Convex hull of screen points (monotone chain), for a cylinder's silhouette.
+function hull(points: [number, number][]) {
+  const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1])
+  const cross = (o: [number, number], a: [number, number], b: [number, number]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+  const half = (list: [number, number][]) => list.reduce<[number, number][]>((out, point) => {
+    while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], point) <= 0) out.pop()
+    out.push(point)
+    return out
+  }, [])
+  const lower = half(sorted)
+  const upper = half([...sorted].reverse())
+  return [...lower.slice(0, -1), ...upper.slice(0, -1)]
+}
+
 export default function ModelScene({ model, t, unit, focus }: { model: OverviewModel, t: number, unit: number, focus?: string }) {
   const titleId = useId()
   const camera: Camera = {
@@ -36,7 +50,18 @@ export default function ModelScene({ model, t, unit, focus }: { model: OverviewM
     if (prim.kind === 'poly') {
       const points = prim.points.map(P)
       extent.push(...points)
-      return wrap(prim.group, `${index}`, <path d={pathFrom(points)} fill={prim.fill} stroke={prim.stroke ?? darken(prim.fill, 0.35)} strokeWidth={prim.width ?? 0.8} strokeLinejoin="round" />)
+      return wrap(prim.group, `${index}`, <path d={pathFrom(points)} fill={prim.fill} stroke={prim.stroke ?? darken(prim.fill, 0.35)} strokeWidth={prim.width ?? 0.8} strokeLinejoin="round" opacity={prim.opacity} />)
+    }
+    if (prim.kind === 'cylinder') {
+      const [cx, cy, cz] = prim.centre
+      const near = discPoints([cx, cy + prim.length / 2, cz], prim.radius, 'y')
+      const far = discPoints([cx, cy - prim.length / 2, cz], prim.radius, 'y')
+      extent.push(...near, ...far)
+      return wrap(prim.group, `${index}`, <>
+        <path d={pathFrom(hull([...near, ...far]))} fill={prim.side} stroke={darken(prim.side, 0.5)} strokeWidth=".8" strokeLinejoin="round" />
+        <path d={pathFrom(near)} fill={prim.face} stroke={darken(prim.face, 0.5)} strokeWidth=".8" />
+        {(prim.rings ?? []).map((ring, i) => <path key={i} d={pathFrom(discPoints([cx, cy + prim.length / 2 + 0.01, cz], ring.radius, 'y'))} fill={ring.fill} stroke={darken(ring.fill, 0.4)} strokeWidth=".7" />)}
+      </>)
     }
     if (prim.kind === 'line') {
       const [a, b] = [P(prim.from), P(prim.to)]

@@ -17,7 +17,9 @@ export const LAYER_COLORS: Record<LayerId, string> = {
 // Drawing primitives, painted in the order given. Bricks inside a 'sorted' pass are depth-sorted together.
 export type Prim =
   | { kind: 'sorted', bricks: SceneBrick[] }
-  | { kind: 'poly', group: string, points: Point3[], fill: string, stroke?: string, width?: number }
+  | { kind: 'poly', group: string, points: Point3[], fill: string, stroke?: string, width?: number, opacity?: number }
+  // A cylinder along y (wheels, tyres): side hull, then the end face nearest the viewer, then optional rings on that face.
+  | { kind: 'cylinder', group: string, centre: Point3, radius: number, length: number, side: string, face: string, rings?: { radius: number, fill: string }[] }
   | { kind: 'line', group: string, from: Point3, to: Point3, stroke: string, width: number }
   | { kind: 'disc', group: string, centre: Point3, radius: number, axis: 'x' | 'y' | 'z', fill: string, stroke?: string }
   | { kind: 'studs', group: string, at: Point3[], fill: string, side: string, stroke: string }
