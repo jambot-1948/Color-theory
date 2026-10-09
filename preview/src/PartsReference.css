@@ -1,6 +1,9 @@
 .pr-main .bw-title a,.pr-heading a{display:inline-flex;align-items:center;gap:7px;color:#2d6664;text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap}
-.pr-edition{border-top:1px solid #dbe1dc;padding:30px 0 34px}
+.pr-toolbar{position:sticky;top:0;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 24px;padding:10px;background:#f5f7f5eF;border:1px solid #dbe3dd;border-radius:6px;backdrop-filter:blur(10px)}
+.pr-search{height:44px;min-width:min(420px,45vw);display:flex;align-items:center;gap:9px;padding:0 12px;background:#fff;border:1px solid #d4ddd7;border-radius:4px;color:#6c7a72}.pr-search input{width:100%;border:0;outline:0;background:transparent;color:#1b2825;font-size:13px}.pr-toolbar nav{display:flex;align-items:center;gap:4px;overflow-x:auto}.pr-toolbar nav button{min-height:38px;padding:0 10px;border:0;background:transparent;color:#526259;font-size:11px;font-weight:700;white-space:nowrap;border-radius:3px}.pr-toolbar nav button:hover{background:#e8efea;color:#1d5f59}
+.pr-edition{scroll-margin-top:84px;border-top:1px solid #dbe1dc;padding:30px 0 34px}
 .pr-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
+.pr-heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.pr-heading-actions>button{min-height:36px;padding:0 10px;border:1px solid #cad6ce;background:#fff;color:#4b5d53;border-radius:4px;font-size:11px;font-weight:700}.pr-heading-actions>button.active{background:#e6f1ed;border-color:#76a79d;color:#1f665f}
 .pr-heading h2{margin:0 0 4px;font-size:21px}
 .pr-heading span{font-size:12px;color:#66736c}
 .pr-roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
@@ -22,16 +25,18 @@
 .pr-part-mark{position:absolute;top:5px;right:5px;font-size:9px;font-weight:800;color:#246b67}
 .pr-part.is-tension .pr-part-mark{color:#a83b2b}
 .pr-empty{font-size:11px;color:#78857e}
-.pr-bench{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:22px;align-items:center;margin-bottom:22px;padding:14px 18px;background:#fff;border:1px solid #dbe3dd;border-radius:6px}
+.pr-bench{position:sticky;top:76px;z-index:6;display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:22px;align-items:center;margin-bottom:22px;padding:14px 18px;background:#fff;border:1px solid #bfcfc5;border-radius:6px;box-shadow:0 10px 30px #1e39310f}
 .pr-bench-copy h3{margin:4px 0 6px;font-size:18px;color:#1d2420}
 .pr-bench-copy h3.is-snap{color:#246b67}.pr-bench-copy h3.is-loose{color:#80591f}.pr-bench-copy h3.is-clash{color:#a83b2b}
 .pr-bench-copy p{margin:0 0 8px;font-size:13px;line-height:1.55;color:#3c4b43;max-width:62ch}
 .pr-bench-hint{color:#6c7a72!important;font-size:12px!important}
 .pr-bench-copy button{display:inline-flex;align-items:center;gap:5px;border:1px solid #dbe3dd;background:#fff;border-radius:4px;padding:5px 9px;font-size:11px;font-weight:700;color:#3c4b43}
-@media(max-width:700px){.pr-roles{grid-template-columns:1fr}.pr-heading{align-items:flex-start}.pr-main .bw-title a{white-space:normal}.pr-bench{grid-template-columns:1fr}}
+@media(max-width:800px){.pr-toolbar{position:static;display:block;padding:8px}.pr-search{min-width:0;width:100%}.pr-toolbar nav{margin-top:6px;padding:2px 0}.pr-roles{grid-template-columns:1fr}.pr-heading{align-items:flex-start}.pr-main .bw-title a{white-space:normal}.pr-bench{position:static;grid-template-columns:1fr}.pr-heading-actions{align-items:flex-end}.pr-heading-actions>button{order:2}}
 .pr-cap{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#fff;border:1px solid #dfe6e1;border-radius:5px}
 .pr-cap-head{display:flex;gap:12px;align-items:center}.pr-cap-head .iso-icon{width:58px;flex:none}
 .pr-cap-head strong{font-size:13px;font-weight:760}.pr-cap-head p{margin:2px 0 0;font-size:12px;line-height:1.45;color:#56655d}
 .pr-products{display:flex;flex-wrap:wrap;gap:6px}
 .pr-products .pr-part{flex-direction:row;align-items:baseline;gap:6px;padding:6px 10px;text-align:left}
 .pr-products .pr-part-mark{position:static;margin-left:4px}
+.pr-no-results{display:flex;flex-direction:column;gap:5px;margin:8px 0 24px;padding:24px;background:#fff;border:1px dashed #cbd7cf;border-radius:6px;color:#526259}.pr-no-results strong{color:#23372e}
+@media(pointer:coarse){.pr-part,.pr-toolbar button,.pr-heading-actions button,.pr-bench-copy button{min-height:44px}}

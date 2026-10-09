@@ -72,13 +72,15 @@ export default function Overview() {
   return <section className="fd-castle" aria-labelledby="fd-title">
     <div className="fc-inner">
       <div className="fc-left">
-        <h1 id="fd-title">Chromatic Architecture</h1>
-        <p className="fc-lead">If you want to build something like this, here are some things to consider.</p>
-        <div className="fc-models" role="tablist" aria-label="Model">
+        <h1 id="fd-title">Build a system.<br />See what fits.</h1>
+        <p className="fc-lead">Chromatic Architecture turns a software stack into an assembly you can test—what snaps together, what conflicts, and what is still missing.</p>
+        <div className="fc-actions"><a className="fc-primary" href="#/ai-applications">Start assembling <ArrowRight size={16} /></a><a className="fc-secondary" href="#/growth">See a system grow</a></div>
+        <p className="fc-model-note">The same five architectural layers can be read through different familiar objects. Change the model; the system questions stay the same.</p>
+        <div className="fc-models" role="tablist" aria-label="Choose a metaphor model">
           {models.map(item => <button key={item.id} type="button" role="tab" aria-selected={item.id === model.id} onClick={() => setModelId(item.id)}>{item.name}</button>)}
         </div>
         <div className={`fc-scene${focus ? ' has-focus' : ''}`} data-focus={focus} style={{ '--fc-labels': Math.max(0, t * 2 - 1).toFixed(2) } as CSSProperties}>
-          <span className="fc-boxart" style={{ opacity: Math.max(0, 1 - t * 2.5) }} aria-hidden="true">Want to build this?</span>
+          <span className="fc-boxart" style={{ opacity: Math.max(0, 1 - t * 2.5) }} aria-hidden="true">One system, five layers</span>
           <ModelScene key={model.id} model={model} t={t} unit={20} focus={focus} />
           <div className="fc-views" role="group" aria-label="View">
             <button type="button" aria-pressed={view === 'box'} onClick={() => setTarget(0)}>Box</button>
@@ -97,7 +99,7 @@ export default function Overview() {
           </li>
         })}
       </ol>
-      <p className="fc-caveat">Each model is a metaphor for layers, not an architecture diagram. Each layer has its own page, where real products fill the parts and you can test how they fit.</p>
+      <p className="fc-caveat"><strong>This is a reasoning model, not a runtime diagram.</strong> Open a layer to assemble real products, test recorded pairings and tensions, and expose missing capabilities.</p>
     </div>
   </section>
 }

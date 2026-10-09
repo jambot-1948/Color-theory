@@ -87,7 +87,7 @@ export default function FrontDoor() {
 
       <section className="fd-hero" aria-labelledby="fd-example-title">
         <div className="fd-hero-inner" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-          <div className="fd-intro"><span className="fd-kicker">ZOOM IN ON ONE LAYER</span><h2 id="fd-example-title">How parts fit</h2><p>Each layer is made of parts. Watch three parts of an AI application go together: what snaps, what’s forced, and what’s missing.</p><a className="fd-primary" href="?build=model-api:openai,agent-runtime:openai-agents-sdk,vector-retrieval:pinecone#/ai-applications">Build this example yourself <ArrowRight size={17} /></a></div>
+          <div className="fd-intro"><h2 id="fd-example-title">How parts fit</h2><p>Each layer is made of parts. Watch three parts of an AI application go together: what snaps, what’s forced, and what’s missing.</p><a className="fd-primary" href="?build=model-api:openai,agent-runtime:openai-agents-sdk,vector-retrieval:pinecone#/ai-applications">Build this example yourself <ArrowRight size={17} /></a></div>
           <div className="fd-iso" aria-hidden="true">
             <BrickScene bricks={bricks} plate={{ w: 12, d: 6 }} unit={20} maxTier={4} frame="tall" showBadges={'missing' in current ? 'none' : 'all'} showArrow={bricks.some(brick => brick.isNew)} label={`Step ${step + 1} of ${frames.length}: ${tools.map(part => part.name).join(', ')}`} />
           </div>
@@ -97,11 +97,11 @@ export default function FrontDoor() {
       </section>
 
       <section className="fd-principles" aria-labelledby="fd-principles-title"><div className="fd-section-inner"><div className="fd-section-heading"><h2 id="fd-principles-title">How to read a model</h2><p>A useful stack is more than a pile of tools. Each brick has a job, and each join is either recorded or marked loose.</p></div><div className="fd-definitions">
-        <div><span>01</span><h3>Brick</h3><p>A capability, such as a model API or a vector store. Colour is its role; height is its tier. The printed label is the product that fills it.</p></div>
-        <div><span>02</span><h3>Snap</h3><p>The brick locks onto an earlier part because a pairing, curated recipe, or authored note links them.</p></div>
-        <div><span>03</span><h3>Loose</h3><p>It sits on the model, but nothing recorded says it locks. Not wrong, just unproven.</p></div>
-        <div><span>04</span><h3>Forced</h3><p>Pushed off its studs by a tension authored for this design, or by two products filling the same capability.</p></div>
-        <div><span>05</span><h3>Placeholder</h3><p>A pale, dashed brick is a part the model is missing, and each one is named in a missing-parts box. A hanging brick has nothing underneath it yet.</p></div>
+        <div><h3>Brick</h3><p>A capability, such as a model API or a vector store. Colour is its role; height is its tier. The printed label is the product that fills it.</p></div>
+        <div><h3>Snap</h3><p>The brick locks onto an earlier part because a pairing, curated recipe, or authored note links them.</p></div>
+        <div><h3>Loose</h3><p>It sits on the model, but nothing recorded says it locks. Not wrong, just unproven.</p></div>
+        <div><h3>Forced</h3><p>Pushed off its studs by a tension authored for this design, or by two products filling the same capability.</p></div>
+        <div><h3>Placeholder</h3><p>A pale, dashed brick is a part the model is missing, and each one is named in a missing-parts box. A hanging brick has nothing underneath it yet.</p></div>
       </div><p className="fd-boundary">Stacking shows relationships and tiers. It is not runtime wiring or data flow. <a href="#/growth">See how models grow over time</a>.</p></div></section>
 
       <section className="fd-editions" aria-labelledby="fd-editions-title"><div className="fd-section-inner"><div className="fd-section-heading"><h2 id="fd-editions-title">Choose a system</h2><p>Explore a curated assembly, then change the parts to test your own combination.</p></div><div className="fd-edition-list">{editions.map(edition => <a key={edition.name} href={edition.href}><span className="fd-edition-name">{edition.name}</span><span className="fd-edition-detail">{edition.detail}</span><span className="fd-edition-count">{capabilities[edition.id].length} capabilities · {edition.data.tools.length} products · {edition.data.recipes.length} examples</span><ArrowRight size={19} /></a>)}</div></div></section>

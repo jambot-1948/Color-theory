@@ -26,3 +26,21 @@
 .bw-footer p{max-width:1540px;margin:0 auto;padding:18px 48px 22px;font-size:12px;line-height:1.55;color:#56665a}
 .bw-footer strong{color:#1d2c26}
 @media(max-width:700px){.bw-footer p{padding:16px 18px 20px;font-size:11px}}
+
+/* Workbench hierarchy: the assembly leads; examples and parts share one compact control rail. */
+.bw-layout{grid-template-columns:minmax(0,1fr) minmax(250px,310px)}
+.bw-library{position:sticky;top:18px;padding:14px;max-height:calc(100vh - 36px);overflow:auto}
+.bw-library-tabs{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:14px;padding:3px;background:#eef2ef;border:1px solid #dce3de;border-radius:5px}
+.bw-library-tabs button{min-height:38px;border:0;border-radius:3px;background:transparent;color:#66746d;font-size:11px;font-weight:750}
+.bw-library-tabs button.active{background:#fff;color:#1b2825;box-shadow:0 1px 4px #1b282515}
+.bw-library-tabs span{color:#7b8881;font-variant-numeric:tabular-nums}
+.bw-panel-note{margin:2px 2px 13px;color:#68766f;font-size:11px;line-height:1.45}
+.bw-search{height:42px}
+.bw-tool-list{margin-top:10px;max-height:calc(100vh - 185px)}
+.bw-presets{margin:0;padding:0;border:0}
+.bw-presets button{min-height:45px;gap:8px;border-bottom:1px solid #e8ece9;padding:10px 3px;font-weight:650}
+.bw-presets button span{display:flex;align-items:center;gap:7px}
+.bw-presets button small{padding:2px 5px;border:1px solid #d9a493;color:#9d452f;border-radius:3px;font-size:9px}
+.bw-share{width:40px;height:40px}
+@media(max-width:760px){.bw-library{position:static;padding:14px;max-height:none;overflow:visible;order:initial}.bw-workspace{order:initial}.bw-tool-list{max-height:300px}.bw-add-mobile{min-height:44px;padding:7px 11px}.bw-header nav{height:45px;overflow-x:auto;scrollbar-width:thin}.bw-title p{line-height:1.5}}
+@media(pointer:coarse){.bw-app button,.bw-app select,.bw-header nav a{min-height:44px}}
