@@ -45,3 +45,4 @@
 .fc-scene g[data-group=deco]>g{opacity:calc(1 - var(--fc-labels,0))}
 .fc-scene.has-focus g[data-group=deco]>g{opacity:calc((1 - var(--fc-labels,0)) * .16)}
 @media(max-width:700px){.fc-boxart{position:static;display:block;margin:2px 0 6px}}
+.wb-callout.is-active text{fill:#0d1a15}
