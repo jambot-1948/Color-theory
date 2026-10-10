@@ -46,6 +46,7 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   })
   const [search, setSearch] = useState('')
   const [libraryView, setLibraryView] = useState<'parts' | 'examples'>('parts')
+  const [mobileMode, setMobileMode] = useState<'build' | 'read'>('build')
   const [lens, setLens] = useState<Lens>('Architect')
   const [copied, setCopied] = useState(false)
   const tools = useMemo(() => slotTools(edition, data, slots), [edition, data, slots])
@@ -77,6 +78,13 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
   function add(id: string) { setSlots(current => current.length < MAX_PARTS ? [...current, { capability: id }] : current) }
   function remove(index: number) { setSlots(current => current.filter((_, position) => position !== index)) }
   function fill(index: number, product: string) { setSlots(current => current.map((slot, position) => position === index ? { ...slot, product: product || undefined } : slot)) }
+  function loadPreset(preset: Slot[]) {
+    setSlots(preset)
+    if (window.matchMedia('(max-width: 760px)').matches) {
+      setMobileMode('read')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
   async function share() {
     const url = new URL(location.href)
     url.searchParams.delete('blend')
@@ -89,10 +97,14 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
     <SiteHeader active={edition} />
     <main className="bw-main"><div className="bw-title"><div><h1>{config.title} assembly</h1><p>Assemble capabilities, choose the products that fill them, then read what fits, conflicts, or remains missing.</p></div><span>{caps.length} capabilities / {data.tools.length} products</span></div>
       <aside className={`bw-foundation-note${edition === 'foundations' ? ' is-generic' : ''}`}><span className="bw-label">{foundationNotes[edition].label}</span><p>{foundationNotes[edition].text}</p>{edition !== 'foundations' && <a href="#/foundations">See Foundations <ArrowRight size={14} /></a>}</aside>
-      <div className="bw-layout">
-      <section className="bw-workspace"><div className="bw-workspace-head"><div><span className="bw-label">YOUR ASSEMBLY</span><h2>{tools.length ? tools.map(tool => tool.name).join(' + ') : 'Start with a capability'}</h2>{tools.length > 0 && <p className="bw-products">{tools.map(tool => tool.product?.name ?? `any ${tool.name.toLowerCase()}`).join(' · ')}</p>}</div><button className="bw-share" onClick={share} disabled={!tools.length} title="Copy share link" aria-label="Copy share link">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div><button className="bw-add-mobile" onClick={() => { setLibraryView('parts'); document.getElementById('bw-tool-library')?.scrollIntoView({ behavior: 'smooth' }) }}><Plus size={15} />Add or change parts</button>
+      <div className="bw-mobile-mode" role="tablist" aria-label="Workshop mode">
+        <button type="button" role="tab" aria-selected={mobileMode === 'build'} onClick={() => setMobileMode('build')}><span>Build</span><small>{tools.length} {tools.length === 1 ? 'part' : 'parts'}</small></button>
+        <button type="button" role="tab" aria-selected={mobileMode === 'read'} onClick={() => setMobileMode('read')}><span>Read</span><small>{recipe ? 'Matched' : 'Explore fit'}</small></button>
+      </div>
+      <div className={`bw-layout is-mobile-${mobileMode}`}>
+      <section className="bw-workspace"><div className="bw-workspace-head"><div><span className="bw-label">YOUR ASSEMBLY</span><h2>{tools.length ? tools.map(tool => tool.name).join(' + ') : 'Start with a capability'}</h2>{tools.length > 0 && <p className="bw-products">{tools.map(tool => tool.product?.name ?? `any ${tool.name.toLowerCase()}`).join(' · ')}</p>}</div><button className="bw-share" onClick={share} disabled={!tools.length} title="Copy share link" aria-label="Copy share link">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div>
         <div className="bw-slots"><span className="bw-label">PARTS TRAY · CAPABILITY, THEN PRODUCT</span><p className="bw-tray-note">Products are examples. Any product that does the job can fill a brick; leave it on “Any product” if yours is not listed.</p>{tools.length ? <div className="bw-slot-list">{tools.map((tool, index) => <div key={tool.id} className={`bw-slot${tool.product ? '' : ' is-empty'}`}><i style={{ background: hues[tool.primaryHue].hex }} /><span className="bw-slot-name"><strong>{tool.name}</strong><small>{hues[tool.primaryHue].name}</small></span><label><span className="bw-visually-hidden">Product for {tool.name}</span><select value={tool.product?.id ?? ''} onChange={event => fill(index, event.target.value)}><option value="">Any product</option>{tool.capability.products.map(id => <option key={id} value={id}>{productName(id)}</option>)}</select></label><button onClick={() => remove(index)} title={`Remove ${tool.name}`} aria-label={`Remove ${tool.name}`}><X size={14} /></button></div>)}</div> : <p>Pick a capability from the parts list to begin.</p>}</div>
-        <AssemblyGuide key={`${edition}-${encodeSlots(slots)}`} tools={tools} links={links} recipeId={recipe?.id} exact={match?.exact} data={data} edition={edition} />
+        <div className="bw-read-panel"><AssemblyGuide key={`${edition}-${encodeSlots(slots)}`} tools={tools} links={links} recipeId={recipe?.id} exact={match?.exact} data={data} edition={edition} />
         <div className="bw-reading"><div className="bw-section-head"><h3>Completed composition</h3></div><div className="bw-lenses" role="tablist" aria-label="Reading lens">{(['Architect', 'Operator', 'Consultant'] as Lens[]).map(item => <button key={item} role="tab" aria-selected={lens === item} className={lens === item ? 'active' : ''} onClick={() => setLens(item)}>{item}</button>)}</div>
           {tools.length ? <div className="bw-reading-copy">
             <span className="bw-label">{readingLabel}</span>
@@ -101,13 +113,13 @@ export default function BlendWorkshop({ edition = 'ai' }: { edition?: keyof type
             {lens === 'Operator' && <><p>{operatorText}</p><div className="bw-insight"><strong>{recipe ? 'Also check' : 'Pattern trade-offs'}</strong><span>{operatorDetail}</span></div></>}
             {lens === 'Consultant' && <><p>{consultantText}</p><div className="bw-insight"><strong>{pattern?.type === 'anti-pattern' ? 'Recommended fix' : recipe ? 'Summary' : 'Pattern potential'}</strong><span>{consultantDetail}</span></div></>}
           </div> : <p className="bw-empty">Your reading appears as you add parts.</p>}
-        </div>{tools.length > 0 && <div className="bw-next"><div><span className="bw-label">NEXT CHECK</span><p>{nextCheck}</p></div><ArrowRight size={20} /></div>}</section>
+        </div>{tools.length > 0 && <div className="bw-next"><div><span className="bw-label">NEXT CHECK</span><p>{nextCheck}</p></div><ArrowRight size={20} /></div>}</div></section>
       <aside className="bw-library" id="bw-tool-library" aria-label="Build controls">
         <div className="bw-library-tabs" role="group" aria-label="Build control">
           <button type="button" aria-pressed={libraryView === 'parts'} className={libraryView === 'parts' ? 'active' : ''} onClick={() => setLibraryView('parts')}>Add parts <span>{caps.length}</span></button>
           <button type="button" aria-pressed={libraryView === 'examples'} className={libraryView === 'examples' ? 'active' : ''} onClick={() => setLibraryView('examples')}>Examples <span>{presets.length}</span></button>
         </div>
-        {libraryView === 'examples' ? <div className="bw-presets"><p className="bw-panel-note">Load a curated assembly, then change it to test your own decisions.</p>{presets.map(preset => <button key={preset.name} onClick={() => setSlots(preset.slots)}><span>{preset.name}{preset.caution && <small>Caution</small>}</span><ArrowRight size={15} /></button>)}</div> : <><p className="bw-panel-note">Add a capability first. Choose its product in the assembly.</p><label className="bw-search"><Search size={16} /><span className="bw-visually-hidden">Search parts</span><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search capabilities or products" /></label><div className="bw-tool-list">{available.map(cap => <button key={cap.id} className="bw-tool" onClick={() => add(cap.id)} disabled={slots.length >= MAX_PARTS} title={slots.length >= MAX_PARTS ? 'Remove a part to add another' : cap.summary}><i style={{ background: hues[cap.hue].hex }} /><span><strong>{cap.name}</strong><small>{hues[cap.hue].name} · {cap.products.map(productName).join(', ')}</small></span><Plus size={16} /></button>)}{!available.length && <p className="bw-empty">No matching available parts. Clear the search or remove an existing part.</p>}</div></>}
+        {libraryView === 'examples' ? <div className="bw-presets"><p className="bw-panel-note">Load a curated assembly, then change it to test your own decisions.</p>{presets.map(preset => <button key={preset.name} onClick={() => loadPreset(preset.slots)}><span>{preset.name}{preset.caution && <small>Caution</small>}</span><ArrowRight size={15} /></button>)}</div> : <><p className="bw-panel-note">Add a capability first. Choose its product in the assembly.</p><label className="bw-search"><Search size={16} /><span className="bw-visually-hidden">Search parts</span><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search capabilities or products" /></label><div className="bw-tool-list">{available.map(cap => <button key={cap.id} className="bw-tool" onClick={() => add(cap.id)} disabled={slots.length >= MAX_PARTS} title={slots.length >= MAX_PARTS ? 'Remove a part to add another' : cap.summary}><i style={{ background: hues[cap.hue].hex }} /><span><strong>{cap.name}</strong><small>{hues[cap.hue].name} · {cap.products.map(productName).join(', ')}</small></span><Plus size={16} /></button>)}{!available.length && <p className="bw-empty">No matching available parts. Clear the search or remove an existing part.</p>}</div></>}
       </aside></div>
     </main>
     <SiteFooter />

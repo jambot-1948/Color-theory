@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import './BlendWorkshop.css'
 import './WorkshopNavigation.css'
 
@@ -11,5 +12,7 @@ const links = [
 ]
 
 export default function SiteHeader({ active }: { active?: string }) {
-  return <header className="bw-header"><a className="bw-brand" href="#/"><span className="bw-mark" aria-hidden="true"><i /><i /><i /></span><span className="bw-brand-copy"><span>Chromatic Architecture</span><small>Systems workbench</small></span></a><nav aria-label="Main navigation">{links.map(link => <a key={link.id} className={active === link.id ? 'active' : undefined} aria-current={active === link.id ? 'page' : undefined} href={link.href}>{link.label}</a>)}</nav></header>
+  const activeLink = useRef<HTMLAnchorElement | null>(null)
+  useEffect(() => { activeLink.current?.scrollIntoView({ block: 'nearest', inline: 'center' }) }, [active])
+  return <header className="bw-header"><a className="bw-brand" href="#/"><span className="bw-mark" aria-hidden="true"><i /><i /><i /></span><span className="bw-brand-copy"><span>Chromatic Architecture</span><small>Systems workbench</small></span></a><nav aria-label="Main navigation">{links.map(link => <a key={link.id} ref={active === link.id ? activeLink : undefined} className={active === link.id ? 'active' : undefined} aria-current={active === link.id ? 'page' : undefined} href={link.href}>{link.label}</a>)}</nav></header>
 }

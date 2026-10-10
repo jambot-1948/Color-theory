@@ -90,7 +90,7 @@ export interface AssemblyGuideProps {
 
 export default function AssemblyGuide({ tools, links, recipeId, exact, data, edition }: AssemblyGuideProps) {
   const hasArchitecture = edition === 'ai' && recipeId === 'lean-agent-runtime' && exact
-  const [view, setView] = useState<'angled' | 'parts' | 'map' | 'journey'>('angled')
+  const [view, setView] = useState<'angled' | 'parts' | 'map' | 'journey'>(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches ? 'parts' : 'angled')
   const recipe = recipeId ? data.recipes.find(item => item.id === recipeId) : undefined
   const story = recipeId && exact ? allStories[recipeId] : undefined
   const order = story ? story.steps.map(item => item.toolId) : recipe?.tools ?? []
@@ -111,7 +111,7 @@ export default function AssemblyGuide({ tools, links, recipeId, exact, data, edi
 
   return <div className="ag-guide">
     <div className="ag-head"><div><h3>Assembly guide</h3><p>{story ? 'Curated sequence for this recipe.' : recipe ? `Capabilities in the order of ${recipe.name}.` : 'One possible build order for understanding this stack.'}</p></div><span>{hasArchitecture && (view === 'map' || view === 'journey') ? 'WORKED EXAMPLE' : orderedTools.length ? `STEP ${String(step).padStart(2, '0')} / ${String(orderedTools.length).padStart(2, '0')}` : 'NO PARTS YET'}</span></div>
-    {orderedTools.length > 0 && <div className="ag-view-tabs" role="tablist" aria-label="Recipe view">{([['angled', 'Brick manual'], ['parts', 'Flat diagram'], ...(hasArchitecture ? [['map', 'System map'], ['journey', 'Follow a request']] as const : [])] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}>{label}</button>)}</div>}
+    {orderedTools.length > 0 && <><div className="ag-view-tabs" role="tablist" aria-label="Recipe view">{([['angled', 'Build view'], ['parts', 'Connections'], ...(hasArchitecture ? [['map', 'System map'], ['journey', 'Follow a request']] as const : [])] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}>{label}</button>)}</div><p className="ag-view-help">Build view adds one part at a time. Connections shows how the selected parts work together.</p></>}
     {view === 'map' || view === 'journey' ? <ArchitectureViews view={view} /> : orderedTools.length ? <div className="ag-layout">
       {!flat ? <ManualBoard {...manual} /> : <div className="ag-board">
         <div className="ag-board-head"><span>ASSEMBLY STATE</span><span>{visible.length} OF {orderedTools.length} PARTS</span></div>
