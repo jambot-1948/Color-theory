@@ -5,7 +5,7 @@ import type { Callout, OverviewModel, Point3 } from './types'
 
 const MANUAL: Camera = ISO_CAMERA
 
-// Draws one overview model at a point in its swing from box art (t = 0) to the manual view (t = 1).
+// Draws one overview model at a point in its swing from the assembled view (t = 0) to the system map (t = 1).
 // Convex hull of screen points (monotone chain), for a cylinder's silhouette.
 function hull(points: [number, number][]) {
   const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1])
@@ -82,7 +82,7 @@ export default function ModelScene({ model, t, unit, focus }: { model: OverviewM
 
   callouts.forEach(item => extent.push(P(item.anchor)))
   // Room for callouts grows as they fade in, so the box art fills the frame.
-  const margin = 30 + 180 * t
+  const margin = 30 + 130 * t
   const minX = Math.min(...extent.map(c => c[0])) - margin
   const maxX = Math.max(...extent.map(c => c[0])) + margin
   const minY = Math.min(...extent.map(c => c[1])) - 30
@@ -94,11 +94,12 @@ export default function ModelScene({ model, t, unit, focus }: { model: OverviewM
     const end: [number, number] = [anchor[0] + item.side * 70, anchor[1] - item.lift]
     const textX = end[0] + item.side * 6
     const anchorAt = item.side > 0 ? 'start' : 'end'
-    return <g key={item.title} className={`wb-callout${focus === item.group ? ' is-active' : ''}`} opacity={shown} aria-hidden="true">
-      <circle cx={anchor[0]} cy={anchor[1]} r="2.6" fill="#1d2420" />
-      <path d={`M ${anchor[0]} ${anchor[1]} L ${end[0]} ${end[1]}`} stroke="#1d2420" strokeWidth="1" fill="none" />
-      <text x={textX} y={end[1] - 2} textAnchor={anchorAt} fontSize="14" fontWeight="800" fill="#1b2c26">{item.title}</text>
-      <text x={textX} y={end[1] + 14} textAnchor={anchorAt} fontSize="12" fill="#4b5a52">{item.subtitle}</text>
+    const opacity = focus ? (focus === item.group ? shown : 0) : shown
+    return <g key={item.title} className={`wb-callout${focus === item.group ? ' is-active' : ''}`} opacity={opacity} aria-hidden="true">
+      <circle cx={anchor[0]} cy={anchor[1]} r="3.2" fill="#1d2420" />
+      <path d={`M ${anchor[0]} ${anchor[1]} L ${end[0]} ${end[1]}`} stroke="#1d2420" strokeWidth="1.5" fill="none" />
+      <text x={textX} y={end[1] - 3} textAnchor={anchorAt} fontSize="16" fontWeight="800" fill="#1b2c26">{item.title}</text>
+      <text x={textX} y={end[1] + 14} textAnchor={anchorAt} fontSize="13" fontWeight="600" fill="#4b5a52">{item.subtitle}</text>
     </g>
   }
 

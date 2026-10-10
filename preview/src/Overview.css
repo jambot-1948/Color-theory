@@ -1,53 +1,52 @@
 .fd-castle{background:#f2f5f2;border-bottom:1px solid #d8e0d9}
-.fc-inner{max-width:1540px;margin:auto;padding:40px 48px 30px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr);gap:20px 40px;align-items:start}
-.fc-left h1{margin:0;color:#192b26;font-size:clamp(48px,5vw,76px);line-height:.98;font-weight:760;letter-spacing:-.025em;text-wrap:balance}
-.fc-lead{margin:22px 0 18px;color:#2f443a;font-size:19px;line-height:1.5;max-width:54ch}
-.fc-actions{display:flex;align-items:center;gap:17px;flex-wrap:wrap;margin-bottom:19px}.fc-primary{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 17px;background:#1e3931;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;font-weight:750}.fc-primary:hover{background:#285849}.fc-secondary{color:#1d5f59;font-size:13px;font-weight:750;text-underline-offset:4px}.fc-model-note{max-width:62ch;margin:0 0 8px;color:#56665d;font-size:13px;line-height:1.5}
-.fc-sub{margin:0;color:#526259;font-size:15px}
-.fc-scene{min-width:0;margin-top:6px}
-.fc-scene .iso-scene{height:640px;width:100%;max-height:none}
-.fc-scene g[data-group]>g{transition:opacity .2s ease}
-.fc-scene.has-focus g[data-group]>g{opacity:.16}
-.fc-scene[data-focus=foundations] g[data-group=foundations]>g,.fc-scene[data-focus=data] g[data-group=data]>g,.fc-scene[data-focus=ai] g[data-group=ai]>g,.fc-scene[data-focus=harness] g[data-group=harness]>g{opacity:1}
-.fc-scene[data-focus=base] .iso-plinth{filter:drop-shadow(0 0 6px #c9b98f)}
-.fc-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.fc-layers li{padding:10px 14px 11px;background:#fff;border:1px solid #d6dfd8;border-radius:6px;transition:border-color .2s,box-shadow .2s,opacity .3s}
-.fc-layers li.is-active{border-color:#7f9a8b;box-shadow:0 2px 10px #1f3a2c14}
-.fc-layers li.is-pending{opacity:.45}
-.fc-head{display:flex;align-items:center;gap:8px}
-.fc-head i{width:12px;height:12px;border-radius:2px;flex:none}
-.fc-num{font-size:11px;font-weight:800;color:#6a756d}
-.fc-head strong{font-size:15px;color:#1b2c26}
-.fc-head small{font-size:12px;color:#5d6d63}
-.fc-layers p{margin:5px 0 7px;font-size:13px;line-height:1.45;color:#3c4f45}
-.fc-parts{display:flex;flex-wrap:wrap;gap:4px}
-.fc-parts span{font-size:11px;padding:2px 7px;border-radius:3px;background:#eef3ef;color:#33443b}
-.fc-layers a{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;font-weight:700;color:#1d5f59;text-decoration:none}
-.fc-layers a:hover{text-decoration:underline}
-.fc-layers a:focus-visible{outline:2px solid #186f67;outline-offset:2px}
-.fc-caveat{grid-column:1/-1;margin:8px 0 0;padding-top:16px;border-top:1px solid #cfd8d0;font-size:12px;line-height:1.5;color:#5b6a61}.fc-caveat strong{color:#2d4037}
-@media(max-width:1000px){.fc-inner{grid-template-columns:1fr}.fc-scene .iso-scene{height:560px}}
-@media(max-width:700px){.fc-scene .iso-scene{height:440px}}
-@media(max-width:700px){.fc-inner{padding:30px 18px 26px}.fc-left h1{font-size:43px}.fc-lead{font-size:16px;margin:16px 0}.fc-sub{font-size:13px}.fc-model-note{font-size:12px}.fc-actions{margin-bottom:16px}}
-@media(prefers-reduced-motion:reduce){.fc-scene g[data-group]>g,.fc-layers li{transition:none}}
-.fc-scene{position:relative}
-.fc-boxart{position:absolute;left:4px;top:8px;font-size:22px;font-weight:760;color:#1b2c26;pointer-events:none}
-.fc-views{position:absolute;right:4px;top:4px;display:flex;border:1px solid #bccbc0;border-radius:4px;overflow:hidden;background:#fff}
-.fc-views button{font:inherit;font-size:12px;font-weight:700;padding:6px 12px;border:0;background:transparent;color:#41554a;cursor:pointer}
-.fc-views button[aria-pressed=true]{background:#1e3931;color:#fff}
-.fc-views button:focus-visible{outline:2px solid #186f67;outline-offset:-2px}
-@media(max-width:700px){.fc-boxart{font-size:17px}}
-/* Box art shows the castle without labels; they fade in as the camera reaches the manual view. */
-.fc-scene .iso-brick text{opacity:var(--fc-labels,1)}
-.fc-scene.has-focus .iso-brick text{opacity:1}
-/* The box art shows the castle alone; the baseplate's operating-model label appears in the manual view. */
-.fc-scene .iso-plinth-label{opacity:var(--fc-labels,1)}
-/* Decorative turrets dress the box art and step aside in the manual view, so labels stay readable. */
-.fc-scene g[data-group=deco]>g{opacity:calc(1 - var(--fc-labels,0))}
-.fc-scene.has-focus g[data-group=deco]>g{opacity:calc((1 - var(--fc-labels,0)) * .16)}
-@media(max-width:700px){.fc-boxart{position:static;display:block;margin:2px 0 6px}}
-.wb-callout.is-active text{fill:#0d1a15}
-.fc-models{display:flex;gap:6px;margin:11px 0 4px}
-.fc-models button{font:inherit;min-height:40px;font-size:13px;font-weight:700;padding:7px 14px;border:1px solid #bccbc0;border-radius:20px;background:#fff;color:#33443b;cursor:pointer}
+.fc-inner{max-width:1540px;min-height:calc(100vh - 72px);margin:auto;padding:42px 48px 34px;display:grid;grid-template-columns:minmax(330px,.72fr) minmax(0,1.28fr);gap:44px;align-items:center}
+.fc-copy{max-width:560px;padding-bottom:24px}
+.fc-copy h1{margin:0;color:#192b26;font-size:clamp(50px,5vw,78px);line-height:.98;font-weight:760;letter-spacing:-.025em;text-wrap:balance}
+.fc-lead{margin:22px 0 20px;color:#2f443a;font-size:19px;line-height:1.5;max-width:54ch}
+.fc-actions{display:flex;align-items:center;gap:17px;flex-wrap:wrap;margin-bottom:28px}
+.fc-primary{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 17px;background:#1e3931;color:#fff;text-decoration:none;border-radius:4px;font-size:13px;font-weight:750}
+.fc-primary:hover{background:#285849}
+.fc-primary:focus-visible,.fc-secondary:focus-visible{outline:2px solid #186f67;outline-offset:3px}
+.fc-secondary{color:#1d5f59;font-size:13px;font-weight:750;text-underline-offset:4px}
+.fc-model-note{max-width:50ch;margin:0 0 12px;color:#46594f;font-size:14px;line-height:1.55}
+.fc-models{display:flex;gap:7px;margin:0 0 26px}
+.fc-models button{font:inherit;min-height:38px;font-size:13px;font-weight:700;padding:6px 14px;border:1px solid #aebfb2;border-radius:20px;background:transparent;color:#33443b;cursor:pointer}
+.fc-models button:hover{background:#fff}
 .fc-models button[aria-selected=true]{background:#1e3931;border-color:#1e3931;color:#fff}
 .fc-models button:focus-visible{outline:2px solid #186f67;outline-offset:2px}
+.fc-reasoning-note{max-width:52ch;margin:0;padding-top:17px;border-top:1px solid #cbd5cd;color:#5b6a61;font-size:12px;line-height:1.55}
+.fc-reasoning-note strong{color:#2d4037}
+
+.fc-stage{min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.fc-stage-status{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:0 8px 10px;border-bottom:1px solid #cbd5cd;color:#63736a;font-size:12px}
+.fc-stage-status span{font-weight:700}
+.fc-stage-status strong{color:#1b2c26;font-size:13px}
+.fc-scene{position:relative;min-width:0}
+.fc-scene .iso-scene{display:block;width:100%;height:clamp(500px,68vh,680px);max-height:none}
+.fc-scene g[data-group]>g{transition:opacity .2s ease}
+.fc-boxart{position:absolute;left:8px;top:18px;font-size:20px;font-weight:760;color:#1b2c26;pointer-events:none}
+.fc-stage-caption{margin:-8px 8px 0;text-align:center;color:#4f6157;font-size:13px;font-weight:650}
+
+/* The assembled object stays clean; its labels arrive with the single system reveal. */
+.fc-scene .iso-brick text,.fc-scene .iso-plinth-label{opacity:var(--fc-labels,1)}
+.fc-scene g[data-group=deco]>g{opacity:calc(1 - var(--fc-labels,0))}
+.wb-callout text{paint-order:stroke;stroke:#f2f5f2;stroke-width:3px;stroke-linejoin:round}
+
+@media(max-width:1000px){
+  .fc-inner{min-height:auto;grid-template-columns:1fr;padding-top:34px;gap:20px}
+  .fc-copy{max-width:720px;padding-bottom:0}
+  .fc-scene .iso-scene{height:560px}
+}
+@media(max-width:700px){
+  .fc-inner{padding:28px 18px 26px;gap:12px}
+  .fc-copy h1{font-size:43px}
+  .fc-lead{font-size:16px;margin:16px 0}
+  .fc-actions{margin-bottom:22px}
+  .fc-model-note{font-size:13px}
+  .fc-models{margin-bottom:18px}
+  .fc-stage-status{padding-top:8px}
+  .fc-scene .iso-scene{height:440px}
+  .fc-boxart{position:static;display:block;margin:10px 8px 0;font-size:17px}
+  .fc-stage-caption{margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.fc-scene g[data-group]>g{transition:none}}

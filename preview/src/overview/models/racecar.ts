@@ -107,11 +107,11 @@ export const raceCar: OverviewModel = {
         wheel(16.4, 7.0, 1.55, 1.4),
       ],
       callouts: [
-        { group: 'ai', anchor: [11.2, 3.3, 3.4 + H + 0.35 + 1.2 * t], side: 1, lift: 30, title: 'Power unit', subtitle: 'AI application' },
-        { group: 'data', anchor: [6.5, 6.1 + spread, 1.6 + 0.3 * t], side: -1, lift: -64, title: 'Sidepods & telemetry', subtitle: 'Data engineering' },
-        { group: 'harness', anchor: [0.4, 1.2, 3.65 + 0.6 * t], side: -1, lift: 30, title: 'Brakes, halo & wings', subtitle: 'Agent harness' },
-        { group: 'foundations', anchor: [19.4, 4.5, 1.35], side: 1, lift: -30, title: 'Chassis', subtitle: 'Foundations' },
-        { group: 'base', anchor: [12, 9, -0.8], side: 1, lift: -30, title: 'Pit wall', subtitle: 'Operating model' },
+        { group: 'ai', anchor: [11.2, 3.3, 3.4 + H + 0.35 + 1.2 * t], side: 1, lift: 30, title: 'AI application', subtitle: 'The power unit' },
+        { group: 'data', anchor: [6.5, 6.1 + spread, 1.6 + 0.3 * t], side: -1, lift: -64, title: 'Data engineering', subtitle: 'Sidepods & telemetry' },
+        { group: 'harness', anchor: [0.4, 1.2, 3.65 + 0.6 * t], side: -1, lift: 30, title: 'Agent harness', subtitle: 'Brakes, halo & wings' },
+        { group: 'foundations', anchor: [19.4, 4.5, 1.35], side: 1, lift: -30, title: 'Foundations', subtitle: 'The chassis' },
+        { group: 'base', anchor: [12, 9, -0.8], side: 1, lift: -30, title: 'Operating model', subtitle: 'The pit wall' },
       ],
     }
   },

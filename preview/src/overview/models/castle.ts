@@ -71,11 +71,11 @@ export const castleModel: OverviewModel = {
     return {
       prims: [{ kind: 'sorted', bricks: lifted(castle, lift, t) }],
       callouts: [
-        { group: 'ai', anchor: [10, 1.5, 8 * H + 2.4 * t], side: 1, lift: 20, title: 'Spire', subtitle: 'AI application' },
-        { group: 'data', anchor: [2, 2.5, 4 * H + 0.5 * t], side: -1, lift: 70, title: 'Storerooms', subtitle: 'Data engineering' },
-        { group: 'harness', anchor: [7, 8, 2.5 * H], side: -1, lift: -60, title: 'Gatehouse', subtitle: 'Agent harness' },
-        { group: 'foundations', anchor: [18, 6, 2.5 * H], side: 1, lift: -4, title: 'Walls & turrets', subtitle: 'Foundations' },
-        { group: 'base', anchor: [18, 4, -0.8], side: 1, lift: -20, title: 'Baseplate', subtitle: 'Operating model' },
+        { group: 'ai', anchor: [10, 1.5, 8 * H + 2.4 * t], side: 1, lift: 20, title: 'AI application', subtitle: 'The spire' },
+        { group: 'data', anchor: [2, 2.5, 4 * H + 0.5 * t], side: -1, lift: 70, title: 'Data engineering', subtitle: 'The storerooms' },
+        { group: 'harness', anchor: [7, 8, 2.5 * H], side: -1, lift: -60, title: 'Agent harness', subtitle: 'The gatehouse' },
+        { group: 'foundations', anchor: [18, 6, 2.5 * H], side: 1, lift: -4, title: 'Foundations', subtitle: 'Walls & turrets' },
+        { group: 'base', anchor: [18, 4, -0.8], side: 1, lift: -20, title: 'Operating model', subtitle: 'The baseplate' },
       ],
     }
   },
