@@ -21,6 +21,8 @@ export const headline: CSSProperties = { margin: '0 0 22px', fontSize: 64, lineH
 export const body: CSSProperties = { margin: 0, fontSize: 29, lineHeight: 1.45, color: '#41554a', maxWidth: 620 }
 export const smallCaps: CSSProperties = { fontSize: 18, fontWeight: 800, color: SUBTLE, letterSpacing: '0.06em' }
 
+export const caption: CSSProperties = { fontSize: 22, lineHeight: 1.35, color: '#56665a' }
+
 export function Chip({ label, color, progress }: { label: string, color: string, progress: number }) {
-  return <span style={{ display: 'inline-block', fontSize: 17, fontWeight: 800, padding: '6px 13px', border: `2.5px solid ${color}`, borderRadius: 5, background: '#fff', color, opacity: progress, transform: `scale(${0.85 + 0.15 * progress})`, transformOrigin: 'left center' }}>{label}</span>
+  return <span style={{ display: 'inline-block', fontSize: 22, fontWeight: 800, padding: '6px 14px', border: `2.5px solid ${color}`, borderRadius: 5, background: '#fff', color, opacity: progress, transform: `scale(${0.85 + 0.15 * progress})`, transformOrigin: 'left center' }}>{label}</span>
 }

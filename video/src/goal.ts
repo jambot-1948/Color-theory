@@ -25,8 +25,17 @@ export const questions: Question[] = [
   { text: 'Where does the team’s data come from, and how fresh must it be?', note: 'Collect it nightly and model it in one place.', asks: { data: ['ingest', 'transform', 'store', 'orchestrate'] } },
   { text: 'Who owns this data, and who may see it?', note: 'This is people data.', asks: { data: ['govern'], foundations: ['trust'] } },
   { text: 'Can we trust the numbers?', asks: { data: ['observe'] } },
+  { text: 'Who runs it, and who gets paged?', note: 'A small team will run this.', asks: { foundations: ['delivery', 'platform', 'operations'] } },
   { text: 'How will people ask?', note: 'Dashboards, and questions in plain language.', asks: { data: ['serve'], ai: ['cognition', 'memory', 'interface'], foundations: ['experience'] } },
   { text: 'Does it only answer, or also act?', note: 'Acting adds a system of its own.', asks: { harness: ['permissions', 'evidence'] }, optional: true },
+]
+
+// How this job is judged. Editorial: the site records no scores for brick builds, so these are shown as a lens, not a number.
+// Names follow the site's evaluationDimensions (trustSurface, operationalLoad, adaptability).
+export const criteria = [
+  { id: 'trust', label: 'Trust surface', why: 'This is people data.', result: 'Governance and Trust roles are filled.' },
+  { id: 'load', label: 'Operational load', why: 'A small team runs it.', result: 'One orchestrator, not two.' },
+  { id: 'adapt', label: 'Adaptability', why: 'New questions will arrive.', result: 'Roles stay put when a product is swapped.' },
 ]
 
 export const jobHues = (edition: EditionId) => [...new Set(questions.flatMap(question => question.asks[edition] ?? []))]
@@ -40,8 +49,9 @@ const recipeTools = (edition: EditionId, id: string) => {
 }
 export const systems = {
   data: { edition: 'data' as const, name: 'Team data', tools: ['fivetran', 'dbt', 'snowflake', 'trino', 'airflow', 'great-expectations', 'datahub'] },
-  ai: { edition: 'ai' as const, name: 'Ask in plain language', tools: recipeTools('ai', 'internal-knowledge-agent') },
-  foundations: { edition: 'foundations' as const, name: 'Login, app and delivery', tools: recipeTools('foundations', 'authenticated-app') },
+  // The recipe has no Interface part, which question 5 asks for. Streamlit and Vercel both seat cleanly; the video uses Streamlit.
+  ai: { edition: 'ai' as const, name: 'Ask in plain language', tools: [...recipeTools('ai', 'internal-knowledge-agent'), 'streamlit'] },
+  foundations: { edition: 'foundations' as const, name: 'Login, app and delivery', tools: recipeTools('foundations', 'watched-app') },
   harness: { edition: 'harness' as const, name: 'Only if it acts', tools: [] as string[] },
 }
 // A second product on a role that already has one: the forced fit shown in the data build.

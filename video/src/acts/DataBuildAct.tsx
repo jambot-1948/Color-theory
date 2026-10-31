@@ -136,7 +136,7 @@ function SeatKey({ frame }: { frame: number }) {
     { mark: <span style={{ width: 30, flex: 'none' }}><BrickIcon hex="#8a948f" unit={5} ghost /></span>, name: 'Missing', text: 'the job asks, nothing fills it' },
   ]
   return <div style={{ opacity: show, display: 'flex', flexDirection: 'column', gap: 9 }}>
-    {rows.map(row => <div key={row.name} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 20, color: '#41554a' }}>
+    {rows.map(row => <div key={row.name} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 22, color: '#41554a' }}>
       {row.mark}<span><strong style={{ color: INK, fontWeight: 760 }}>{row.name}</strong> · {row.text}</span>
     </div>)}
   </div>
@@ -153,8 +153,8 @@ function StepCopy({ frame, fps }: { frame: number, fps: number }) {
   const color = toneColor[verdict] ?? MUTED
   return <div style={{ opacity: Math.min(enter, exit), transform: `translateY(${(1 - enter) * 28}px)` }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 18, height: 40 }}>
-      <span style={{ fontSize: 18, fontWeight: 800, color: SUBTLE, letterSpacing: '0.06em' }}>STEP {String(index + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}</span>
-      {index > 0 && index <= FORCED && frame >= step.start + 40 && <span style={{ fontSize: 17, fontWeight: 800, padding: '6px 13px', border: `2.5px solid ${color}`, borderRadius: 5, background: '#fff', color, opacity: chipIn, transform: `scale(${0.85 + 0.15 * chipIn})`, transformOrigin: 'left center' }}>{verdictCopy[verdict].label}</span>}
+      <span style={{ fontSize: 20, fontWeight: 800, color: SUBTLE, letterSpacing: '0.06em' }}>STEP {String(index + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}</span>
+      {index > 0 && index <= FORCED && frame >= step.start + 40 && <span style={{ fontSize: 22, fontWeight: 800, padding: '6px 14px', border: `2.5px solid ${color}`, borderRadius: 5, background: '#fff', color, opacity: chipIn, transform: `scale(${0.85 + 0.15 * chipIn})`, transformOrigin: 'left center' }}>{verdictCopy[verdict].label}</span>}
     </div>
     <h2 style={{ margin: '22px 0 20px', fontSize: 60, lineHeight: 1.05, fontWeight: 760, color: INK, letterSpacing: '-0.01em' }}>{step.action}</h2>
     {step.kind === 'primer' ? <PrimerList frame={frame} fps={fps} /> : <p style={{ margin: 0, fontSize: 29, lineHeight: 1.45, color: '#41554a', maxWidth: 620 }}>{step.copy}</p>}
@@ -169,7 +169,7 @@ function StillMissing({ frame, fps }: { frame: number, fps: number }) {
   const enter = spring({ frame: frame - step.start - 30, fps, config: { damping: 18, stiffness: 120 } })
   const loud = stepAt(frame) === 3
   return <div style={{ opacity: enter, display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 22px 18px', border: `2.5px dashed ${loud ? '#b0562f' : '#b5c0b9'}`, borderRadius: 10, background: '#fafbfa' }}>
-    <small style={{ fontSize: 15, fontWeight: 800, letterSpacing: '0.06em', color: loud ? '#b0562f' : '#617068' }}>THE JOB STILL NEEDS</small>
+    <small style={{ fontSize: 20, fontWeight: 800, letterSpacing: '0.06em', color: loud ? '#b0562f' : '#617068' }}>THE JOB STILL NEEDS</small>
     <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', maxWidth: 580 }}>
       {gaps.map(id => {
         const hue = hueOf('data', id)
@@ -187,9 +187,9 @@ function Stamp({ frame, fps }: { frame: number, fps: number }) {
   const slam = spring({ frame: frame - STAMP_AT, fps, config: { damping: 11, stiffness: 220, mass: 0.9 } })
   const color = toneColor[verdict]
   return <div style={{ transform: `scale(${1.6 - 0.6 * slam}) rotate(-4deg)`, opacity: Math.min(1, slam * 1.4), display: 'inline-flex', flexDirection: 'column', gap: 4, padding: '14px 22px', border: `4px solid ${color}`, borderRadius: 6, color, background: '#fff', boxShadow: '0 10px 30px #1d242014' }}>
-    <small style={{ fontSize: 15, fontWeight: 800, letterSpacing: '0.08em', opacity: 0.8 }}>FINISHED MODEL</small>
+    <small style={{ fontSize: 20, fontWeight: 800, letterSpacing: '0.08em', opacity: 0.8 }}>FINISHED MODEL</small>
     <strong style={{ fontSize: 34, fontWeight: 800 }}>{verdictCopy[verdict].label}</strong>
-    <small style={{ fontSize: 16, fontWeight: 700, opacity: 0.8 }}>Links recorded, not tested</small>
+    <small style={{ fontSize: 22, fontWeight: 700, opacity: 0.8 }}>Links recorded, not tested</small>
   </div>
 }
 
@@ -216,7 +216,7 @@ export function DataBuildAct() {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: (zoom - 1) / (PRIMER_ZOOM - 1), background: `linear-gradient(to right, ${PAPER} 0, #f2f5f200 140px), linear-gradient(to top, ${PAPER} 0, #f2f5f200 120px)` }} />
     </div>
     <div style={{ position: 'absolute', right: 150, top: 150 }}><Stamp frame={frame} fps={fps} /></div>
-    <div style={{ position: 'absolute', left: 120, right: 120, bottom: 44, fontSize: 19, color: MUTED, opacity: caveat, textAlign: 'right' }}>
+    <div style={{ position: 'absolute', left: 120, right: 120, bottom: 44, fontSize: 22, color: MUTED, opacity: caveat, textAlign: 'right' }}>
       Height shows tier, a reading aid. Studs lock only where a pairing is recorded; stacking is not data flow.
     </div>
   </AbsoluteFill>

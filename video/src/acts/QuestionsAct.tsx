@@ -30,8 +30,8 @@ function HueChip({ edition, hue, progress }: { edition: EditionId, hue: string, 
   const info = hueOf(edition, hue)
   return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '6px 12px 6px 8px', border: '2px solid #cdd6cf', borderRadius: 5, background: '#fff', opacity: progress, transform: `translateY(${(1 - progress) * 10}px)` }}>
     <span style={{ width: 22, height: 22, borderRadius: 3, background: info.hex }} />
-    <span style={{ fontSize: 15, fontWeight: 800, color: SUBTLE, letterSpacing: '0.05em' }}>{editionInfo[edition].title.toUpperCase()}</span>
-    <span style={{ fontSize: 20, fontWeight: 750, color: INK }}>{info.name}</span>
+    <span style={{ fontSize: 18, fontWeight: 800, color: SUBTLE, letterSpacing: '0.05em' }}>{editionInfo[edition].title.toUpperCase()}</span>
+    <span style={{ fontSize: 24, fontWeight: 750, color: INK }}>{info.name}</span>
   </span>
 }
 
@@ -50,7 +50,7 @@ export function QuestionsAct() {
       <Beat frame={frame} fps={fps} start={10} end={QUESTIONS_DURATION}>
         <p style={{ margin: 0, fontSize: 27, lineHeight: 1.4, color: '#41554a' }}>Each question asks for roles. Each role has a colour. A pale placeholder marks it until a product fills it.</p>
       </Beat>
-      <ol style={{ listStyle: 'none', margin: '40px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <ol style={{ listStyle: 'none', margin: '28px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
         {questions.map((question, index) => {
           if (frame < Q_START[index]) return null
           const enter = spring({ frame: frame - Q_START[index], fps, config: { damping: 20, stiffness: 120 } })
@@ -58,7 +58,7 @@ export function QuestionsAct() {
           const hues = order.flatMap(edition => (question.asks[edition] ?? []).map(hue => ({ edition, hue })))
           return <li key={question.text} style={{ opacity: enter * (active ? 1 : 0.5), transform: `translateY(${(1 - enter) * 20}px)` }}>
             <div style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
-              <span style={{ fontSize: 18, fontWeight: 800, color: SUBTLE, minWidth: 30 }}>{String(index + 1).padStart(2, '0')}</span>
+              <span style={{ fontSize: 22, fontWeight: 800, color: SUBTLE, minWidth: 36 }}>{String(index + 1).padStart(2, '0')}</span>
               <span style={{ fontSize: active ? 34 : 23, lineHeight: 1.2, fontWeight: active ? 760 : 650, color: INK }}>{question.text}</span>
             </div>
             {active && <div style={{ marginLeft: 46 }}>
@@ -80,7 +80,7 @@ export function QuestionsAct() {
       return <div key={edition} style={{ position: 'absolute', ...cells[edition], width: 520, height: 470, opacity: intro * (optional ? 0.62 : 1) }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <span style={{ ...smallCaps, color: INK }}>{editionInfo[edition].title.toUpperCase()}</span>
-          <span style={{ fontSize: 17, fontWeight: 700, color: MUTED }}>{optional ? 'Only if it acts' : `${shownAsked} of ${asked} roles asked`}</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: MUTED }}>{optional ? 'Only if it acts' : `${shownAsked} of ${asked} roles asked`}</span>
         </div>
         <div style={{ width: 520, height: 430, border: optional ? '2px dashed #c1cbc4' : 'none', borderRadius: 10, marginTop: 8 }}>
           <MorphScene frame={frame} fps={fps} keyframes={keyframes} plate={{ w: 12, d: 6 }} badges={false} headroom={1.4}
@@ -93,6 +93,6 @@ export function QuestionsAct() {
       <p style={{ margin: 0, fontSize: 38, lineHeight: 1.15, fontWeight: 760, color: INK }}>One job. Three systems, and a fourth if it acts.</p>
       <p style={{ margin: '12px 0 0', fontSize: 24, color: MUTED }}>Roles first. Products second.</p>
     </div>
-    <div style={{ position: 'absolute', right: 60, bottom: 26, fontSize: 18, color: MUTED, opacity: intro }}>The questions are a starting checklist, not a rule.</div>
+    <div style={{ position: 'absolute', right: 60, bottom: 26, fontSize: 22, color: MUTED, opacity: intro }}>The questions are a starting checklist, not a rule.</div>
   </AbsoluteFill>
 }

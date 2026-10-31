@@ -1,6 +1,6 @@
 # Round 2 plan: the five open items
 
-Status: draft for Jamil's decisions, 2026-10-31. Branch `video/goal-first-fixes`. Nothing here is built yet.
+Status: built 2026-10-31. Jamil's decisions: Streamlit, sixth question, the three criteria (site gets them too), no joined state, 2:16 accepted (no trims).
 
 Order of work is by risk: data-only fixes first (1, 3), then visual encoding (2, 4), then the one piece of new content (5).
 

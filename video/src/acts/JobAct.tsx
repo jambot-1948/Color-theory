@@ -1,10 +1,10 @@
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion'
 import type { SceneBrick } from '../../../preview/src/bricks/Brick'
 import { BRICK_HEIGHT } from '../../../preview/src/bricks/iso'
 import { MorphScene, clamp } from '../lib/motion'
-import { Beat, Eyebrow, body, headline } from '../lib/type'
+import { Beat, Chip, Eyebrow, body, headline } from '../lib/type'
 import { INK, PAPER } from '../theme'
-import { job } from '../goal'
+import { criteria, job } from '../goal'
 
 // Act 1: the job. Start from what the tool is for; the usual pile of tools flashes by as the answer we are not giving.
 const GRAY = '#aeb8b1'
@@ -18,8 +18,8 @@ const pile: SceneBrick[] = names.map((name, index) => {
   return { id: `pile-${name}`, box: { x, y, z: level * BRICK_HEIGHT, w: 4, d: 2, h: BRICK_HEIGHT }, hex: GRAY, label: '', sticker: name, state: 'seated' }
 })
 
-const B = { job: 20, pile: 110, instead: 230, clear: 260 }
-export const JOB_DURATION = 360
+const B = { job: 20, pile: 110, instead: 230, clear: 260, judged: 330 }
+export const JOB_DURATION = 450
 
 export function JobAct() {
   const frame = useCurrentFrame()
@@ -28,15 +28,21 @@ export function JobAct() {
   return <AbsoluteFill style={{ background: PAPER, fontFamily: 'Inter, sans-serif' }}>
     <Eyebrow opacity={fade}>CHROMATIC ARCHITECTURE · START FROM THE JOB</Eyebrow>
     <div style={{ position: 'absolute', left: 120, top: 300, width: 700 }}>
-      <Beat frame={frame} fps={fps} start={B.job} end={B.clear + 90}>
+      <Beat frame={frame} fps={fps} start={B.job} end={JOB_DURATION - 20}>
         <h1 style={headline}>{job.line}</h1>
         <p style={body}>{job.detail}</p>
       </Beat>
       <Beat frame={frame} fps={fps} start={B.pile + 20} end={B.instead - 4} style={{ marginTop: 40 }}>
         <p style={{ ...body, fontSize: 32, color: INK, fontWeight: 650 }}>The usual answer is a pile of tools.</p>
       </Beat>
-      <Beat frame={frame} fps={fps} start={B.instead} end={B.clear + 90} style={{ marginTop: 40 }}>
+      <Beat frame={frame} fps={fps} start={B.instead} end={JOB_DURATION - 20} style={{ marginTop: 40 }}>
         <p style={{ ...body, fontSize: 32, color: INK, fontWeight: 650 }}>Ask what the job needs first. Then pick the parts.</p>
+      </Beat>
+      <Beat frame={frame} fps={fps} start={B.judged} end={JOB_DURATION - 20} style={{ marginTop: 36 }}>
+        <p style={{ ...body, fontSize: 24, color: '#56665a' }}>It will be judged on three things, chosen for this job:</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 14 }}>
+          {criteria.map((item, i) => <Chip key={item.id} label={item.label} color={INK} progress={spring({ frame: frame - B.judged - 14 - i * 12, fps, config: { damping: 18, stiffness: 140 } })} />)}
+        </div>
       </Beat>
     </div>
     <div style={{ position: 'absolute', right: 20, top: 40, width: 1100, height: 900, opacity: fade }}>
