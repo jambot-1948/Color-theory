@@ -23,7 +23,7 @@ export interface Question {
 
 export const questions: Question[] = [
   { text: 'Where does the team’s data come from, and how fresh must it be?', note: 'Collect it nightly and model it in one place.', asks: { data: ['ingest', 'transform', 'store', 'orchestrate'] } },
-  { text: 'Who may see whose work?', note: 'This is people data.', asks: { data: ['govern'], foundations: ['trust'] } },
+  { text: 'Who owns this data, and who may see it?', note: 'This is people data.', asks: { data: ['govern'], foundations: ['trust'] } },
   { text: 'Can we trust the numbers?', asks: { data: ['observe'] } },
   { text: 'How will people ask?', note: 'Dashboards, and questions in plain language.', asks: { data: ['serve'], ai: ['cognition', 'memory', 'interface'], foundations: ['experience'] } },
   { text: 'Does it only answer, or also act?', note: 'Acting adds a system of its own.', asks: { harness: ['permissions', 'evidence'] }, optional: true },
@@ -31,13 +31,21 @@ export const questions: Question[] = [
 
 export const jobHues = (edition: EditionId) => [...new Set(questions.flatMap(question => question.asks[edition] ?? []))]
 
-// The systems the job leads to. Products are chosen from curated recipes where one fits.
+// The systems the job leads to. Foundations and AI use a curated recipe as it stands in the site's data, so a product swap there carries over.
+// The data system is the job's own build: the Modern Data Stack plus the roles the job asked for.
+const recipeTools = (edition: EditionId, id: string) => {
+  const recipe = editionInfo[edition].data.recipes.find(item => item.id === id)
+  if (!recipe) throw new Error(`goal.ts: the ${edition} data has no recipe "${id}" any more`)
+  return recipe.tools
+}
 export const systems = {
   data: { edition: 'data' as const, name: 'Team data', tools: ['fivetran', 'dbt', 'snowflake', 'trino', 'airflow', 'great-expectations', 'datahub'] },
-  ai: { edition: 'ai' as const, name: 'Ask in plain language', tools: ['openai', 'pinecone', 'langchain', 'langgraph', 'langsmith'] },
-  foundations: { edition: 'foundations' as const, name: 'Login, app and delivery', tools: ['nextjs', 'nodejs', 'postgresql', 'heroku', 'auth0', 'github-actions'] },
+  ai: { edition: 'ai' as const, name: 'Ask in plain language', tools: recipeTools('ai', 'internal-knowledge-agent') },
+  foundations: { edition: 'foundations' as const, name: 'Login, app and delivery', tools: recipeTools('foundations', 'authenticated-app') },
   harness: { edition: 'harness' as const, name: 'Only if it acts', tools: [] as string[] },
 }
+// A second product on a role that already has one: the forced fit shown in the data build.
+export const secondOrchestrator = 'dagster'
 
 export const hueOf = (edition: EditionId, id: string) => editionInfo[edition].data.hues.find(hue => hue.id === id)!
 
@@ -46,6 +54,8 @@ export function readSystem(edition: EditionId, toolIds: string[], layoutIds: str
   const { data } = editionInfo[edition]
   const slots = slotsFromTools(edition, toolIds)
   const tools = slotTools(edition, data, slots)
+  // A product the data no longer holds would silently shrink the build and change its verdict.
+  if (tools.length !== new Set(toolIds).size) throw new Error(`goal.ts: ${edition} has no capability for ${toolIds.filter(id => !tools.some(tool => tool.product?.id === id)).join(', ')}`)
   const match = blueprintMatch(edition, data, slots)
   const links = slotLinks(edition, data, slots, match ? allStories[match.recipe.id]?.links : undefined)
   const filled = new Set(tools.map(tool => tool.primaryHue))

@@ -1,16 +1,20 @@
 # Handoff: Chromatic Architecture animated overview
 
-Last session: 2026-09-29. Branch: `video/animated-overview` on `jambot-1948/Color-theory`. `main` is untouched.
+Last session: 2026-10-31. Branch: `video/goal-first-fixes` (cut from `main`, which already contains the merged video and the site changes since). The older `video/animated-overview` branch is behind main.
 
 ## What exists (2026-09-29: goal-first cut)
-`Overview` is now the **goal-first cut**: 2:02, four acts, anchored on one job ("a tool to explore how a project team works"). Rationale and trade-offs are in `GOAL_FIRST.md`; the matching site plan is `../SITE_GOALS_AND_SYSTEMS.md`.
+`Overview` is the **goal-first cut**: 2:03 (3680 frames), four acts, anchored on one job ("a tool to explore how a project team works"). Rationale and trade-offs are in `GOAL_FIRST.md`; the matching site plan is `../SITE_GOALS_AND_SYSTEMS.md`.
 
 | # | Act | File | Frames |
 |---|-----|------|--------|
-| 1 | The job; the gray pile flashes by as "the usual answer" | `src/acts/JobAct.tsx` | 450 |
-| 2 | Five questions; each lights hue chips and drops placeholders on the system that owns the role (Data, AI, Foundations, Harness "only if it acts") | `src/acts/QuestionsAct.tsx` | 1080 |
-| 3 | The data system up close: *Holds, parts missing* → Governance Gap *Looks built, reads wrong* → add GX Core + DataHub → *Snaps together* | `src/acts/DataBuildAct.tsx` | 1080 |
-| 4 | The set: Data, AI, Harness (pale) on Foundations, verdict per system; open seams "Unproven, not wrong"; end card | `src/acts/SetAct.tsx` | 1080 |
+| 1 | The job; the gray pile flashes by as "the usual answer" | `src/acts/JobAct.tsx` | 360 |
+| 2 | Five questions; each lights hue chips and drops placeholders on the system that owns the role (Data, AI, Foundations, Harness "only if it acts") | `src/acts/QuestionsAct.tsx` | 820 |
+| 3 | The data system up close, seven steps: **read one brick** (capability, role colour, product label, tier, zoomed in) → fill three (*Holds, parts missing*) → Governance Gap (*Looks built, reads wrong*) → ask the job again → add GX Core + DataHub (*Snaps together*) → **add a second orchestrator (Dagster on Airflow's role: *Forced fit*, red ✕)** → take it back off, stamp "Links recorded, not tested". A seat key (Snaps / Loose / Forced / Missing) sits bottom-left from step 2 | `src/acts/DataBuildAct.tsx` | 1560 |
+| 4 | The set: Data, AI, Harness (pale) on Foundations, verdict per system; open seams "Unproven, not wrong"; end card | `src/acts/SetAct.tsx` | 940 |
+
+**Changes on 2026-10-31** (from a critique of the first goal-first render): the forced fit and a short grammar primer were added; question 2 now reads "Who owns this data, and who may see it?"; "answers the job" became "every role the job asked for is filled", with the verdict stamp qualified "Links recorded, not tested"; acts 1, 2 and 4 were tightened to pay for the new material. Earlier the HANDOFF listed act 2 at 1080 frames; it was 1050.
+
+**Data drift caught:** `main` replaced Heroku with Render and added GitHub to Authenticated App after the video merged, which silently shrank the Foundations build. `goal.ts` now takes the AI and Foundations builds from their curated recipes (`internal-knowledge-agent`, `authenticated-app`) and `readSystem()` throws if a product has no capability, so drift fails loudly. The data build is still a hand-picked list.
 
 The job, questions and chosen builds live in `src/goal.ts`. `readSystem()` reads a build with the site's rules and counts the job's unfilled roles as `gaps`. Move it to `preview/src/jobs.ts` when the site gets jobs (phase 2 of the site plan).
 
@@ -37,6 +41,7 @@ Shared code: `src/lib/motion.tsx` (MorphScene: parts drop in, glide between keyf
 - Visual register follows PRODUCT.md: neutral chrome, colour only from the hue system, and no 3D, neon or gradients.
 
 ## Open questions and ideas to explore
+- Still open from the critique: the AI system reads *Holds, parts missing* (Interface) in act 4 even though the job asked "how will people ask?"; act 4's dashed seams can read as data flow and the "not data flow" caveat isn't repeated there; Foundations is a passive base (its plinth label is never explained); chips, pills and captions are 15-19px; the job has questions but no evaluation criteria (the site's data has eight `evaluationDimensions`).
 - Goal-first cut: in act 4 the systems are still small at 1080p (sticker text barely readable). A slow push-in per system would help.
 - Goal-first cut: the AI system reads *Holds, parts missing* (Interface) because The Knowledge Agent recipe has no interface part. Honest, but unexplained on screen. Either add a caption or give the AI system an interface part (Streamlit reads loose today).
 - Goal-first cut: the job's questions still sit in `video/src/goal.ts`; see the site plan for moving them.

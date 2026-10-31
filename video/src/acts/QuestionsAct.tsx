@@ -9,9 +9,9 @@ import { hueOf, questions, readSystem, systems } from '../goal'
 
 // Act 2: the questions. Each one asks for roles; each role has a colour and lands as a placeholder
 // on the system that owns it. Colour = role is taught here, in context. No products yet.
-const Q_START = questions.map((_, index) => 70 + index * 150)
-const SUMMARY_AT = Q_START.at(-1)! + 190
-export const QUESTIONS_DURATION = SUMMARY_AT + 190
+const Q_START = questions.map((_, index) => 60 + index * 115)
+const SUMMARY_AT = Q_START.at(-1)! + 150
+export const QUESTIONS_DURATION = SUMMARY_AT + 150
 
 const order: EditionId[] = ['data', 'ai', 'foundations', 'harness']
 const cells: Record<EditionId, { left: number, top: number }> = {

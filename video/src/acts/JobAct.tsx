@@ -18,8 +18,8 @@ const pile: SceneBrick[] = names.map((name, index) => {
   return { id: `pile-${name}`, box: { x, y, z: level * BRICK_HEIGHT, w: 4, d: 2, h: BRICK_HEIGHT }, hex: GRAY, label: '', sticker: name, state: 'seated' }
 })
 
-const B = { job: 20, pile: 150, instead: 300, clear: 330 }
-export const JOB_DURATION = 450
+const B = { job: 20, pile: 110, instead: 230, clear: 260 }
+export const JOB_DURATION = 360
 
 export function JobAct() {
   const frame = useCurrentFrame()

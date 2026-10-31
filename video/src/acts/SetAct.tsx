@@ -9,8 +9,8 @@ import { readSystem, systems } from '../goal'
 
 // Act 4: the set. The job needs several systems, each its own model on its own plate, on one foundation.
 // The joins between systems are not recorded anywhere, so they are drawn as open seams, not studs.
-const T = { data: 20, ai: 80, foundations: 150, harness: 230, seams: 560, card: 840 }
-export const SET_DURATION = 1080
+const T = { data: 20, ai: 70, foundations: 130, harness: 200, seams: 420, card: 700 }
+export const SET_DURATION = 940
 
 const toneColor: Record<string, string> = { clean: SEAT_COLORS.snap, loose: SEAT_COLORS.loose, forced: SEAT_COLORS.clash, gaps: '#56655d', caution: '#b0562f', empty: MUTED }
 type Panel = { edition: EditionId, at: number, left: number, top: number, width: number, height: number, optional?: boolean }
