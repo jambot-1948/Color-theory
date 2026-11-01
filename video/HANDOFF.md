@@ -3,7 +3,7 @@
 Last session: 2026-10-31 (round 2 built; see `ROUND_2_PLAN.md`). Branch: `video/goal-first-fixes` (cut from `main`, which already contains the merged video and the site changes since). The older `video/animated-overview` branch is behind main.
 
 ## What exists (2026-09-29: goal-first cut)
-`Overview` is the **goal-first cut**: 2:16 (4085 frames), four acts, anchored on one job ("a tool to explore how a project team works"). Rationale and trade-offs are in `GOAL_FIRST.md`; the matching site plan is `../SITE_GOALS_AND_SYSTEMS.md`.
+`Overview` is the **goal-first cut**: 2:31 (4535 frames), five acts (Act 0 added: `src/acts/GapAct.tsx`, 450 frames, "why this exists": problem statement and tool list, nothing joins them, then a bridge of seven hue swatches), anchored on one job ("a tool to explore how a project team works"). Rationale and trade-offs are in `GOAL_FIRST.md`; the matching site plan is `../SITE_GOALS_AND_SYSTEMS.md`.
 
 | # | Act | File | Frames |
 |---|-----|------|--------|
