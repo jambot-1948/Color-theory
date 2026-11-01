@@ -3,6 +3,7 @@ import '@fontsource/inter/400.css'
 import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import '@fontsource/inter/800.css'
+import { GapAct, GAP_DURATION } from './acts/GapAct'
 import { JobAct, JOB_DURATION } from './acts/JobAct'
 import { QuestionsAct, QUESTIONS_DURATION } from './acts/QuestionsAct'
 import { DataBuildAct, DATA_BUILD_DURATION } from './acts/DataBuildAct'
@@ -17,6 +18,7 @@ export const FPS = 30
 
 // The main video: the goal-first cut.
 const acts = [
+  { id: 'Act0-Gap', component: GapAct, duration: GAP_DURATION },
   { id: 'Act1-Job', component: JobAct, duration: JOB_DURATION },
   { id: 'Act2-Questions', component: QuestionsAct, duration: QUESTIONS_DURATION },
   { id: 'Act3-DataBuild', component: DataBuildAct, duration: DATA_BUILD_DURATION },
