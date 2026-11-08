@@ -1,0 +1,8 @@
+{
+  // Serves the built site (preview/dist) as static assets on Cloudflare. No Worker code.
+  "name": "color-theory",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
