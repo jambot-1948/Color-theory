@@ -9,6 +9,7 @@ import './WorkshopNavigation.css'
 import './FrontDoor.css'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
+import Film from './Film'
 import Overview from './overview/Overview'
 import { BrickScene } from './bricks/Brick'
 import { slotLinks, slotTools, slotsFromTools } from './bricks/capabilityModel'
@@ -83,6 +84,7 @@ export default function FrontDoor() {
   return <div className="bw-app fd-app">
     <SiteHeader />
     <main>
+      <Film />
       <Overview />
 
       <section className="fd-hero" aria-labelledby="fd-example-title">
